@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="apple-mobile-web-app-capable" content="yes"><title>3D Maze</title>
+<style>
+html,body{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;margin:0;height:100%;background:#000;overflow:hidden;font-family:sans-serif;color:#fff}
+canvas{display:block;width:100vw;height:100vh;image-rendering:pixelated}
+#hud{position:fixed;top:10px;left:10px;font-size:16px;text-shadow:0 0 4px #000;line-height:1.5;pointer-events:none}
+#msg{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(0,0,0,.7);font-size:28px;cursor:pointer;text-align:center;z-index:20;padding:10px;box-sizing:border-box}
+#msg small{font-size:16px;margin-top:12px;opacity:.8}
+#hurt{position:fixed;inset:0;background:red;opacity:0;pointer-events:none}
+#banner{position:fixed;left:0;right:0;top:38%;text-align:center;font-size:34px;font-weight:bold;color:#ff4444;text-shadow:0 0 8px #000;pointer-events:none;display:none;z-index:15}
+#touch{display:none}
+.tbtn{position:fixed;border-radius:50%;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;touch-action:none}
+#fire{right:24px;bottom:28px;width:88px;height:88px;font-size:18px;background:rgba(255,60,60,.35)}
+#rel{right:124px;bottom:36px;width:56px;height:56px;font-size:13px}
+#stickBase{position:fixed;width:110px;height:110px;margin:-55px 0 0 -55px;border-radius:50%;border:2px solid rgba(255,255,255,.4);background:rgba(255,255,255,.08);display:none;pointer-events:none}
+#stickKnob{position:absolute;left:30px;top:30px;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.45)}
+#hint{position:fixed;left:20px;bottom:20px;font-size:12px;opacity:.6;pointer-events:none}
+#menu{position:fixed;inset:0;z-index:30;background:radial-gradient(#2a2340,#050508);display:flex;align-items:center;justify-content:center;overflow:auto;touch-action:manipulation}
+#menu .pane{display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px;width:min(92vw,420px);text-align:center}
+#menu h1{margin:0 0 6px;font-size:34px;letter-spacing:3px;color:#c9a0ff}
+.btn{font-size:20px;padding:14px 18px;width:100%;border-radius:12px;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;font-weight:bold;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.btn:active{background:rgba(255,255,255,.3)}
+.btn.main{background:rgba(110,70,200,.55)}
+.btn.small{font-size:16px;padding:10px 14px;width:auto;min-width:140px}
+#code{font-size:64px;font-weight:bold;letter-spacing:10px;color:#6cf;font-family:monospace}
+#codeIn{font-size:34px;text-align:center;letter-spacing:8px;width:100%;box-sizing:border-box;padding:10px;border-radius:12px;border:2px solid #6cf;background:#111;color:#fff;font-family:monospace;text-transform:uppercase;-webkit-user-select:text;user-select:text;touch-action:manipulation}
+.err{color:#ff7070;min-height:1.2em;font-size:16px}
+.status{font-size:18px;opacity:.9}
+.help{font-size:13px;opacity:.65;line-height:1.5}
+#msg .btn{max-width:320px;margin-top:10px;font-size:18px}
+</style>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js" onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';document.head.appendChild(s);})()"></script>
+</head><body>
+<canvas id="c"></canvas>
+<div id="hurt"></div>
+<div id="hud"></div>
+<div id="banner"></div>
+<div id="touch"><div id="stickBase"><div id="stickKnob"></div></div><div id="hint">drag left side to move &middot; drag right side to look</div><div id="rel" class="tbtn">R</div><div id="fire" class="tbtn">FIRE</div></div>
+<div id="msg"></div>
+<div id="menu">
+  <div class="pane" id="mMain">
+    <h1>3D MAZE</h1>
+    <button class="btn main" id="bSolo">Solo</button>
+    <button class="btn" id="bHost">Host online game</button>
+    <button class="btn" id="bJoin">Join online game</button>
+    <div class="err" id="mErr"></div>
+    <div class="help" id="mHelp"></div>
+  </div>
+  <div class="pane" id="mHost" style="display:none">
+    <div class="status">Your game code</div>
+    <div id="code">&middot;&middot;&middot;&middot;&middot;</div>
+    <div class="status" id="hostStatus">Connecting to server...</div>
+    <div class="help">Your friend taps <b>Join online game</b> and types this code.<br>Online mode is a race: first to the green exit wins. Shoot each other on the way!</div>
+    <div class="err" id="hostErr"></div>
+    <button class="btn small" id="bHostBack">Cancel</button>
+  </div>
+  <div class="pane" id="mJoin" style="display:none">
+    <div class="status">Enter your friend's code</div>
+    <input id="codeIn" maxlength="5" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" inputmode="text" placeholder="ABCDE">
+    <button class="btn main" id="bConnect">Connect</button>
+    <div class="status" id="joinStatus"></div>
+    <div class="err" id="joinErr"></div>
+    <button class="btn small" id="bJoinBack">Back</button>
+  </div>
+</div>
+<script>
+const W=320,H=200,FOV=Math.PI/3;
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+cv.width=W;cv.height=H;
+const hud=document.getElementById('hud'),msg=document.getElementById('msg'),hurt=document.getElementById('hurt'),banner=document.getElementById('banner');
+const menu=document.getElementById('menu'),$=id=>document.getElementById(id);
+let level=1,map,N,px,py,ang,startT,state='menu',enemies=[],hp=100,ammo=12,reloadT=0,cool=0,flash=0,recoil=0,kills=0;
+const MAXAMMO=12;
+const isTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
+const joy={id:null,ox:0,oy:0,x:0,y:0},look={id:null,lx:0};
+let mode='solo';            // 'solo' | 'mp'
+let curSeed=0;
+$('mHelp').innerHTML=isTouch?'Left side: drag to move &middot; Right side: drag to look<br>FIRE to shoot, R to reload &middot; Landscape works best<br>Find the green exit!'
+  :'WASD / arrows to move, mouse to look<br>Click or Space to shoot, R to reload<br>Find the green exit!';
+function setTouchUI(on){document.getElementById('touch').style.display=(isTouch&&on)?'block':'none';}
+
+// ---------- sound ----------
+let ac;
+function sfx(type,vol=1){
+  try{
+    ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    if(ac.state==='suspended')ac.resume();
+    const t=ac.currentTime,g=ac.createGain();g.connect(ac.destination);
+    if(type==='shot'){
+      const len=0.18,b=ac.createBuffer(1,ac.sampleRate*len,ac.sampleRate),d=b.getChannelData(0);
+      for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
+      const s=ac.createBufferSource();s.buffer=b;
+      const f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=vol<1?1100:1800;
+      s.connect(f);f.connect(g);g.gain.value=0.6*vol;s.start(t);
+    }else{
+      const o=ac.createOscillator();o.connect(g);
+      if(type==='hit'){o.type='square';o.frequency.setValueAtTime(300,t);o.frequency.exponentialRampToValueAtTime(80,t+0.15);g.gain.setValueAtTime(0.15,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.15);o.start(t);o.stop(t+0.15);}
+      if(type==='click'){o.type='square';o.frequency.value=900;g.gain.setValueAtTime(0.08,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.04);o.start(t);o.stop(t+0.04);}
+      if(type==='reload'){o.type='triangle';o.frequency.setValueAtTime(200,t);o.frequency.setValueAtTime(400,t+0.12);g.gain.setValueAtTime(0.12,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.25);o.start(t);o.stop(t+0.25);}
+      if(type==='ouch'){o.type='sawtooth';o.frequency.setValueAtTime(180,t);o.frequency.exponentialRampToValueAtTime(60,t+0.3);g.gain.setValueAtTime(0.2,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.3);o.start(t);o.stop(t+0.3);}
+    }
+  }catch(e){}
+}
+
+// ---------- seeded PRNG + maze ----------
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function randSeed(){return (Math.random()*4294967296)>>>0;}
+function genMaze(cells,seed){
+  const rnd=mulberry32(seed);
+  N=cells*2+1;
+  map=Array.from({length:N},()=>Array(N).fill(1));
+  const st=[[1,1]];map[1][1]=0;
+  while(st.length){
+    const [x,y]=st[st.length-1];
+    const d=[[2,0],[-2,0],[0,2],[0,-2]].filter(([dx,dy])=>{
+      const nx=x+dx,ny=y+dy;return nx>0&&ny>0&&nx<N-1&&ny<N-1&&map[ny][nx]===1;});
+    if(!d.length){st.pop();continue;}
+    const [dx,dy]=d[Math.floor(rnd()*d.length)];
+    map[y+dy/2][x+dx/2]=0;map[y+dy][x+dx]=0;st.push([x+dx,y+dy]);
+  }
+  map[N-2][N-1]=2;
+}
+function mazeHash(){let h=2166136261;for(let y=0;y<N;y++)for(let x=0;x<N;x++){h^=map[y][x];h=Math.imul(h,16777619);}return (h>>>0).toString(16)+'/'+N;}
+function faceOpen(x,y){ // angle facing an open neighbour
+  if(map[y][x+1]!==1)return 0;if(map[y+1][x]!==1)return Math.PI/2;if(map[y][x-1]!==1)return Math.PI;return -Math.PI/2;
+}
+function bfsDist(sx,sy){ // path length from cell to exit
+  const dist=Array.from({length:N},()=>Array(N).fill(-1));const q=[[sx,sy]];dist[sy][sx]=0;
+  while(q.length){const [x,y]=q.shift();if(map[y][x]===2)return dist[y][x];
+    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy;if(map[ny]?.[nx]!==undefined&&map[ny][nx]!==1&&dist[ny][nx]<0){dist[ny][nx]=dist[y][x]+1;q.push([nx,ny]);}}}
+  return 1e9;
+}
+// deterministic spawns: host top-left; joiner = far corner (top-right or bottom-left) whose path to exit is closest to host's
+let spawns=[];
+function computeSpawns(){
+  const h=bfsDist(1,1),c1=[N-2,1],c2=[1,N-2];
+  const d1=Math.abs(bfsDist(c1[0],c1[1])-h),d2=Math.abs(bfsDist(c2[0],c2[1])-h);
+  const j=d1<=d2?c1:c2;
+  spawns=[{x:1.5,y:1.5,a:faceOpen(1,1)},{x:j[0]+.5,y:j[1]+.5,a:faceOpen(j[0],j[1])}];
+}
+function newLevel(){
+  curSeed=randSeed();
+  genMaze(4+level*2,curSeed);
+  px=1.5;py=1.5;ang=map[1][2]===0?0:Math.PI/2;
+  hp=100;ammo=MAXAMMO;reloadT=0;cool=0;
+  enemies=[];
+  const open=[];
+  for(let y=1;y<N-1;y++)for(let x=1;x<N-1;x++)if(map[y][x]===0&&Math.hypot(x-1,y-1)>5)open.push([x,y]);
+  const count=Math.min(open.length,2+level*2);
+  for(let i=0;i<count;i++){
+    const [x,y]=open.splice(Math.floor(Math.random()*open.length),1)[0];
+    enemies.push({x:x+.5,y:y+.5,hp:3,alive:true,hitT:0,dir:Math.random()*6.28,wob:Math.random()*6});
+  }
+  startT=performance.now();
+}
+newLevel();
+
+// ---------- overlay helpers ----------
+let msgAction=null;
+function showMsg(html,action){msg.innerHTML=html;msgAction=action||null;msg.style.display='flex';msg.style.cursor=action?'pointer':'default';}
+function hideMsg(){msg.style.display='none';msgAction=null;}
+function lockPointer(){if(!isTouch&&cv.requestPointerLock){try{const p=cv.requestPointerLock();if(p&&p.catch)p.catch(()=>{});}catch(e){}}}
+function unlockPointer(){if(document.pointerLockElement&&document.exitPointerLock)document.exitPointerLock();}
+msg.addEventListener('click',e=>{
+  const act=e.target.closest&&e.target.closest('[data-act]');
+  if(act){e.stopPropagation();overlayAct(act.dataset.act);return;}
+  if(msgAction)msgAction();
+});
+function overlayAct(a){
+  if(a==='menu'){backToMenu();}
+  if(a==='next'&&net.isHost&&net.conn){hostStartRound(net.round+1);}
+}
+function resumePlay(){state='play';hideMsg();lockPointer();}
+function soloClick(){
+  if(state==='won'){level++;newLevel();}
+  if(state==='dead'){newLevel();}
+  resumePlay();
+}
+
+// ---------- menu ----------
+function showPane(id){for(const p of ['mMain','mHost','mJoin'])$(p).style.display=p===id?'flex':'none';}
+function showMenu(err){
+  state='menu';mode='solo';hideMsg();banner.style.display='none';setTouchUI(false);unlockPointer();
+  menu.style.display='flex';showPane('mMain');$('mErr').textContent=err||'';hud.innerHTML='';
+}
+function backToMenu(err){netShutdown();showMenu(err);}
+$('bSolo').onclick=()=>{sfx('click');netShutdown();mode='solo';level=1;newLevel();menu.style.display='none';setTouchUI(true);resumePlay();};
+$('bHost').onclick=()=>{sfx('click');if(!peerReady())return;showPane('mHost');$('hostErr').textContent='';startHost(0);};
+$('bJoin').onclick=()=>{sfx('click');if(!peerReady())return;showPane('mJoin');$('joinErr').textContent='';$('joinStatus').textContent='';$('bConnect').disabled=false;setTimeout(()=>$('codeIn').focus(),50);};
+$('bHostBack').onclick=()=>backToMenu();
+$('bJoinBack').onclick=()=>backToMenu();
+$('bConnect').onclick=()=>startJoin();
+$('codeIn').addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')startJoin();});
+$('codeIn').addEventListener('input',()=>{const i=$('codeIn');i.value=i.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);});
+function peerReady(){
+  if(typeof window.Peer!=='function'){$('mErr').textContent='Online play unavailable: could not load PeerJS (check your internet). Solo still works.';return false;}
+  return true;
+}
+
+// ---------- networking (PeerJS / WebRTC) ----------
+const CODE_CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',PREFIX='maze3d-';
+function makeCode(){let s='';for(let i=0;i<5;i++)s+=CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)];return s;}
+const net={peer:null,conn:null,isHost:false,code:'',round:1,myFrags:0,theirFrags:0,myWins:0,theirWins:0,lastRecv:0,sendTimer:null,joinTimer:null,shotCount:0,connected:false,winner:null,myEl:0,theirEl:0,gen:0};
+const remote={x:0,y:0,a:0,tx:0,ty:0,ta:0,hp:100,dead:false,firing:false,sc:0,flashT:0,hitT:0,wob:0,has:false,seen:0,paused:false};
+function netShutdown(){
+  net.gen++;
+  clearInterval(net.sendTimer);clearTimeout(net.joinTimer);net.sendTimer=null;
+  try{net.conn&&net.conn.close();}catch(e){}
+  try{net.peer&&net.peer.destroy();}catch(e){}
+  net.peer=null;net.conn=null;net.connected=false;mode='solo';
+}
+function startHost(attempt){
+  netShutdown();const gen=net.gen;
+  net.isHost=true;net.code=makeCode();net.myFrags=net.theirFrags=net.myWins=net.theirWins=0;net.shotCount=0;remote.sc=0;
+  $('code').textContent=net.code;$('hostStatus').textContent='Connecting to server...';
+  let peer;
+  try{peer=new Peer(PREFIX+net.code,{debug:1});}catch(e){$('hostErr').textContent='Could not start: '+e.message;return;}
+  net.peer=peer;
+  peer.on('open',()=>{if(gen!==net.gen)return;$('hostStatus').textContent='Waiting for friend...';});
+  peer.on('error',err=>{
+    if(gen!==net.gen)return;
+    if(err.type==='unavailable-id'&&attempt<6){startHost(attempt+1);return;}   // code taken: regenerate
+    if(net.connected){if(err.type==='peer-unavailable'||err.type==='webrtc')onDisconnect();return;}
+    $('hostErr').textContent=errText(err);$('hostStatus').textContent='';
+  });
+  peer.on('connection',c=>{
+    if(gen!==net.gen)return;
+    if(net.conn){c.on('open',()=>{try{c.send({t:'full'});}catch(e){}setTimeout(()=>c.close(),300);});return;}
+    net.conn=c;$('hostStatus').textContent='Friend connecting...';
+    c.on('open',()=>{if(gen!==net.gen)return;onConnected();hostStartRound(1);});
+    wireConn(c,gen);
+  });
+  peer.on('disconnected',()=>{ // lost the broker; an established P2P link keeps working
+    if(gen!==net.gen)return;if(!net.connected){try{peer.reconnect();}catch(e){}}
+  });
+}
+function startJoin(){
+  const code=$('codeIn').value.toUpperCase().trim();
+  $('joinErr').textContent='';
+  if(!/^[A-HJ-NP-Z2-9]{5}$/.test(code)){$('joinErr').textContent='Bad code: codes are 5 letters/digits (no O, 0, I or 1).';return;}
+  netShutdown();const gen=net.gen;
+  net.isHost=false;net.code=code;net.myFrags=net.theirFrags=net.myWins=net.theirWins=0;net.shotCount=0;remote.sc=0;
+  $('joinStatus').textContent='Connecting...';$('bConnect').disabled=true;
+  const fail=t=>{if(gen!==net.gen)return;netShutdown();$('joinErr').textContent=t;$('joinStatus').textContent='';$('bConnect').disabled=false;};
+  let peer;
+  try{peer=new Peer({debug:1});}catch(e){fail('Could not start: '+e.message);return;}
+  net.peer=peer;
+  net.joinTimer=setTimeout(()=>{if(!net.connected)fail('Connection failed (timed out). Check the code, or your network may block peer-to-peer.');},20000);
+  peer.on('open',()=>{
+    if(gen!==net.gen)return;
+    $('joinStatus').textContent='Finding game '+code+'...';
+    const c=peer.connect(PREFIX+code,{reliable:true,serialization:'json'});
+    net.conn=c;
+    c.on('open',()=>{if(gen!==net.gen)return;clearTimeout(net.joinTimer);$('joinStatus').textContent='Connected! Starting...';onConnected();});
+    wireConn(c,gen);
+  });
+  peer.on('error',err=>{
+    if(gen!==net.gen)return;
+    if(net.connected){if(err.type==='peer-unavailable'||err.type==='webrtc')onDisconnect();return;}
+    fail(err.type==='peer-unavailable'?'No game found with code '+code+'. Check the code and that your friend is still hosting.':errText(err));
+  });
+}
+function errText(err){
+  const m={'network':'Network error: cannot reach the PeerJS server.','server-error':'PeerJS server error, try again.','socket-error':'Lost connection to the PeerJS server.','socket-closed':'Lost connection to the PeerJS server.','browser-incompatible':'This browser does not support WebRTC.','webrtc':'Peer-to-peer connection failed (network may block WebRTC).','unavailable-id':'Could not get a free game code, try again.'};
+  return m[err.type]||('Connection error: '+(err.type||err.message||err));
+}
+function wireConn(c,gen){
+  c.on('data',d=>{if(gen===net.gen)onData(d);});
+  c.on('close',()=>{if(gen===net.gen&&net.connected)onDisconnect();});
+  c.on('error',()=>{if(gen===net.gen&&net.connected)onDisconnect();});
+}
+function onConnected(){
+  net.connected=true;net.lastRecv=performance.now();
+  clearInterval(net.sendTimer);net.sendTimer=setInterval(sendState,50);   // ~20 Hz
+}
+function send(o){try{if(net.conn&&net.conn.open)net.conn.send(o);}catch(e){}}
+function sendState(){
+  if(mode!=='mp')return;
+  send({t:'s',r:net.round,x:+px.toFixed(3),y:+py.toFixed(3),a:+ang.toFixed(3),hp:Math.ceil(hp),f:flash>0?1:0,sc:net.shotCount,d:state==='respawn'?1:0,fr:net.myFrags,st:state==='paused'?'p':''});
+}
+function onDisconnect(){
+  clearInterval(net.sendTimer);
+  const was=net.connected;net.connected=false;
+  if(!was||state==='menu')return;
+  state='dc';unlockPointer();setTouchUI(false);banner.style.display='none';
+  showMsg('Friend disconnected<small>Frags &mdash; you: '+net.myFrags+' &middot; friend: '+net.theirFrags+'</small><button class="btn" data-act="menu">Back to menu</button>');
+}
+function hostStartRound(r){
+  const seed=randSeed();
+  send({t:'start',seed,r,mf:net.theirFrags,tf:net.myFrags,mw:net.theirWins,tw:net.myWins});
+  startRound(seed,r);
+}
+function startRound(seed,r){
+  mode='mp';net.round=r;net.winner=null;curSeed=seed;
+  genMaze(4+r*2,seed);computeSpawns();
+  enemies=[];
+  respawnSelf();
+  const o=spawns[net.isHost?1:0];
+  Object.assign(remote,{x:o.x,y:o.y,a:o.a,tx:o.x,ty:o.y,ta:o.a,hp:100,dead:false,has:false,flashT:0,hitT:0,paused:false});
+  startT=performance.now();
+  menu.style.display='none';setTouchUI(true);
+  state='play';hideMsg();lockPointer();
+  flashBanner('Round '+r+' &mdash; GO!','#7f7',1200);
+}
+function respawnSelf(){
+  const s=spawns[net.isHost?0:1];px=s.x;py=s.y;ang=s.a;
+  hp=100;ammo=MAXAMMO;reloadT=0;cool=0;
+}
+let bannerT=null;
+function flashBanner(html,color,ms){banner.innerHTML=html;banner.style.color=color;banner.style.display='block';clearTimeout(bannerT);bannerT=setTimeout(()=>banner.style.display='none',ms);}
+function onData(d){
+  if(!d||typeof d!=='object')return;
+  net.lastRecv=performance.now();
+  switch(d.t){
+    case 'start':
+      if(!net.isHost){net.myFrags=d.mf|0;net.theirFrags=d.tf|0;net.myWins=d.mw|0;net.theirWins=d.tw|0;startRound(d.seed>>>0,d.r|0);}
+      break;
+    case 's':
+      if(d.r!==net.round||mode!=='mp')break;
+      remote.tx=d.x;remote.ty=d.y;remote.ta=d.a;remote.hp=d.hp;remote.firing=!!d.f;remote.dead=!!d.d;remote.paused=d.st==='p';
+      if(typeof d.fr==='number')net.theirFrags=d.fr;
+      if(!remote.has||Math.hypot(d.x-remote.x,d.y-remote.y)>2){remote.x=d.x;remote.y=d.y;remote.a=d.a;}  // snap on first packet / respawn
+      if(d.sc>remote.sc){remote.flashT=0.08;sfx('shot',0.35);}   // fallback if a 'shot' msg was missed
+      remote.sc=d.sc;remote.has=true;remote.seen++;
+      break;
+    case 'shot':
+      if(d.sc>remote.sc){remote.sc=d.sc;remote.flashT=0.08;if(mode==='mp')sfx('shot',0.35);}
+      break;
+    case 'hit':
+      if(d.r!==net.round||mode!=='mp')break;
+      if(state!=='play'&&state!=='paused')break;
+      hp-=d.dmg||34;hurt.style.opacity=0.6;sfx('ouch');
+      if(hp<=0){
+        hp=0;net.theirFrags++;state='respawn';send({t:'died',r:net.round});
+        hideMsg();flashBanner('You were shot!','#ff4444',1500);
+        const g=net.gen,r=net.round;
+        setTimeout(()=>{if(g!==net.gen||r!==net.round||state!=='respawn')return;respawnSelf();state='play';sendState();},1500);
+      }
+      break;
+    case 'died':
+      if(d.r!==net.round)break;
+      net.myFrags++;remote.dead=true;flashBanner('Frag!','#ffd34d',900);
+      break;
+    case 'win':
+      if(d.r!==net.round)break;
+      net.theirEl=d.el;
+      if(net.winner==='me'){ // both reached it: faster time wins, host wins an exact tie
+        if(d.el<net.myEl||(d.el===net.myEl&&!net.isHost)){net.myWins--;net.theirWins++;roundOver('them');}
+      }else if(!net.winner){net.theirWins++;roundOver('them');}
+      break;
+    case 'full':
+      $('joinErr').textContent='That game already has two players.';
+      break;
+  }
+}
+function roundOver(who){
+  net.winner=who;state='roundover';unlockPointer();setTouchUI(false);banner.style.display='none';
+  const t=((performance.now()-startT)/1000).toFixed(1);
+  const head=who==='me'?'<span style="color:#7f7">You win round '+net.round+'!</span>':'<span style="color:#f77">Your friend wins round '+net.round+'!</span>';
+  const btn=net.isHost?'<button class="btn" data-act="next">Next round (bigger maze)</button>':'<small>Waiting for host to start the next round...</small>';
+  showMsg(head+'<small>Time '+t+'s<br>Frags &mdash; you: '+net.myFrags+' &middot; friend: '+net.theirFrags+'<br>Rounds won &mdash; you: '+net.myWins+' &middot; friend: '+net.theirWins+'</small>'+btn+'<button class="btn" data-act="menu" style="opacity:.8">Leave to menu</button>');
+}
+function netUpdate(dt){
+  if(mode!=='mp')return;
+  const k=Math.min(1,dt*12);
+  remote.x+=(remote.tx-remote.x)*k;remote.y+=(remote.ty-remote.y)*k;remote.a+=normA(remote.ta-remote.a)*k;
+  if(Math.hypot(remote.tx-remote.x,remote.ty-remote.y)>0.01)remote.wob+=dt*8;
+  remote.flashT=Math.max(0,remote.flashT-dt);remote.hitT=Math.max(0,remote.hitT-dt);
+  if(net.connected&&performance.now()-net.lastRecv>10000)onDisconnect();   // heartbeat timeout
+}
+
+// ---------- input ----------
+const keys={};
+addEventListener('keydown',e=>{if(state==='menu')return;keys[e.code]=true;if(e.code==='Space'){e.preventDefault();shoot();}if(e.code==='KeyR')reload();});
+addEventListener('keyup',e=>{keys[e.code]=false;});
+// ---------- touch controls ----------
+const stickBase=document.getElementById('stickBase'),stickKnob=document.getElementById('stickKnob');
+cv.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  for(const t of e.changedTouches){
+    if(t.clientX<innerWidth/2&&joy.id===null){
+      joy.id=t.identifier;joy.ox=t.clientX;joy.oy=t.clientY;joy.x=joy.y=0;
+      stickBase.style.left=t.clientX+'px';stickBase.style.top=t.clientY+'px';stickBase.style.display='block';
+      stickKnob.style.transform='translate(0,0)';
+    }else if(look.id===null){look.id=t.identifier;look.lx=t.clientX;}
+  }
+},{passive:false});
+cv.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  for(const t of e.changedTouches){
+    if(t.identifier===joy.id){
+      let dx=t.clientX-joy.ox,dy=t.clientY-joy.oy;const m=Math.hypot(dx,dy),R=50;
+      if(m>R){dx*=R/m;dy*=R/m;}
+      joy.x=dx/R;joy.y=dy/R;stickKnob.style.transform=`translate(${dx}px,${dy}px)`;
+    }else if(t.identifier===look.id){
+      ang+=(t.clientX-look.lx)*0.007;look.lx=t.clientX;
+    }
+  }
+},{passive:false});
+function endTouch(e){
+  for(const t of e.changedTouches){
+    if(t.identifier===joy.id){joy.id=null;joy.x=joy.y=0;stickBase.style.display='none';}
+    if(t.identifier===look.id)look.id=null;
+  }
+}
+cv.addEventListener('touchend',endTouch);cv.addEventListener('touchcancel',endTouch);
+let fireHeld=false;
+const fireBtn=document.getElementById('fire');
+fireBtn.addEventListener('touchstart',e=>{e.preventDefault();fireHeld=true;shoot();},{passive:false});
+fireBtn.addEventListener('touchend',e=>{e.preventDefault();fireHeld=false;},{passive:false});
+fireBtn.addEventListener('touchcancel',()=>{fireHeld=false;});
+document.getElementById('rel').addEventListener('touchstart',e=>{e.preventDefault();reload();},{passive:false});
+document.addEventListener('mousemove',e=>{if(document.pointerLockElement===cv)ang+=e.movementX*0.003;});
+document.addEventListener('mousedown',e=>{
+  if(isTouch||state!=='play'||e.button!==0||e.target!==cv)return;
+  if(!document.pointerLockElement)lockPointer();
+  shoot();
+});
+document.addEventListener('pointerlockchange',()=>{
+  if(!isTouch&&!document.pointerLockElement&&state==='play'){
+    state='paused';
+    if(mode==='mp')showMsg('Paused<small>The online game keeps running &mdash; click to resume</small><button class="btn" data-act="menu">Leave to menu</button>',resumePlay);
+    else showMsg('Paused<small>Click to resume</small><button class="btn" data-act="menu">Menu</button>',soloClick);
+  }
+});
+
+function solid(x,y){const v=map[Math.floor(y)]?.[Math.floor(x)];return v===undefined||v===1;}
+function lineOfSight(x0,y0,x1,y1){
+  const d=Math.hypot(x1-x0,y1-y0),steps=Math.ceil(d*8);
+  for(let i=1;i<steps;i++){const t=i/steps;if(solid(x0+(x1-x0)*t,y0+(y1-y0)*t))return false;}
+  return true;
+}
+function normA(a){while(a>Math.PI)a-=2*Math.PI;while(a<-Math.PI)a+=2*Math.PI;return a;}
+// distance to target if it is under the crosshair cone with line of sight, else -1
+function inCrosshair(tx,ty){
+  const dx=tx-px,dy=ty-py,d=Math.hypot(dx,dy);
+  const a=Math.abs(normA(Math.atan2(dy,dx)-ang));
+  return a<Math.atan(0.3/d)+0.01&&lineOfSight(px,py,tx,ty)?d:-1;
+}
+
+// ---------- gun ----------
+function reload(){if(state!=='play'||reloadT>0||ammo===MAXAMMO)return;reloadT=1.0;sfx('reload');}
+function shoot(){
+  if(state!=='play'||cool>0||reloadT>0)return;
+  if(ammo<=0){sfx('click');reload();return;}
+  ammo--;cool=0.22;flash=0.07;recoil=1;sfx('shot');
+  if(mode==='mp'){
+    net.shotCount++;send({t:'shot',sc:net.shotCount});
+    if(remote.has&&!remote.dead&&inCrosshair(remote.x,remote.y)>=0){
+      remote.hitT=0.15;sfx('hit');send({t:'hit',r:net.round,dmg:34});
+    }
+  }else{
+    // find nearest enemy under crosshair
+    let best=null,bd=1e9;
+    for(const e of enemies){
+      if(!e.alive)continue;
+      const d=inCrosshair(e.x,e.y);
+      if(d>=0&&d<bd){best=e;bd=d;}
+    }
+    if(best){
+      best.hp--;best.hitT=0.15;sfx('hit');
+      if(best.hp<=0){best.alive=false;kills++;}
+    }
+  }
+  if(ammo===0)setTimeout(reload,250);
+}
+
+// ---------- update ----------
+function update(dt){
+  netUpdate(dt);
+  hurt.style.opacity=Math.max(0,parseFloat(hurt.style.opacity||0)-dt*2);
+  if(state!=='play')return;
+  cool=Math.max(0,cool-dt);flash=Math.max(0,flash-dt);recoil=Math.max(0,recoil-dt*6);
+  if(reloadT>0){reloadT-=dt;if(reloadT<=0){reloadT=0;ammo=MAXAMMO;}}
+  const sp=2.5*dt,rs=2.2*dt;
+  if(keys.ArrowLeft||keys.KeyQ)ang-=rs;
+  if(keys.ArrowRight||keys.KeyE)ang+=rs;
+  let mx=0,my=0;const c=Math.cos(ang),s=Math.sin(ang);
+  if(keys.KeyW||keys.ArrowUp){mx+=c;my+=s;}
+  if(keys.KeyS||keys.ArrowDown){mx-=c;my-=s;}
+  if(keys.KeyA){mx+=s;my-=c;}
+  if(keys.KeyD){mx-=s;my+=c;}
+  mx+=c*-joy.y-s*joy.x;my+=s*-joy.y+c*joy.x;
+  const ml=Math.hypot(mx,my);if(ml>1){mx/=ml;my/=ml;}
+  if(fireHeld)shoot();
+  const r=0.2,nx=px+mx*sp,ny=py+my*sp;
+  if(!solid(nx+Math.sign(mx)*r,py))px=nx;
+  if(!solid(px,ny+Math.sign(my)*r))py=ny;
+
+  // enemies (solo only; the list is empty in multiplayer)
+  for(const e of enemies){
+    if(!e.alive)continue;
+    e.hitT=Math.max(0,e.hitT-dt);e.wob+=dt*6;
+    const dx=px-e.x,dy=py-e.y,d=Math.hypot(dx,dy);
+    let vx,vy,spd;
+    if(d<8&&lineOfSight(e.x,e.y,px,py)){vx=dx/d;vy=dy/d;spd=1.3+level*0.1;}
+    else{
+      vx=Math.cos(e.dir);vy=Math.sin(e.dir);spd=0.8;
+      if(Math.random()<dt*0.5)e.dir=Math.random()*6.28;
+    }
+    if(e.hitT>0)spd*=0.3;
+    if(d>0.5){
+      const ex=e.x+vx*spd*dt,ey=e.y+vy*spd*dt;
+      let moved=false;
+      if(!solid(ex+Math.sign(vx)*0.25,e.y)){e.x=ex;moved=true;}
+      if(!solid(e.x,ey+Math.sign(vy)*0.25)){e.y=ey;moved=true;}
+      if(!moved)e.dir=Math.random()*6.28;
+    }
+    if(d<0.7){hp-=25*dt;hurt.style.opacity=0.35;}
+  }
+  if(mode==='mp'){
+    if(map[Math.floor(py)][Math.floor(px)]===2&&!net.winner){
+      net.myEl=Math.round(performance.now()-startT);net.myWins++;
+      send({t:'win',r:net.round,el:net.myEl});roundOver('me');
+    }
+    return;
+  }
+  if(hp<=0){
+    hp=0;state='dead';unlockPointer();
+    showMsg(`You died on level ${level}<small>${isTouch?'Tap':'Click'} to try again</small><button class="btn" data-act="menu">Menu</button>`,soloClick);return;
+  }
+  if(map[Math.floor(py)][Math.floor(px)]===2){
+    state='won';unlockPointer();
+    const t=((performance.now()-startT)/1000).toFixed(1);
+    const k=enemies.filter(e=>!e.alive).length;
+    showMsg(`You escaped level ${level} in ${t}s!<small>Enemies shot: ${k}/${enemies.length}<br>${isTouch?'Tap':'Click'} for level ${level+1}</small><button class="btn" data-act="menu">Menu</button>`,soloClick);
+  }
+}
+
+// ---------- render ----------
+const img=ctx.createImageData(W,H),buf=new Uint32Array(img.data.buffer),zbuf=new Float32Array(W);
+function rgb(r,g,b){return (255<<24)|(b<<16)|(g<<8)|r;}
+const PAL_RED={body:[200,40,40],head:[220,60,50],eyes:[255,240,80],mouth:[40,0,0]};
+const PAL_BLUE={body:[40,90,225],head:[70,130,245],eyes:[255,255,255],mouth:[0,10,50]};
+function render(){
+  const fl=flash>0?1.4:1;
+  for(let y=0;y<H;y++){
+    const sky=y<H/2,k=sky?y/(H/2):(y-H/2)/(H/2);
+    const col=sky?rgb(30+k*40|0,30+k*40|0,60+k*60|0):rgb(Math.min(255,(40+k*60)*fl)|0,Math.min(255,(35+k*50)*fl)|0,(30+k*40)|0);
+    for(let x=0;x<W;x++)buf[y*W+x]=col;
+  }
+  for(let x=0;x<W;x++){
+    const ra=ang-FOV/2+FOV*x/W,dx=Math.cos(ra),dy=Math.sin(ra);
+    let mx=Math.floor(px),my=Math.floor(py);
+    const ddx=Math.abs(1/dx),ddy=Math.abs(1/dy);
+    const sx=dx<0?-1:1,sy=dy<0?-1:1;
+    let sdx=(dx<0?px-mx:mx+1-px)*ddx,sdy=(dy<0?py-my:my+1-py)*ddy,side=0,cell=0;
+    for(let i=0;i<64;i++){
+      if(sdx<sdy){sdx+=ddx;mx+=sx;side=0;}else{sdy+=ddy;my+=sy;side=1;}
+      cell=map[my]?.[mx];if(cell===undefined){cell=1;break;}if(cell>0)break;
+    }
+    const raw=side?sdy-ddy:sdx-ddx,dist=raw*Math.cos(ra-ang);
+    zbuf[x]=dist;
+    const h=Math.min(H*4,H/dist|0),top=Math.max(0,(H-h)/2|0),bot=Math.min(H,(H+h)/2|0);
+    let hit=side?px+raw*dx:py+raw*dy;hit-=Math.floor(hit);
+    const shade=Math.min(1.3,Math.max(0.15,1-dist/10)*(side?0.75:1)*fl);
+    const edge=(hit<0.04||hit>0.96)?0.6:1;
+    let r=170,g=120,b=200;if(cell===2){r=60;g=230;b=90;}
+    const col=rgb(Math.min(255,r*shade*edge)|0,Math.min(255,g*shade*edge)|0,Math.min(255,b*shade*edge)|0);
+    for(let y=top;y<bot;y++)buf[y*W+x]=col;
+  }
+  // billboards (enemies red, remote player blue), far to near, z-buffered
+  const sprites=enemies.filter(e=>e.alive).map(e=>({x:e.x,y:e.y,wob:e.wob,hitT:e.hitT,pal:PAL_RED,gun:0}));
+  if(mode==='mp'&&remote.has&&!remote.dead)sprites.push({x:remote.x,y:remote.y,wob:remote.wob,hitT:remote.hitT,pal:PAL_BLUE,gun:remote.flashT>0||remote.firing?2:1});
+  const vis=sprites.map(e=>{const dx=e.x-px,dy=e.y-py;return{e,d:Math.hypot(dx,dy),a:normA(Math.atan2(dy,dx)-ang)};})
+    .filter(o=>Math.abs(o.a)<FOV/2+0.5&&o.d>0.1).sort((a,b)=>b.d-a.d);
+  const tanH=Math.tan(FOV/2);
+  for(const {e,d,a} of vis){
+    const perp=d*Math.cos(a);if(perp<0.1)continue;
+    const cx=W/2+Math.tan(a)/tanH*W/2;
+    const size=H/perp*0.8,bob=Math.sin(e.wob)*size*0.03;
+    const x0=Math.floor(cx-size/2),x1=Math.ceil(cx+size/2);
+    const yBase=H/2+H/perp/2;            // floor line at this distance
+    const y0=Math.floor(yBase-size+bob),y1=Math.floor(yBase+bob);
+    const shade=Math.max(0.2,1-d/10),P=e.pal;
+    for(let x=Math.max(0,x0);x<Math.min(W,x1);x++){
+      if(zbuf[x]<perp)continue;
+      const u=(x-x0)/(x1-x0);
+      for(let y=Math.max(0,y0);y<Math.min(H,y1);y++){
+        const v=(y-y0)/(y1-y0);
+        let c=null;
+        const bx=u-0.5,by=v-0.62;
+        if(bx*bx/0.09+by*by/0.12<1)c=P.body;                     // body
+        const hx=u-0.5,hy=v-0.25;
+        if(hx*hx+hy*hy<0.045)c=P.head;                           // head
+        if(((u-0.42)**2+(v-0.22)**2<0.0016)||((u-0.58)**2+(v-0.22)**2<0.0016))c=P.eyes; // eyes
+        if(v>0.3&&v<0.34&&Math.abs(u-0.5)<0.07)c=P.mouth;       // mouth
+        if(e.gun&&u>0.66&&u<0.8&&v>0.5&&v<0.58)c=[50,50,58];     // gun
+        if(e.gun===2&&(u-0.73)**2+(v-0.5)**2<0.004)c=[255,211,77]; // muzzle flash
+        if(!c)continue;
+        if(e.hitT>0)c=[255,255,255];
+        buf[y*W+x]=rgb(c[0]*shade|0,c[1]*shade|0,c[2]*shade|0);
+      }
+    }
+  }
+  ctx.putImageData(img,0,0);
+
+  // crosshair
+  ctx.fillStyle='rgba(255,255,255,.85)';
+  ctx.fillRect(W/2-4,H/2,3,1);ctx.fillRect(W/2+2,H/2,3,1);ctx.fillRect(W/2,H/2-4,1,3);ctx.fillRect(W/2,H/2+2,1,3);
+
+  // gun
+  const bobW=(keys.KeyW||keys.KeyS||keys.ArrowUp||keys.ArrowDown||Math.hypot(joy.x,joy.y)>0.2)&&state==='play'?Math.sin(performance.now()/90)*2:0;
+  const rl=reloadT>0?Math.sin(Math.min(1,(1-reloadT))*Math.PI)*40:0;
+  const gx=W/2+18+bobW,gy=H-48+recoil*8+rl+Math.abs(bobW);
+  if(flash>0){
+    ctx.fillStyle='#ffd34d';ctx.beginPath();
+    for(let i=0;i<10;i++){const r=i%2?6:16,t=i/10*Math.PI*2;ctx.lineTo(gx+4+Math.cos(t)*r,gy-6+Math.sin(t)*r);}
+    ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(gx+4,gy-6,5,0,7);ctx.fill();
+  }
+  ctx.fillStyle='#2b2b30';ctx.fillRect(gx-2,gy-2,12,30);          // barrel
+  ctx.fillStyle='#45454d';ctx.fillRect(gx-8,gy+20,24,22);         // body
+  ctx.fillStyle='#5a5a63';ctx.fillRect(gx-2,gy-2,12,4);           // sight
+  ctx.fillStyle='#6b4a2e';ctx.fillRect(gx+4,gy+36,14,20);         // grip
+  ctx.fillStyle='#e8c39e';ctx.fillRect(gx+2,gy+40,20,14);         // hand
+
+  // minimap
+  const s=Math.max(2,Math.floor(70/N));
+  ctx.globalAlpha=0.7;
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+    ctx.fillStyle=map[y][x]===1?'#555':map[y][x]===2?'#3e5':'#111';
+    ctx.fillRect(W-N*s-4+x*s,4+y*s,s,s);
+  }
+  if(mode==='mp'){
+    if(remote.has&&!remote.dead){ctx.fillStyle='#4af';ctx.fillRect(W-N*s-4+remote.x*s-1,4+remote.y*s-1,3,3);}
+    ctx.fillStyle='#fff';   // you = white, friend = blue
+  }else ctx.fillStyle='#4af';
+  ctx.fillRect(W-N*s-4+px*s-1,4+py*s-1,3,3);
+  ctx.globalAlpha=1;
+
+  if(state==='menu'){hud.innerHTML='';return;}
+  const am=reloadT>0?'reloading...':ammo+'/'+MAXAMMO;
+  if(mode==='mp'){
+    const lag=net.connected?performance.now()-net.lastRecv:1e9;
+    const conn=!net.connected?'<span style="color:#f66">disconnected</span>':lag>1500?'<span style="color:#fc6">laggy...</span>':'<span style="color:#7f7">connected</span>';
+    hud.innerHTML=`Round ${net.round} &nbsp; Time ${((performance.now()-startT)/1000).toFixed(1)}s &nbsp; ${conn}<br>`+
+      `You: Health ${Math.ceil(hp)} &nbsp; Ammo ${am} &nbsp; Frags ${net.myFrags}<br>`+
+      `<span style="color:#8bf">Friend: Health ${remote.dead?0:remote.hp} &nbsp; Frags ${net.theirFrags}${remote.paused?' (paused)':''}</span>`;
+  }else{
+    const left=enemies.filter(e=>e.alive).length;
+    hud.innerHTML=`Level ${level} &nbsp; Time ${((performance.now()-startT)/1000).toFixed(1)}s<br>`+
+      `Health ${Math.ceil(hp)} &nbsp; Ammo ${am} &nbsp; Enemies ${left}`;
+  }
+}
+let last=performance.now();
+function loop(t){const dt=Math.min(0.05,(t-last)/1000);last=t;update(dt);render();requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+showMenu();
+// read-only debug hook (used by automated tests)
+window.__mz={get:()=>({mode,state,N,hash:map&&mazeHash(),seed:curSeed,px,py,ang,hp,ammo,remote:{...remote},net:{isHost:net.isHost,code:net.code,round:net.round,myFrags:net.myFrags,theirFrags:net.theirFrags,connected:net.connected,winner:net.winner},spawns})};
+</script></body></html>

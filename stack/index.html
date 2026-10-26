@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Stack">
+<title>Stack</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#111;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;font-family:-apple-system,system-ui,sans-serif}
+canvas{display:block;width:100vw;height:100vh}
+#ui{position:fixed;inset:0;pointer-events:none;color:#fff;text-align:center}
+#score{margin-top:calc(env(safe-area-inset-top) + 40px);font-size:64px;font-weight:800;text-shadow:0 3px 10px rgba(0,0,0,.25)}
+#combo{font-size:20px;font-weight:700;opacity:0;transition:opacity .3s}
+#center{position:fixed;left:0;right:0;top:55%;font-size:20px;font-weight:600;line-height:1.6;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+#center b{font-size:34px}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="ui"><div id="score">0</div><div id="combo"></div><div id="center"></div></div>
+<script>
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const scoreEl=document.getElementById('score'),comboEl=document.getElementById('combo'),center=document.getElementById('center');
+let Wd,Ht,dpr;
+function resize(){dpr=window.devicePixelRatio||1;Wd=innerWidth;Ht=innerHeight;cv.width=Wd*dpr;cv.height=Ht*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}
+addEventListener('resize',resize);resize();
+
+const BH=34;            // block height
+let stack,moving,debris,state,score,best=+(localStorage.stackBest||0),combo,camY,camTarget,hueBase,speed,flashT=0,shake=0;
+function hue(i){return (hueBase+i*6)%360;}
+function reset(){
+  const w=Math.min(Wd*0.62,260);
+  stack=[{x:(Wd-w)/2,w,i:0}];
+  debris=[];score=0;combo=0;camY=camTarget=0;hueBase=Math.random()*360;speed=2.6;
+  spawn();state='ready';
+  scoreEl.textContent='0';
+  center.innerHTML=`<b>STACK</b><br>Tap to drop the block<br>Best: ${best}`;
+}
+function spawn(){
+  const top=stack[stack.length-1],dir=stack.length%2?1:-1;
+  moving={x:dir>0?-top.w:Wd,w:top.w,i:stack.length,dir};
+}
+function yOf(i){return Ht*0.62-i*BH+camY;}
+
+function tap(){
+  if(state==='ready'){state='play';center.innerHTML='';return;}
+  if(state==='over'){reset();return;}
+  if(state!=='play')return;
+  const top=stack[stack.length-1],m=moving;
+  const diff=m.x-top.x,ad=Math.abs(diff);
+  if(ad<=5){ // perfect
+    m.x=top.x;combo++;flashT=1;
+    if(combo>=3){m.w=Math.min(m.w+8,Math.min(Wd*0.62,260));m.x=top.x-4;}
+    comboEl.textContent=combo>1?`PERFECT x${combo}`:'PERFECT';comboEl.style.opacity=1;
+    setTimeout(()=>comboEl.style.opacity=0,600);
+    beep(440*Math.pow(2,Math.min(combo,12)/12),0.12);
+  }else if(ad>=m.w){ // missed entirely
+    debris.push({x:m.x,y:yOf(m.i),w:m.w,vy:0,vx:m.dir*1,i:m.i,r:0});
+    moving=null;gameOver();return;
+  }else{
+    combo=0;
+    const cutW=ad,keepW=m.w-ad;
+    const cutX=diff>0?m.x+keepW:m.x;
+    debris.push({x:cutX,y:yOf(m.i),w:cutW,vy:0,vx:diff>0?1.5:-1.5,i:m.i,r:0});
+    m.w=keepW;m.x=diff>0?m.x:top.x;
+    beep(220,0.08);shake=4;
+  }
+  stack.push({x:m.x,w:m.w,i:m.i});
+  score++;scoreEl.textContent=score;
+  speed=Math.min(7,2.6+score*0.09);
+  camTarget=Math.max(0,(stack.length-6)*BH);
+  if(navigator.vibrate)navigator.vibrate(10);
+  spawn();
+}
+function gameOver(){
+  state='over';
+  if(score>best){best=score;localStorage.stackBest=best;}
+  beep(110,0.4,'sawtooth');
+  setTimeout(()=>{center.innerHTML=`<b>${score}</b><br>Best: ${best}<br>Tap to play again`;},500);
+}
+addEventListener('touchstart',e=>{e.preventDefault();tap();},{passive:false});
+addEventListener('mousedown',tap);
+addEventListener('keydown',e=>{if(e.code==='Space')tap();});
+
+let ac;
+function beep(f,d,type='sine'){
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime;
+    o.type=type;o.frequency.value=f;o.connect(g);g.connect(ac.destination);
+    g.gain.setValueAtTime(0.15,t);g.gain.exponentialRampToValueAtTime(0.001,t+d);o.start(t);o.stop(t+d);}catch(e){}
+}
+
+function drawBlock(x,y,w,h){
+  const top=10;
+  ctx.fillStyle=`hsl(${h},70%,62%)`;ctx.fillRect(x,y,w,BH);
+  ctx.fillStyle=`hsl(${h},70%,75%)`;
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+top,y-top);ctx.lineTo(x+w+top,y-top);ctx.lineTo(x+w,y);ctx.fill();
+  ctx.fillStyle=`hsl(${h},70%,48%)`;
+  ctx.beginPath();ctx.moveTo(x+w,y);ctx.lineTo(x+w+top,y-top);ctx.lineTo(x+w+top,y+BH-top);ctx.lineTo(x+w,y+BH);ctx.fill();
+}
+function frame(){
+  if(state==='play'&&moving){
+    moving.x+=moving.dir*speed;
+    const top=stack[stack.length-1];
+    if(moving.x>top.x+top.w+40&&moving.dir>0)moving.dir=-1;
+    if(moving.x+moving.w<top.x-40&&moving.dir<0)moving.dir=1;
+  }
+  camY+=(camTarget-camY)*0.1;
+  const topHue=hue(stack.length);
+  const g=ctx.createLinearGradient(0,0,0,Ht);
+  g.addColorStop(0,`hsl(${topHue+40},55%,30%)`);g.addColorStop(1,`hsl(${topHue},50%,12%)`);
+  ctx.fillStyle=g;ctx.fillRect(0,0,Wd,Ht);
+  ctx.save();
+  if(shake>0){ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);shake*=0.85;if(shake<.3)shake=0;}
+  // base pillar
+  const b=stack[0];ctx.fillStyle=`hsl(${hue(0)},40%,30%)`;ctx.fillRect(b.x,yOf(0)+BH,b.w,Ht);
+  for(const s of stack){const y=yOf(s.i);if(y>-BH&&y<Ht+BH)drawBlock(s.x,y,s.w,hue(s.i));}
+  if(flashT>0){const t=stack[stack.length-1];ctx.strokeStyle=`rgba(255,255,255,${flashT})`;ctx.lineWidth=3;
+    ctx.strokeRect(t.x-6*(1-flashT),yOf(t.i)-6*(1-flashT),t.w+12*(1-flashT),BH+12*(1-flashT));flashT-=0.04;}
+  for(const d of debris){d.vy+=0.6;d.y+=d.vy;d.x+=d.vx;d.r+=d.vx*0.01;
+    ctx.save();ctx.translate(d.x+d.w/2,d.y+BH/2);ctx.rotate(d.r);ctx.globalAlpha=0.9;drawBlock(-d.w/2,-BH/2,d.w,hue(d.i));ctx.restore();}
+  debris=debris.filter(d=>d.y<Ht+200);
+  if(moving&&state!=='over')drawBlock(moving.x,yOf(moving.i),moving.w,hue(moving.i));
+  ctx.restore();
+  requestAnimationFrame(frame);
+}
+reset();requestAnimationFrame(frame);
+</script></body></html>
