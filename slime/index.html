@@ -153,7 +153,7 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:ma
 .fbtns{position:absolute;right:8px;bottom:calc(38% - 8px);display:flex;flex-direction:column;gap:8px;align-items:flex-end;z-index:4}
 .fb{height:40px;min-width:40px;border-radius:20px;font-size:14px!important;background:rgba(255,255,255,.94);box-shadow:0 3px 0 rgba(40,20,80,.25);font-weight:900;font-size:15px;display:none;align-items:center;justify-content:center;gap:5px;padding:0 13px}
 .fb:active{transform:translateY(2px)}
-#mAll{background:linear-gradient(#b48cff,#7a4fe0);color:#fff}#undoB{background:#fff3c4;color:#6d4a00}
+#undoB{background:#fff3c4;color:#6d4a00}
 #rcd{position:absolute;left:8px;bottom:calc(38% - 6px);z-index:4;display:none;align-items:center;height:40px;border-radius:20px;padding:0 14px;background:linear-gradient(#ff9b6a,#f0603c);color:#fff;font-weight:900;font-size:13px;box-shadow:0 3px 0 #b0381c;animation:pulse .7s ease-in-out infinite alternate}
 #frz.curse{background:linear-gradient(90deg,#5a0f1e,#a01830);color:#fff}
 .seg{display:flex;gap:6px;align-items:center;margin-bottom:10px;font-weight:900;font-size:14px}.seg .chip{flex:none;min-width:58px;height:36px}
@@ -198,7 +198,7 @@ textarea#sv{width:100%;height:90px;border-radius:14px;border:2px solid #e4dcf7;f
   </div>
   <div id="goalW"><div id="goal"><div id="goalF"></div><div id="goalT">…</div></div><span id="crowd">👥 ×1.00</span></div>
 </div>
-<div id="field"><canvas id="c"></canvas><div id="banner"></div><button id="rcd"><span id="rcdT">🏁</span></button><div class="fbtns"><button class="fb" id="undoB">↩ <span id="undoT">Undo</span></button><button class="fb" id="mAll">🧲 Merge All <b id="mAllN">0</b></button><button class="fb" id="zoomB">🔍+</button></div></div>
+<div id="field"><canvas id="c"></canvas><div id="banner"></div><button id="rcd"><span id="rcdT">🏁</span></button><div class="fbtns"><button class="fb" id="undoB">↩ <span id="undoT">Undo</span></button><button class="fb" id="zoomB">🔍+</button></div></div>
 <div id="bottom">
   <button id="buy"><span class="bl"><span id="buyName">Buy Green Blob</span><small id="buySub">Tap to adopt a slime</small></span><span class="bc"><span class="drop sm"></span><span id="buyCost">10</span></span><span id="buyX">×1</span></button>
   <div id="nav">
@@ -383,7 +383,7 @@ function rad(t){return baseR*(1+t*0.032);}
 function mk(tier,x,y,z){return{id:nid++,uid:0,tier:tier,sh:0,sp:0,pn:0,x:x,y:y,z:z||0,vz:0,vx:0,vy:0,hop:0,hopDur:.42,hopH:0,idle:Math.random()*2+.5,s:0,sv:0,ph:Math.random()*6.28,blink:Math.random()*3+1,bl:0,dir:1,age:5,seek:null,tgt:false,lean:0,dragging:false,spk:Math.random()*2,
   ps:(Math.random()*5)|0,bd:0,bdT:0,nm:'',pin:false,lk:false,born:0,bud:0,budIn:false,asleep:false,awake:40+Math.random()*80,sick:false,fight:false,trav:false,esc:false,look:0,wander:30+Math.random()*90,emo:'',emoT:0};}
 function newUid(){return S.uid++;}
-function prot(s){return !!(s.nm||s.lk||s.pin||s.sp);} // protected from auto-merge, Merge All, starvation, theft and escaping
+function prot(s){return !!(s.nm||s.lk||s.pin||s.sp);} // protected from auto-merge, starvation, theft and escaping
 function story(s,txt){if(SIM||!s.uid)return;var a=S.story[s.uid]||(S.story[s.uid]=[]);a.push([Date.now(),txt]);if(a.length>7)a.splice(1,1);}
 var PR=[];
 function randPos(t,pn){var r=rad(t),R=PR[pn||0];if(R&&R.w){return{x:R.x+r+4+Math.random()*Math.max(1,R.w-2*r-8),y:R.y+r*1.9+Math.random()*Math.max(1,R.h-r*1.9-6)};}
@@ -1377,7 +1377,6 @@ var FEATS=[
  {k:'eggs',n:'Mystery Eggs & Goo Puddles',i:'🥚',c:function(){return S.best>=4;},d:'Eggs, puddles and bubbles appear around the farm. Tap them!'},
  {k:'ev1',n:'Farm Trouble',i:'🤒',c:function(){return S.best>=5;},d:'Sometimes things go wrong: slime flu, escapees… Fix trouble fast for a reward. Nothing bad happens while you are away.'},
  {k:'spring',n:'Hot Spring',i:'♨️',c:function(){return S.best>=5;},d:'A new pen! Build it in the Shop. ×2 goo, but its slimes doze off. Poke them awake.'},
- {k:'mergeall',n:'Merge All',i:'🧲',c:function(){return S.best>=5;},d:'The 🧲 button merges every matching pair at once (named, pinned and locked slimes are skipped). Undo a manual merge within 3 seconds.'},
  {k:'devourer',n:'The Devourer',i:'👄',c:function(){return S.best>=6;},d:'Something hungry woke up in the pit. Drag slimes into it: it grows, evolves and grants permanent bonuses. Keep it fed… or it feeds itself.'},
  {k:'ev2',n:'Goo Goblins',i:'👺',c:function(){return S.best>=7;},d:'Goblins sneak in to steal goo. Tap them away!'},
  {k:'flower',n:'Flower Bed',i:'🌸',c:function(){return S.best>=7;},d:'A new pen in the Shop: ×3 squish and auto-squish lands there, but pests love it.'},
@@ -1459,9 +1458,7 @@ function wantPen(s){var open=[];for(var p=0;p<4;p++)if(penOpen(p))open.push(p);i
   if(s.ps===4&&s.bud&&budMap[s.bud])return budMap[s.bud].pn;
   return Math.random()<0.3?open[(Math.random()*open.length)|0]:-1;}
 function poke(s){s.asleep=false;s.awake=50+Math.random()*70;s.bd+=1;s.s=0.4;addText(s.x,s.y-rad(s.tier)*2,'!',0.8,'#ff8a00',20);var v=squishVal(s)*2;addGoo(v);sPoke();qProg('poke',1);}
-// ---------- QoL: Merge All, 3-second undo, auto-buy, buy ×N ----------
-function mergePairs(){var cap=cycleCap(),by={},pairs=[];for(var i=0;i<SL.length;i++){var s=SL[i];if(!mergeable(s,cap))continue;if(by[s.tier]){pairs.push([s,by[s.tier]]);by[s.tier]=null;}else by[s.tier]=s;}return pairs;}
-function mergeAll(){var p=mergePairs();p.slice(0,24).forEach(function(q){var a=q[0],b=q[1],mv=PENS[b.pn].mult>=PENS[a.pn].mult?a:b,tg=mv===a?b:a;mv.seek=tg;tg.tgt=true;mv.hop=0;});if(p.length)sBuy();return p.length;}
+// ---------- QoL: 3-second undo, auto-buy, buy ×N ----------
 var UNDO=null;
 function snapSlime(s){return{tier:s.tier,sh:s.sh,sp:s.sp,pn:s.pn,x:s.x,y:s.y,uid:s.uid,ps:s.ps,bd:s.bd,nm:s.nm,pin:s.pin,lk:s.lk,born:s.born,bud:s.bud,st:S.story[s.uid]?S.story[s.uid].slice():null};}
 function setUndo(snap,n){UNDO={snap:snap,id:n.id,t:3};}
@@ -1504,7 +1501,6 @@ $('buy').addEventListener('click',function(e){ac();if(e.target.closest('#buyX'))
 $('buyX').addEventListener('click',function(e){e.stopPropagation();S.buyN=S.buyN===1?10:S.buyN===10?0:1;sBuy();updUI();if(openSheet==='shShop')buildShop();});
 $('tabU').addEventListener('click',function(){shopTab='u';buildShop();});
 $('tabC').addEventListener('click',function(){shopTab='c';buildShop();});
-$('mAll').addEventListener('click',function(){ac();var n=mergeAll();if(!n){toast('No unprotected twins to merge');sErr();}else addText(cam.x+W/cam.z/2,cam.y+H/cam.z*0.3,'🧲 Merging '+n+' pair'+(n>1?'s':'')+'!',1.2,'#7a4fe0',18);});
 $('undoB').addEventListener('click',function(){ac();if(doUndo())addText(cam.x+W/cam.z/2,cam.y+H/cam.z*0.3,'↩ Merge undone',1,'#7a4fe0',16);updUI();});
 $('zoomB').addEventListener('click',function(){ac();if(cam.z>1.02){cam.z=1;cam.x=0;cam.y=0;clampCam();}else focusPen(0);});
 $('rcd').addEventListener('click',function(){ac();open('shRace');});
@@ -1723,7 +1719,7 @@ function showWhatsNew(){queueModal(function(){showModal('<div class="rays"></div
   '<p>🕯️ <b>The Altar &amp; Blood Moons</b>: offer slimes for blessings, gamble on its mood, find secret slimes.</p>'+
   '<p>🏷️ <b>Name your slimes</b>: personalities, hearts, buddies and life stories. Hold a slime to open its profile.</p>'+
   '<p>⚠️ <b>Farm trouble</b>: flu, goblins, fights, storms. Fix it fast for rewards (never while you are away).</p>'+
-  '<p>📋 <b>Daily quests</b> and a 7-day calendar with a shiny on day 7. Plus Merge All, undo, buy ×10/Max, save export, and more.</p>'+
+  '<p>📋 <b>Daily quests</b> and a 7-day calendar with a shiny on day 7. Plus undo, buy ×10/Max, save export, and more.</p>'+
   '</div><p class="sm">Your farm moved over safely: every slime, upgrade and bonus is still yours.</p><button class="mbtn" id="mOk">Let\'s go!</button></div>',{mOk:null},'reveal');fxConfetti(S.opt.rfx?10:60);});}
 // offline earnings + "double it" bonus spin (never loses goo). Night threats are paused while away.
 function offMult(){return gooMult()*rjMult()*crowdMult()*sdMult()*devMult();}
@@ -1767,7 +1763,7 @@ function updUI(){
   if(RC&&S.feat.races){var live=RC.state!=='open',left=Math.max(0,(RC.start-Date.now())/1000);setT('raceLbl',live?'LIVE!':fmtTime(left));setD('raceDot',(RC.bet||RC.entry||S.race.lastDay!==dayStr())?'block':'none');setT('raceDot',RC.bet||RC.entry?'✓':'🔥');
     var show=openSheet!=='shRace'&&(live&&(RC.bet||RC.entry)||(!live&&left<=30&&!mOpen));setD('rcd',show?'flex':'none');if(show)setT('rcdT',live?'🏁 Your race is on! Tap to watch':'🏁 Race in '+Math.ceil(left)+'s'+(RC.bet||RC.entry?' · you\'re in':' · place a bet?'));}
   else{setT('raceLbl','Races');setD('raceDot','none');setD('rcd','none');}
-  var np=S.feat.mergeall?mergePairs().length:0;setD('mAll',np?'flex':'none');if(np)setT('mAllN',String(np));
+
   setD('undoB',UNDO?'flex':'none');if(UNDO)setT('undoT','Undo '+Math.ceil(UNDO.t)+'s');
   setD('zoomB',cam.z>1.02||SL.length>14?'flex':'none');setT('zoomB',cam.z>1.02?'🔍−':'🔍+');
   var G=goal();setT('goalT',G.t);var w=Math.round(G.p*1000)/10;if(w!==lastGoalP){lastGoalP=w;$('goalF').style.width=w+'%';}setC('goalF','gold',G.gold);
@@ -1915,7 +1911,7 @@ window.__sf={get S(){return S;},set S(v){S=v;},get SL(){return SL;},get RC(){ret
   // Update 1 hooks
   cam:cam,focusPen:focusPen,zoomAt:zoomAt,clampCam:clampCam,feed:feedDevourer,devMult:devMult,dvStage:dvStage,get dvEvo(){return dvEvo;},get DVA(){return DVA;},sacrifice:sacrifice,altarChoice:altarChoice,
   startBloodMoon:startBloodMoon,endBloodMoon:endBloodMoon,get bm(){return bm;},bmMatch:bmMatch,relight:relight,startEvent:startEvent,endEvent:endEvent,get EV(){return EV;},evTap:evTap,evSlimeTap:evSlimeTap,
-  openProfile:openProfile,mergeAll:mergeAll,mergePairs:mergePairs,doUndo:doUndo,get UNDO(){return UNDO;},checkFeats:checkFeats,claimCal:claimCal,claimQuest:claimQuest,qProg:qProg,newQuests:newQuests,
+  openProfile:openProfile,doUndo:doUndo,get UNDO(){return UNDO;},checkFeats:checkFeats,claimCal:claimCal,claimQuest:claimQuest,qProg:qProg,newQuests:newQuests,
   giveEgg:giveEgg,eggs:eggs,puds:puds,bubs:bubs,gems:gems,targetTap:targetTap,poke:poke,moveToPen:moveToPen,dropSlime:dropSlime,showWhatsNew:showWhatsNew,exportSave:exportSave,
   blessMult:blessMult,globalMult:globalMult,slimeMult:slimeMult,hearts:hearts,prot:prot,dvTick:dvTick,penAt:penAt,toWorld:toWorld,banner:banner,memorial:memorial};
 
