@@ -246,35 +246,39 @@ function breedMax(){return 5+3*Math.min(2,S.reb||0);}       // v1 allowed 9; now
 function cycleCap(){return Math.min(MAXT,14+5*(S.reb||0));} // tiers beyond Cosmic Overlord unlock via Rebirth
 function ascTier(){return Math.min(cycleCap(),9+(S.ascC||0));} // requirement rises with each ascension
 var UPS=[
- {k:'sq',n:'Squish Power',i:'👆',mx:function(){return 200;},cost:function(l){return 25*Math.pow(2.3,l);},d:function(l){return 'Squishes give ×'+fmt(sqMult(l))+' → ×'+fmt(sqMult(l+1));}},
- {k:'mult',n:'Goo Boost',i:'💧',mx:function(){return 300;},cost:function(l){return 60*Math.pow(2.7,l);},d:function(l){return 'All goo/sec ×'+fmt2(gooMult(l))+' → ×'+fmt2(gooMult(l+1));}},
- {k:'pen',n:'Bigger Pen',i:'🏡',mx:function(){return 16;},cost:function(l){return 150*Math.pow(3.2,l);},d:function(l){var a=penMax(l),b=penMax(l+1),z=nextZone(a);return 'Room for '+a+(l<16?' → '+b:'')+' · every slime boosts the whole farm +3.5%'+(z?' · '+z.icon+' '+z.n+' at '+z.pen:'');}},
- {k:'spawn',n:'Better Breeding',i:'🥚',mx:breedMax,cost:function(l){return 2000*Math.pow(150,l);},d:function(l){return 'Adopt: '+TIERS[l].n+(l<breedMax()?' → '+(S.disc[l+1]?TIERS[l+1].n:'???'):' (max '+breedMax()+(S.reb<2?', +3 per Rebirth':'')+')');}},
- {k:'auto',n:'Auto-Squisher',i:'🤖',mx:function(){return 20;},cost:function(l){return 400*Math.pow(2.7,l);},d:function(l){return (l?autoRate(l)+' squishes/s':'Squishes slimes for you')+(l<20?' → '+autoRate(l+1)+'/s':'');}},
- {k:'hat',n:'Slime Hatchery',i:'🐣',mx:function(){return 12;},cost:function(l){return 5000*Math.pow(6,l);},d:function(l){return (l?'Free slime every '+hatInt(l).toFixed(1)+'s':'Hatches free slimes over time')+(l<12?' → '+hatInt(l+1).toFixed(1)+'s':'');}},
- {k:'am',n:'Auto-Merge',i:'🧲',mx:function(){return 6;},cost:function(l){return 5000*Math.pow(5,l);},d:function(l){return (l?'Merges twins every '+amInt(l).toFixed(1)+'s':'Merges matching slimes for you')+(l<6?' → '+amInt(l+1).toFixed(1)+'s':'');}}
+ {k:'sq',n:'Squish Power',i:'👆',mx:function(){return 200;},cost:function(l){return 30*Math.pow(2.8,l);},v:function(l){return '×'+fmt2(sqMult(l));},
+  d:function(l){var nm=(Math.floor(l/10)+1)*10;return 'Squishes give '+this.v(l)+' → '+this.v(l+1)+' · ×1.12 per level, ×2 bonus at Lv '+nm+(l+1===nm?' (next level!)':'');}},
+ {k:'mult',n:'Goo Boost',i:'💧',mx:function(){return 300;},cost:function(l){return 60*Math.pow(2.7,l);},v:function(l){return '×'+fmt2(gooMult(l));},d:function(l){return 'All goo/sec '+this.v(l)+' → '+this.v(l+1)+' (×1.2 per level)';}},
+ {k:'pen',n:'Bigger Pen',i:'🏡',mx:function(){return 16;},cost:function(l){return 150*Math.pow(3.2,l);},v:function(l){return String(penMax(l));},d:function(l){var a=penMax(l),z=nextZone(a);return 'Room for '+this.v(l)+' → '+this.v(l+1)+' · every slime boosts the whole farm +3.5%'+(z?' · '+z.icon+' '+z.n+' at '+z.pen:'');}},
+ {k:'spawn',n:'Better Breeding',i:'🥚',mx:breedMax,cost:function(l){return 2000*Math.pow(300,l);},v:function(l){return l<=MAXT?(S.disc[l]||l===0?TIERS[l].n:'??? (tier '+(l+1)+')'):'—';},d:function(l){return 'Adopt: '+this.v(l)+(l<breedMax()?' → '+this.v(l+1):' (max '+breedMax()+(S.reb<2?', +3 per Rebirth':'')+')');}},
+ {k:'auto',n:'Auto-Squisher',i:'🤖',mx:function(){return 25;},cost:function(l){return 400*Math.pow(2.7,l);},v:function(l){return fmt2(autoRate(l))+'/s';},d:function(l){return (l?'Squishes '+this.v(l):'Squishes slimes for you')+' → '+this.v(l+1)+(l>=10?' (×1.15 per level)':'');}},
+ {k:'hat',n:'Slime Hatchery',i:'🐣',mx:function(){return 12;},cost:function(l){return 5000*Math.pow(6,l);},v:function(l){return l?fmt2(hatInt(l))+'s':'off';},d:function(l){return (l?'Free slime every '+this.v(l):'Hatches free slimes over time')+' → every '+this.v(l+1);}},
+ {k:'am',n:'Auto-Merge',i:'🧲',mx:function(){return 6;},cost:function(l){return 5000*Math.pow(5,l);},v:function(l){return l?fmt2(amInt(l))+'s':'off';},d:function(l){return (l?'Merges twins every '+this.v(l):'Merges matching slimes for you')+' → every '+this.v(l+1);}}
 ];
 var CR=[
- {k:'start',n:'Royal Nursery',i:'🍼',max:3,cost:function(l){return [5,30,150][l];},d:function(l){return 'Start every run with Better Breeding Lv '+l+' → '+(l+1);}},
- {k:'keep',n:'Heirloom',i:'💎',max:4,cost:function(l){return [10,50,200,800][l];},d:function(l){var a=['Auto-Merge','Auto-Squisher','Hatchery','Bigger Pen'];return l<4?'Keep '+a[l]+' levels when you ascend':'Keeps Auto-Merge, Auto-Squisher, Hatchery & Pen';}},
- {k:'amf',n:'Magnet Polish',i:'✨',max:5,cost:function(l){return 8*Math.pow(3,l);},d:function(l){return 'Auto-Merge '+(25*l)+'% → '+(25*(l+1))+'% faster';}},
- {k:'luck',n:'Four-Leaf Goo',i:'🍀',max:5,cost:function(l){return 12*Math.pow(3,l);},d:function(l){return 'Shiny chance '+(shinyP(l)*100).toFixed(1)+'% → '+(shinyP(l+1)*100).toFixed(1)+'%, Golden Slime more often';}},
- {k:'hatch',n:'Golden Incubator',i:'🪺',max:5,cost:function(l){return 20*Math.pow(3,l);},d:function(l){return 'Hatchery '+(12*(l+1))+'% faster, '+(10*(l+1))+'% chance to hatch +1 tier';}},
- {k:'estate',n:'Royal Estate',i:'🏰',max:5,cost:function(l){return 15*Math.pow(3,l);},d:function(l){return '+'+(2*l)+' → +'+(2*(l+1))+' pen slots (crowd bonus!)';}},
- {k:'jelly',n:'Royal Recipe',i:'🍯',max:5,cost:function(l){return 25*Math.pow(3,l);},d:function(l){return 'Each Royal Jelly earned: +'+(10+l)+'% → +'+(11+l)+'% goo';}},
- {k:'jar',n:'Jelly Jar',i:'🫙',max:10,cost:function(l){return 30*Math.pow(2,l);},d:function(l){return '+'+(15*l)+'% → +'+(15*(l+1))+'% Royal Jelly from ascending';}},
- {k:'dream',n:'Dream Pens',i:'💤',max:3,cost:function(l){return 10*Math.pow(4,l);},d:function(l){return 'Offline: '+offCapH(l)+'h → '+offCapH(l+1)+'h cap, +'+(25*(l+1))+'% goo';}}
+ {k:'start',n:'Royal Nursery',i:'🍼',max:3,cost:function(l){return [5,30,150][l];},v:function(l){return 'Lv '+l;},d:function(l){return 'Start every run with Better Breeding '+this.v(l)+' → '+this.v(l+1);}},
+ {k:'keep',n:'Heirloom',i:'💎',max:4,cost:function(l){return [10,50,200,800][l];},v:function(l){var a=['Auto-Merge','Auto-Squisher','Hatchery','Bigger Pen'];return l?a.slice(0,l).join(', '):'nothing';},d:function(l){return 'Kept when you ascend: '+this.v(l)+' → '+this.v(l+1);}},
+ {k:'amf',n:'Magnet Polish',i:'✨',max:5,cost:function(l){return 8*Math.pow(3,l);},v:function(l){return '+'+(25*l)+'%';},d:function(l){return 'Auto-Merge speed '+this.v(l)+' → '+this.v(l+1);}},
+ {k:'luck',n:'Four-Leaf Goo',i:'🍀',max:5,cost:function(l){return 12*Math.pow(3,l);},v:function(l){return fmt2(shinyP(l)*100)+'%';},d:function(l){return 'Shiny chance '+this.v(l)+' → '+this.v(l+1)+', Golden Slime more often';}},
+ {k:'hatch',n:'Golden Incubator',i:'🪺',max:5,cost:function(l){return 20*Math.pow(3,l);},v:function(l){return fmt2((1/Math.pow(0.88,l)-1)*100)+'% faster, '+(10*l)+'% +1 tier';},d:function(l){return 'Hatchery '+this.v(l)+' → '+this.v(l+1);}},
+ {k:'estate',n:'Royal Estate',i:'🏰',max:5,cost:function(l){return 15*Math.pow(3,l);},v:function(l){return '+'+(2*l);},d:function(l){return this.v(l)+' → '+this.v(l+1)+' pen slots (crowd bonus!)';}},
+ {k:'jelly',n:'Royal Recipe',i:'🍯',max:5,cost:function(l){return 25*Math.pow(3,l);},v:function(l){return '+'+(10+2*l)+'%';},d:function(l){return 'Each Royal Jelly earned: '+this.v(l)+' → '+this.v(l+1)+' goo';}},
+ {k:'jar',n:'Jelly Jar',i:'🫙',max:10,cost:function(l){return 30*Math.pow(2,l);},v:function(l){return '×'+fmt2(jarMult(l));},d:function(l){return 'Royal Jelly from ascending '+this.v(l)+' → '+this.v(l+1)+' (×1.15 per level)';}},
+ {k:'dream',n:'Dream Pens',i:'💤',max:3,cost:function(l){return 10*Math.pow(4,l);},v:function(l){return offCapH(l)+'h cap, +'+(25*l)+'% goo';},d:function(l){return 'Offline: '+this.v(l)+' → '+this.v(l+1);}}
 ];
-function fmt2(n){return n<100?n.toFixed(2).replace(/\.?0+$/,''):fmt(n);}
-function sqMult(l){if(l===undefined)l=lvl('sq');return 1+l*0.5;}
+// 3 significant digits for multipliers / rates, so before → after never looks identical
+function fmt2(n){if(typeof n!=='number'||n!==n)return '0';if(!isFinite(n))n=1e300;if(n>=1000)return fmt(n);
+  var s=n>=100?n.toFixed(0):n>=10?n.toFixed(1):n>=1?n.toFixed(2):n.toPrecision(2);return s.indexOf('.')>=0&&n<100?s.replace(/0+$/,'').replace(/\.$/,''):s;}
+function jarMult(l){if(l===undefined)l=cl('jar');return Math.pow(1.15,l);}
+function sqMult(l){if(l===undefined)l=lvl('sq');return Math.pow(1.12,l)*Math.pow(2,Math.floor(l/10));} // compounding + ×2 every 10 levels
 function gooMult(l){if(l===undefined)l=lvl('mult');return Math.pow(1.2,l);}
-function rjMult(){return 1+(0.1+0.01*cl('jelly'))*(S.rjCycle||0);}
+function rjMult(){return 1+(0.1+0.02*cl('jelly'))*(S.rjCycle||0);}
 function sdMult(){return Math.pow(2,S.sd||0);}
 function crowdMult(n){if(n===undefined)n=SL.length;return Math.pow(1.035,n);}
 function penMax(l){if(l===undefined)l=lvl('pen');return 8+l+2*cl('estate');}
-function autoRate(l){if(l===undefined)l=lvl('auto');return Math.round(l*0.3*10)/10;}
+function autoRate(l){if(l===undefined)l=lvl('auto');return l<=10?0.3*l:3*Math.pow(1.15,l-10);}
 function amInt(l){if(l===undefined)l=lvl('am');return l<=0?1e9:3*Math.pow(0.68,l-1)/(1+0.25*cl('amf'));}
-function hatInt(l){if(l===undefined)l=lvl('hat');return l<=0?1e9:45*Math.pow(0.87,l-1)*Math.pow(0.88,cl('hatch'))/(1+0.1*(S.sd||0));}
+function hatInt(l){if(l===undefined)l=lvl('hat');return l<=0?1e9:45*Math.pow(0.87,l-1)*Math.pow(0.88,cl('hatch'))/(1+0.05*(S.sd||0));}
 function shinyP(l){if(l===undefined)l=cl('luck');return 0.015*(1+0.5*l);}
 function offCapH(l){if(l===undefined)l=cl('dream');return 8+4*l;}
 var frenzyT=0,FRENZY=7;
@@ -289,7 +293,7 @@ function gpsBase(){var sum=0,pm=penMax();zc[0]=zc[1]=zc[2]=0;for(var i=0;i<SL.le
 function gps(){return safe(gpsBase()*globalMult());}
 function squishVal(s){var v=TG[s.tier]*(s.sh?5:1)*sqMult()*globalMult();var z=s.zn;if(z>=0&&zoneOn(z)){if(Z[z].mult)v*=Z[z].mult;if(Z[z].sq)v*=Z[z].sq;}return safe(v);}
 function buyCost(){return safe(10*Math.pow(2.6,lvl('spawn'))*Math.pow(1.17,S.bought));}
-function rjGain(){var L=Math.log10(Math.max(1,S.run))-5;return L<=0?0:Math.floor(1.5*L*L*(1+0.15*cl('jar')));} // log-based: no runaway feedback
+function rjGain(){var L=Math.log10(Math.max(1,S.run))-5;return L<=0?0:Math.floor(1.0*L*L*jarMult());} // log-based: no runaway feedback
 function sdGain(){return Math.max(1,Math.floor(Math.log2(Math.max(1,(S.rjCycle+rjGain())/25))));}
 function addGoo(v){v=safe(v);if(v<=0)return;S.goo=safe(S.goo+v);S.total=safe(S.total+v);S.run=safe(S.run+v);}
 function spend(c){S.goo=Math.max(0,safe(S.goo-c));}
@@ -922,7 +926,7 @@ function buildShop(){
   if(shopTab==='c'){h+=crownHTML();}
   else{var g=rjGain(),at=ascTier(),ca=canAscend();
     h+='<div class="asc"><h3>👑 Slime Ascension</h3>';
-    if(S.best>=8||S.asc>0)h+='<p>Reset goo, slimes &amp; upgrades for Royal Jelly: each 👑 earned = +'+(10+cl('jelly'))+'% goo, and spend 👑 in the Crown Shop. Requirement rises each ascension.<br>Next requirement: <b>'+TIERS[at].n+'</b> (tier '+(at+1)+')</p><button class="bb" id="ascBtn" '+(ca?'':'disabled')+'>'+(S.maxRun<at?'Reach '+TIERS[at].n+' this run':g<1?'Earn more goo to ascend':'Ascend for +'+g+' 👑')+'</button>';
+    if(S.best>=8||S.asc>0)h+='<p>Reset goo, slimes &amp; upgrades for Royal Jelly: each 👑 earned = +'+(10+2*cl('jelly'))+'% goo, and spend 👑 in the Crown Shop. Requirement rises each ascension.<br>Next requirement: <b>'+TIERS[at].n+'</b> (tier '+(at+1)+')</p><button class="bb" id="ascBtn" '+(ca?'':'disabled')+'>'+(S.maxRun<at?'Reach '+TIERS[at].n+' this run':g<1?'Earn more goo to ascend':'Ascend for +'+g+' 👑')+'</button>';
     else h+='<p>Discover the '+(S.disc[8]?TIERS[8].n:'tier 9 slime')+' to unlock Ascension and earn permanent bonuses.</p>';
     h+='</div>';
     if(S.best>=14||S.reb>0)h+=rebirthHTML();
@@ -931,13 +935,13 @@ function buildShop(){
   $('shopList').innerHTML=h;
   $('shopList').querySelectorAll('.bb[data-k]').forEach(function(b){b.addEventListener('click',function(){if(buyUp(b.dataset.k)){buildShop();updUI();}});});
   $('shopList').querySelectorAll('.bb[data-c]').forEach(function(b){b.addEventListener('click',function(){if(buyCrown(b.dataset.c)){fxConfetti(24);buildShop();updUI();}});});
-  var ab=$('ascBtn');if(ab)ab.addEventListener('click',function(){var gg=rjGain();queueModal(function(){showModal('<div style="font-size:54px">👑</div><h2>Ascend?</h2><p>Goo, slimes and upgrades reset'+(cl('keep')?' (Heirloom keeps some)':'')+'.<br>You gain <b>+'+gg+' Royal Jelly</b>: +'+(gg*(10+cl('jelly')))+'% goo forever, plus 👑 to spend in the Crown Shop.</p><button class="mbtn pur" id="mOk">Ascend!</button><button class="mbtn alt" id="mNo">Not yet</button>',{mOk:function(){if(ascend()){fxConfetti(90);shopTab='c';closeAll();}},mNo:null});});});
-  var rb=$('rebBtn');if(rb)rb.addEventListener('click',function(){var gg=sdGain();queueModal(function(){showModal('<div style="font-size:54px">🌠</div><h2>Cosmic Rebirth?</h2><p>Resets goo, slimes, upgrades, ascensions <b>and your Royal Jelly goo bonus</b>. Crown perks, unspent 👑 and Slimedex stay.<br>Gain <b>+'+gg+' Stardust</b> (each doubles all goo and speeds the Hatchery +10%)'+(S.reb<2?', unlock 5 new tiers and +3 Better Breeding':'')+'.</p><button class="mbtn pur" id="mOk">Be reborn!</button><button class="mbtn alt" id="mNo">Not yet</button>',{mOk:function(){if(rebirth()){fxConfetti(140);flash();closeAll();}},mNo:null});});});
+  var ab=$('ascBtn');if(ab)ab.addEventListener('click',function(){var gg=rjGain();queueModal(function(){showModal('<div style="font-size:54px">👑</div><h2>Ascend?</h2><p>Goo, slimes and upgrades reset'+(cl('keep')?' (Heirloom keeps some)':'')+'.<br>You gain <b>+'+gg+' Royal Jelly</b>: +'+(gg*(10+2*cl('jelly')))+'% goo forever, plus 👑 to spend in the Crown Shop.</p><button class="mbtn pur" id="mOk">Ascend!</button><button class="mbtn alt" id="mNo">Not yet</button>',{mOk:function(){if(ascend()){fxConfetti(90);shopTab='c';closeAll();}},mNo:null});});});
+  var rb=$('rebBtn');if(rb)rb.addEventListener('click',function(){var gg=sdGain();queueModal(function(){showModal('<div style="font-size:54px">🌠</div><h2>Cosmic Rebirth?</h2><p>Resets goo, slimes, upgrades, ascensions <b>and your Royal Jelly goo bonus</b>. Crown perks, unspent 👑 and Slimedex stay.<br>Gain <b>+'+gg+' Stardust</b> (each doubles all goo and speeds the Hatchery +5%)'+(S.reb<2?', unlock 5 new tiers and +3 Better Breeding':'')+'.</p><button class="mbtn pur" id="mOk">Be reborn!</button><button class="mbtn alt" id="mNo">Not yet</button>',{mOk:function(){if(rebirth()){fxConfetti(140);flash();closeAll();}},mNo:null});});});
 }
 function zoneHTML(){var pm=penMax(),h='<div>';Z.forEach(function(z,i){h+='<span class="zone">'+(zoneOn(i,pm)?'':'🔒 ')+z.icon+' '+z.n+' · '+(zoneOn(i,pm)?z.d:'pen '+z.pen)+'</span>';});return h+'</div><small>Crowd bonus now ×'+fmt2(crowdMult())+' ('+SL.length+' slimes)</small>';}
 function rebirthHTML(){var cap=cycleCap(),ok=canRebirth();
   return '<div class="reb"><h3>🌠 Cosmic Rebirth</h3><p>The deeper prestige. Resets your 👑 goo bonus &amp; ascensions, keeps Crown perks and unspent 👑. Stardust: <b>'+S.sd+'</b> (×'+fmt(sdMult())+' goo).'+(S.reb<2?' Unlocks tiers '+(cap+2)+'–'+(cap+6)+' and +3 Better Breeding.':'')+'<br>Requirement: <b>'+TIERS[cap].n+'</b> this run</p><button class="bb" id="rebBtn" '+(ok?'':'disabled')+'>'+(ok?'Rebirth for +'+sdGain()+' 🌠':'Reach '+TIERS[cap].n+' this run')+'</button></div>';}
-function crownHTML(){var h='<div class="asc" style="background:linear-gradient(135deg,#fff3c4,#ffe7b0)"><h3>👑 Crown Shop</h3><p>You have <b>'+S.rj+'</b> 👑 to spend. Perks are permanent (they even survive Cosmic Rebirth). Spending 👑 never lowers your goo bonus: that comes from 👑 earned ('+S.rjCycle+' → +'+fmt(S.rjCycle*(10+cl('jelly')))+'%).</p></div>';
+function crownHTML(){var h='<div class="asc" style="background:linear-gradient(135deg,#fff3c4,#ffe7b0)"><h3>👑 Crown Shop</h3><p>You have <b>'+S.rj+'</b> 👑 to spend. Perks are permanent (they even survive Cosmic Rebirth). Spending 👑 never lowers your goo bonus: that comes from 👑 earned ('+S.rjCycle+' → +'+fmt(S.rjCycle*(10+2*cl('jelly')))+'%).</p></div>';
   CR.forEach(function(u){var l=cl(u.k),mx=l>=u.max,c=mx?0:u.cost(l);
     h+='<div class="item"><div class="ic">'+u.i+'</div><div class="it"><b>'+u.n+'<span class="lv">'+(mx?'MAX':'Lv '+l+'/'+u.max)+'</span></b><small>'+u.d(Math.min(l,u.max-1))+'</small></div><button class="bb rj" data-c="'+u.k+'" '+(mx||S.rj<c?'disabled':'')+'>'+(mx?'MAX':'👑 '+fmt(c))+'</button></div>';});
   return h;}
