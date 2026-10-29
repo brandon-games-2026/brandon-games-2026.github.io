@@ -55,6 +55,12 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:ma
 .cas{background:#f8f5ff;border-radius:18px;padding:12px;margin-bottom:10px}.cas h3{margin:0 0 4px}.cas input[type=range]{width:100%;margin:8px 0}.casrow{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px}.cas .seg{margin:6px 0}.casgo{width:100%;position:relative;overflow:hidden}.casgo.hold{background:linear-gradient(#ff6b6b,#c0283a);box-shadow:0 4px 0 #7a1020}.casgo i{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(255,255,255,.35)}
 .casl{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px}.cs{flex:none;width:76px;border-radius:14px;background:#fff;padding:4px;border:3px solid transparent}.cs.on{border-color:#7a4fe0}.cs canvas{width:56px;height:56px}.cs small{display:block;font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .don{background:linear-gradient(135deg,#fff3c4,#ffd98a)}.don .pot{font-size:26px;font-weight:900;text-align:center;margin:6px 0}.don .chain{color:#c0283a}.casrow2{display:flex;gap:8px}.casrow2 .bb{flex:1}.don.s3,.don.s4{background:linear-gradient(135deg,#ffd98a,#ff9a5a)}.don.s5,.don.s6{background:linear-gradient(135deg,#ff9a5a,#ff4d6d);color:#fff;animation:donP .6s ease-in-out infinite}
+#casTabs .tabs{margin-bottom:6px}.ctk{font-size:12px;font-weight:800;color:#6a5a90;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:8px}.ctk .lk{color:#2a8a3a}.ctk .stk{color:#c0283a}
+#bigWin{position:absolute;inset:0;z-index:5;display:none;align-items:center;justify-content:center;background:rgba(30,10,60,.55);pointer-events:none}#bigWin.on{display:flex}#bigWin div{text-align:center;color:#fff;animation:bw .5s cubic-bezier(.2,1.6,.4,1)}#bigWin b{display:block;font-size:54px;font-weight:900;color:#ffd23f;text-shadow:0 4px 0 #b07a00}#bigWin span{font-size:30px;font-weight:900}#bigWin small{display:block;opacity:.7}@keyframes bw{from{transform:scale(.3)}}
+#shCasino .panel{position:relative}#gC,#slC{width:100%;border-radius:16px;display:block;margin-bottom:8px}.gres{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.gres .gr{flex:1 1 30%;background:#f8f5ff;border-radius:10px;padding:6px;font-size:12px;font-weight:800;text-align:center}.gres .r3,.gres .r4{background:#fff3c4}.gres .lnk{width:100%}.gsum{width:100%;text-align:center;font-weight:900}
+.pity{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13px}.pity .ebar{flex:1}.rar{font-size:12px;font-weight:700;margin:6px 0 10px;color:#4a3a70}
+.jp{text-align:center;font-weight:900;background:linear-gradient(90deg,#ffd23f,#ff9a5a);border-radius:12px;padding:8px;margin-bottom:8px}.pt{margin-top:10px;font-size:13px}.pt div{display:flex;gap:8px;padding:3px 0;border-bottom:1px solid #eee}.pt div span{flex:1;color:#6a5a90}
+.scw{position:relative;width:100%;aspect-ratio:1;margin-bottom:8px;touch-action:none}.scw canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:16px}#scTop{transition:opacity .5s;touch-action:none}
 #updBar{position:fixed;left:10px;right:10px;top:calc(env(safe-area-inset-top) + 8px);z-index:30;padding:12px;border-radius:16px;background:#2a8a3a;color:#fff;font-weight:900;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
 .panel{background:#fff;border-radius:26px 26px 0 0;max-height:84%;display:flex;flex-direction:column;padding-bottom:var(--bot);animation:up .28s cubic-bezier(.2,1.2,.4,1)}
 @keyframes up{from{transform:translateY(60%)}to{transform:none}}
@@ -233,11 +239,11 @@ textarea#sv{width:100%;height:90px;border-radius:14px;border:2px solid #e4dcf7;f
 
 <div class="sheet" id="shShop"><div class="panel"><div class="ph"><span>Shop</span><button class="x" data-close>✕</button></div><div class="pb"><div class="tabs"><button class="tab on" id="tabU">🛒 Upgrades</button><button class="tab" id="tabC">👑 Crown Shop</button></div><div id="shopList"></div></div></div></div>
 <div class="sheet" id="shRace"><div class="panel"><div class="ph"><span>🏁 Slime Races<span class="streak" id="rStreak" style="display:none"></span></span><button class="x" data-close>✕</button></div><div class="pb" id="raceBody"><canvas id="track"></canvas><div class="rstat" id="rStat"></div><div id="racers"></div><div id="betUI"></div></div></div></div>
-<div class="sheet" id="shDex"><div class="panel"><div class="ph"><span>Slimedex<small id="dexCount"></small></span><button class="x" data-close>✕</button></div><div class="pb"><div class="grid" id="dexGrid"></div></div></div></div>
+<div class="sheet" id="shDex"><div class="panel"><div class="ph"><span>Slimedex<small id="dexCount"></small></span><button class="x" data-close>✕</button></div><div class="pb"><div class="grid" id="dexGrid"></div><div id="dexGacha"></div></div></div></div>
 <div class="sheet" id="shSet"><div class="panel"><div class="ph"><span>Settings</span><button class="x" data-close>✕</button></div><div class="pb" id="setList"></div></div></div>
 <div class="sheet" id="shFarm"><div class="panel"><div class="ph"><span>🏡 My Farm</span><button class="x" data-close>✕</button></div><div class="pb"><div class="ftabs"><button class="tab on" id="fT">📋 Today</button><button class="tab" id="fS">🐾 Slimes</button><button class="tab" id="fD">👄 Dark</button><button class="tab" id="fM">🪦 Memorial</button></div><div id="farmList"></div></div></div></div>
 <div class="sheet" id="shProf"><div class="panel"><div class="ph"><span>Slime profile</span><button class="x" data-close>✕</button></div><div class="pb" id="profBody"></div></div></div>
-<div class="sheet" id="shCasino"><div class="panel"><div class="ph"><span>🎰 Slime Casino</span><button class="x" data-close>✕</button></div><div class="pb" id="casBody"></div></div></div>
+<div class="sheet" id="shCasino"><div class="panel"><div class="ph"><span>🎰 Slime Casino</span><button class="x" data-close>✕</button></div><div class="pb"><div id="casTabs"></div><div id="casBody"></div></div><div id="bigWin"></div></div></div>
 <div class="sheet" id="shLvl"><div class="panel"><div class="ph"><span id="lvlT">Levels</span></div><div class="pb" id="lvlBody"></div><button class="mbtn" id="lvlX">Close</button></div></div>
 <div class="mod" id="modal"><div class="mbox" id="mbox"></div></div>
 <canvas id="fx"></canvas>
@@ -1268,7 +1274,7 @@ function dvTick(dt){
   if(SIM)return;
   if(S.opt.simple)d.hunger=Math.max(d.hunger,60);else d.hunger=Math.max(0,d.hunger-dt*(0.065+0.015*d.stage));
   if(DVA){DVA.t+=dt;if(DVA.t>1.0&&dvBurpT<0){dvBurpT=0.7;}if(DVA.t>1.6){DVA=null;dvCheckEvo();}}
-  if(dvBurpT>=0){dvBurpT-=dt;if(dvBurpT<0){dvBurpT=-1;sBurp();burst(PIT.x+PIT.w/2,PIT.y+PIT.h*0.35,'#b48cff',10,160);
+  if(dvBurpT>=0){dvBurpT-=dt;if(dvBurpT<0){dvBurpT=-1;sBurp();if(Math.random()<0.12)giveCard(0,'the Devourer burped one up');burst(PIT.x+PIT.w/2,PIT.y+PIT.h*0.35,'#b48cff',10,160);
     if(Math.random()<0.75)gems.push({x:PIT.x+PIT.w/2,y:PIT.y+PIT.h*0.4,vx:(Math.random()-0.5)*140,vy:-160,z:30,vz:220,life:14,c:['#ff5fa2','#5fd1ff','#ffd23f','#8dff8a'][(Math.random()*4)|0]});}}
   if(dvEvo>0)dvEvo-=dt;
   for(var i=gems.length-1;i>=0;i--){var G=gems[i];G.life-=dt;if(G.z>0||G.vz>0){G.vz-=700*dt;G.z+=G.vz*dt;G.x+=G.vx*dt;if(G.z<=0){G.z=0;G.vz=0;G.vx=0;}}if(G.life<=0)gems.splice(i,1);}
@@ -1323,7 +1329,7 @@ function startBloodMoon(){var pool=SL.filter(function(s){return !s.sp;});if(pool
   else{var ts=pool.map(function(s){return s.tier;}).sort(function(a,b){return a-b;}),t=ts[Math.floor(ts.length*(0.3+Math.random()*0.5))];dem={tier:t,txt:'a '+TIERS[t].n};}
   bm={t:0,dur:90,uid:dem.uid||0,tier:dem.tier===undefined?-1:dem.tier,txt:dem.txt};S.bms++;
   banner('🩸 BLOOD MOON! It demands '+dem.txt+'. Drag it to the Altar within 90s…','#8a1020',6);sMoon();return true;}
-function endBloodMoon(ok){if(!bm)return;var was=bm;bm=null;S.bm=3600+Math.random()*1800;
+function endBloodMoon(ok){if(!bm)return;var was=bm;bm=null;S.bm=3600+Math.random()*1800;if(ok)giveCard(2,'a Blood Moon gift');
   if(ok){story0('🌅 Dawn breaks. The moon is satisfied.');return;}
   var pool=SL.filter(function(s){return !prot(s)&&!s.sp&&s.tier<S.maxRun&&!s.eat;});if(!pool.length)pool=SL.filter(function(s){return !prot(s)&&!s.sp;});
   var v=pool.length?pool[(Math.random()*pool.length)|0]:null;
@@ -1412,7 +1418,8 @@ var FEATS=[
  {k:'eggs',n:'Mystery Eggs & Goo Puddles',i:'🥚',c:function(){return S.best>=4;},d:'Eggs, puddles and bubbles appear around the farm. Tap them!'},
  {k:'ev1',n:'Farm Trouble',i:'🤒',c:function(){return S.best>=5;},d:'Sometimes things go wrong: slime flu, escapees… Fix trouble fast for a reward. Nothing bad happens while you are away.'},
  {k:'spring',n:'Hot Spring',i:'♨️',c:function(){return S.best>=5;},d:'A new pen! Build it in the Shop. ×2 goo, but its slimes doze off. Poke them awake.'},
- {k:'casino',n:'Slime Casino',i:'🎰',c:function(){return S.best>=7;},d:'Feeling lucky? The All-In Table, Bet Your Slime and Double or Nothing. Small house edge, wins are capped. Find it under ☰ More.'},
+ {k:'casino',n:'Slime Casino',i:'🎰',c:function(){return S.best>=7;},d:'Feeling lucky? Mystery Egg Gacha, Scratch Cards, the All-In Table, Bet Your Slime and Double or Nothing. Small house edge, wins are capped. Find it under ☰ More.'},
+ {k:'slots',n:'Slime Slots',i:'🎰',c:function(){return S.best>=8&&!!S.feat.casino;},d:'Three reels, a growing jackpot, a free spin every day and Golden Frenzy on three golds. In the Casino.'},
  {k:'devourer',n:'The Devourer',i:'👄',c:function(){return S.best>=6;},d:'Something hungry woke up in the pit. Drag slimes into it: it grows, evolves and grants permanent bonuses. Keep it fed… or it feeds itself.'},
  {k:'ev2',n:'Goo Goblins',i:'👺',c:function(){return S.best>=7;},d:'Goblins sneak in to steal goo. Tap them away!'},
  {k:'flower',n:'Flower Bed',i:'🌸',c:function(){return S.best>=7;},d:'A new pen in the Shop: ×3 squish and auto-squish lands there, but pests love it.'},
@@ -1424,7 +1431,7 @@ var FEATS=[
 var featT=0,silentFeats=false;
 // One feature at a time. New players: at least 2.5 min of play apart (a new tier lets it come sooner).
 // Returning v2 players ("ladder"): one every ~12 min of play (5 min if they chose "Bring it on"), or sooner when they reach a new tier.
-var LAD_ORDER=['spring','flower','star','races','eggs','autobuy','name','quests','casino','ev1','ev2','ev3','devourer','altar','bloodmoon'],DARK_FEATS={ev1:1,ev2:1,ev3:1,altar:1,bloodmoon:1};
+var LAD_ORDER=['spring','flower','star','races','eggs','autobuy','name','quests','casino','slots','ev1','ev2','ev3','devourer','altar','bloodmoon'],DARK_FEATS={ev1:1,ev2:1,ev3:1,altar:1,bloodmoon:1};
 function ladGap(){var L=S.lad||{};return L.on?(L.fast?300:720):150;}
 function featOrder(){var L=S.lad||{};if(!L.on)return FEATS;return LAD_ORDER.map(function(k){for(var i=0;i<FEATS.length;i++)if(FEATS[i].k===k)return FEATS[i];}).filter(Boolean);}
 function checkFeats(){var L=S.lad||(S.lad={on:0,el:9999,mr:0});var F=featOrder();
@@ -1454,7 +1461,7 @@ function newQuests(){var d=dayStr(),pool=QP.filter(function(q){return !q.f||S.fe
   S.quest={day:d,list:list};}
 function qProg(k,n){if(SIM||!S.feat.quests)return;if(S.quest.day!==dayStr())newQuests();S.quest.list.forEach(function(q){if(q.k===k&&!q.c&&q.p<q.goal){q.p=Math.min(q.goal,q.p+n);if(q.p>=q.goal){banner('📋 Quest done: '+q.n+'! Claim it in Farm','#2a6ad0',3);sCrown();}}});}
 function qReward(i){return Math.max(1000,gps()*[120,240,480][i]);}
-function claimQuest(i){var q=S.quest.list[i];if(!q||q.c||q.p<q.goal)return false;q.c=true;var v=qReward(i);addGoo(v);if(i===2)giveEgg();fxCoins(S.opt.rfx?15:50);sWin();return v;}
+function claimQuest(i){var q=S.quest.list[i];if(!q||q.c||q.p<q.goal)return false;q.c=true;var v=qReward(i);addGoo(v);giveCard(0,'quest reward');if(i===2)giveEgg();fxCoins(S.opt.rfx?15:50);sWin();return v;}
 var CAL=[{i:'💧',d:'2 min of goo',g:120},{i:'🥚',d:'Mystery egg',egg:1},{i:'💧',d:'5 min of goo',g:300},{i:'🔥',d:'Goo frenzy',frz:1},{i:'🥚',d:'Mystery egg',egg:1},{i:'💧',d:'15 min of goo',g:900},{i:'✨',d:'A SHINY slime!',shiny:1}];
 function calReady(){return !!S.feat.quests&&S.cal.last!==dayStr();}
 function claimCal(){if(!calReady())return false;var r=CAL[S.cal.day%7],msg='';
@@ -1566,8 +1573,8 @@ function donEnd(){DON=null;donPill=0;var b=$('donB');if(b)b.style.display='none'
 function casTick(dt){if(donPill>0&&!(openSheet==='shCasino')){donPill-=dt;if(donPill<=0&&DON&&DON.step===0)donEnd();}}
 // ---- the sheet ----
 var casF=0.1,casSel=-1,casG=1,casAnimR=null;
-function buildCasino(){var C=casS(),h='',cap=casCap(),mf=casMaxFrac();casF=Math.min(casF,mf);
-  if(DON){h+=donHTML();}
+function buildCasino(){maybeLucky();casTabsHTML();if(casTab==='e')buildEggs();else if(casTab==='s'&&S.feat.slots)buildSlots();else if(casTab==='c')buildScratch();else buildTables();}
+function buildTables(){var C=casS(),h='',cap=casCap(),mf=casMaxFrac();casF=Math.min(casF,mf);
   h+='<canvas id="casC" width="640" height="300"></canvas><div id="casMsg" class="casmsg"></div>';
   var stake=Math.floor(S.goo*casF),p=allInP(casF),rdy=allInReady(),left=Math.ceil((C.cd-Date.now())/1000);
   h+='<div class="cas"><h3>🎲 All-In Table</h3><p class="sm">Drop a slime: lands green, your stake doubles. Bigger stakes get slightly better odds. Wins pay up to <b>'+fmt(cap)+'</b> (30 min of income).</p>'+
@@ -1598,13 +1605,12 @@ function buildCasino(){var C=casS(),h='',cap=casCap(),mf=casMaxFrac();casF=Math.
   var sb=$('casSB');if(sb)sb.addEventListener('click',function(){var s=SL.filter(function(q){return q.uid===casSel;})[0];if(!s||casAnimR)return;var hh=hearts(s);
     var go2=function(){doSlimeBet(s,casG);};
     if(s.nm||hh>=1)askConfirm('💔','Are you sure?','<b>'+esc(s.nm||TIERS[s.tier].n)+'</b> has <b>'+hh+' ❤️</b>'+(s.nm?' and a life story':'')+'. If you lose, '+(s.nm?'they':'it')+' wanders off for good.','Bet anyway',go2);
-    else askConfirm('🎁','Bet this slime?','Win ('+(slimeBetP(casG)*100).toFixed(1)+'%): it becomes a '+(S.disc[s.tier+casG]?TIERS[s.tier+casG].n:'bigger slime')+'. Lose: it wanders off.','Bet it',go2);});
-  bindDon();}
+    else askConfirm('🎁','Bet this slime?','Win ('+(slimeBetP(casG)*100).toFixed(1)+'%): it becomes a '+(S.disc[s.tier+casG]?TIERS[s.tier+casG].n:'bigger slime')+'. Lose: it wanders off.','Bet it',go2);});}
 function donHTML(){var p=donP(DON.step),full=DON.step>=DON_MAX||DON.maxed;
   return '<div class="cas don s'+Math.min(6,DON.step)+'"><h3>🪙 Double or Nothing'+(DON.step?' · <span class="chain">×'+Math.pow(2,DON.step)+' chain '+DON.step+'/'+DON_MAX+'</span>':'')+'</h3><div class="pot">'+fmt(DON.pot)+' goo on the line</div>'+
    (full?'<p class="sm">Max chain reached. Cash out!</p>':'<p class="sm">Flip: heads doubles it, tails loses it. Chance <b>'+(p*100).toFixed(0)+'%</b> (gets harder each flip).</p>')+
    '<div class="casrow2">'+(full?'':'<button class="bb casgo" id="donF">🪙 Flip for '+fmt(DON.pot*2)+'</button>')+'<button class="bb alt" id="donC">💰 Cash out</button></div></div>';}
-function bindDon(){var f=$('donF');if(f)f.addEventListener('click',function(){if(casAnimR||!DON)return;var r=donFlip();sHeart();casAnim('coin',r.win,function(){if(r.win){sWin();fxCoins(30+DON.step*15);casMsg('🪙 Heads! '+fmt(DON.pot)+' on the line'+(DON.step>=DON_MAX?' · max chain!':''),'#2a8a3a');}else{sLose();casMsg('Tails… lost '+fmt(DON.lost)+'. Better luck next time','#c0283a');donEnd();}buildCasino();casMsgKeep();});});
+function bindDon(){var f=$('donF');if(f)f.addEventListener('click',function(){if(casAnimR||!DON)return;if(casTab!=='t'){casTab='t';buildCasino();}var r=donFlip();sHeart();casAnim('coin',r.win,function(){if(r.win){sWin();fxCoins(30+DON.step*15);casMsg('🪙 Heads! '+fmt(DON.pot)+' on the line'+(DON.step>=DON_MAX?' · max chain!':''),'#2a8a3a');}else{sLose();casMsg('Tails… lost '+fmt(DON.lost)+'. Better luck next time','#c0283a');donEnd();}buildCasino();casMsgKeep();});});
   var c=$('donC');if(c)c.addEventListener('click',function(){if(casAnimR||!DON)return;var v=DON.pot,st=DON.step;donEnd();sCoin();casMsg(st?'💰 Cashed out '+fmt(v)+' after a ×'+Math.pow(2,st)+' chain!':'💰 Kept '+fmt(v),'#2a8a3a');fxCoins(30);buildCasino();casMsgKeep();updUI();});}
 var casKeep=null;function casMsg(t,c){casKeep=[t,c];var m=$('casMsg');if(m){m.textContent=t;m.style.background=c;m.style.display='block';}}
 function casMsgKeep(){if(casKeep)casMsg(casKeep[0],casKeep[1]);}
@@ -1632,6 +1638,156 @@ function drawCas(p,o){var c=$('casC');if(!c)return;var g=c.getContext('2d'),W2=3
   if(o&&p<1&&p>0.6){g.fillStyle='rgba(0,0,0,'+((p-0.6)*0.6)+')';g.fillRect(0,0,W2,H2);}}
 $('donB').addEventListener('click',function(){ac();if(!DON)return;open('shCasino');});
 $('bCas').addEventListener('click',function(){ac();if(!casOn()){toast('🔒 The Casino opens later');sErr();return;}open('shCasino');});
+
+// ---------- Slime Casino part 2: Mystery Egg Gacha · Slime Slots · Scratch Cards ----------
+// House edge ~8-12% each (verified by 100k-play sims), wins capped at 30 min of income, Double or Nothing after big wins.
+function casPay(v){return Math.max(0,Math.min(v,casCap()));}
+function luckyOn(){var C=casS();return !SIM&&C.lucky>Date.now();}
+function luckM(){return luckyOn()?1.05:1;}
+function casWin(kind,txt,gain,stake){var C=casS();C.tk=C.tk||[];if(gain>0){C.stk=(C.stk||0)+1;C.tk.unshift(txt+' +'+fmt(gain));if(C.tk.length>6)C.tk.pop();}else C.stk=0;
+  if(!SIM&&gain>0&&(gain>=stake*10||gain>=gps()*300))casBig=gain;}
+var casBig=0;function flushBig(){if(casBig>0){var v=casBig;casBig=0;bigWin(v);}}
+function maybeLucky(){var C=casS();if(Date.now()-(C.lkT||0)<3*3600e3)return;C.lkT=Date.now();if(Math.random()<0.3){C.lucky=Date.now()+3600e3;banner('🍀 LUCKY HOUR! Casino payouts +5% for 60 min','#2a8a3a',4);}}
+// ===== Mystery Egg Gacha =====
+var RAR=[{n:'Common',c:'#b8c2d0',p:0.60,m:0.2},{n:'Rare',c:'#4fa8ff',p:0.28,m:1.0},{n:'Epic',c:'#b48cff',p:0.09,m:2.5},{n:'Legendary',c:'#ffb020',p:0.026,m:6},{n:'Mythic',c:'#ff4d6d',p:0.004,m:15}],PITY=40;
+var GCOL=[{n:'Crystal Blob',t:1,c:'rgba(120,230,255,.55)'},{n:'Candy Jelly',t:2,c:'rgba(255,120,200,.5)'},{n:'Mint Puff',t:3,c:'rgba(110,255,170,.5)'},{n:'Sunset Goo',t:4,c:'rgba(255,150,60,.5)'},
+  {n:'Midnight Ooze',t:5,c:'rgba(40,30,120,.55)'},{n:'Pearl Wobble',t:6,c:'rgba(255,255,255,.6)'},{n:'Ember Drip',t:7,c:'rgba(255,60,30,.5)'},{n:'Galaxy Gel',t:8,c:'rgba(140,80,255,.55)'}];
+function eggPrice(){return Math.max(100,Math.floor(gps()*120));}
+function gachaPull(price){var C=casS();C.pity=(C.pity||0)+1;var r=Math.random(),k=0,acc=0;for(k=0;k<RAR.length;k++){acc+=RAR[k].p;if(r<acc)break;}if(k>=RAR.length)k=0;
+  if(C.pity>=PITY&&k<3){k=3;C.pityHit=1;}if(k>=3)C.pity=0;
+  var prize=casPay(price*RAR[k].m*luckM()),col=-1;
+  if(k===4||(k===3&&Math.random()<0.25)){C.col=C.col||{};var miss=GCOL.map(function(x,i){return i;}).filter(function(i){return !C.col[i];});if(miss.length){col=miss[(Math.random()*miss.length)|0];C.col[col]=1;}}
+  return{k:k,prize:prize,col:col};}
+function gachaBuy(n){var price=eggPrice(),cost=price*n;if(S.goo<cost)return null;S.goo-=cost;var C=casS(),res=[],tot=0;for(var i=0;i<n;i++){var q=gachaPull(price);res.push(q);tot+=q.prize;}
+  tot=casPay(tot);S.goo+=tot;C.gPulls=(C.gPulls||0)+n;C.gWon=(C.gWon||0)+tot;C.gSpent=(C.gSpent||0)+cost;var best=res.reduce(function(a,b){return b.k>a?b.k:a;},0);casWin('egg','🥚 '+RAR[best].n,tot-cost,cost);
+  return{res:res,tot:tot,cost:cost,best:best};}
+// ===== Slime Slots =====
+var SYM=[{i:'🟢',w:6,p:4,n:'Slime'},{i:'💧',w:5,p:10,n:'Goo Drop'},{i:'🍀',w:4,p:18,n:'Clover'},{i:'👑',w:2,p:40,n:'Crown (+JACKPOT)'},{i:'⭐',w:1,p:120,n:'Gold (+Golden Frenzy)'}],SLW=18,PAIR=1;
+function slotSym(){var r=Math.random()*SLW,a=0;for(var i=0;i<SYM.length;i++){a+=SYM[i].w;if(r<a)return i;}return 0;}
+function jpSeed(){return Math.max(1000,gps()*60);}
+function slotSpin(stake,free){var C=casS();if(!free){if(S.goo<stake||stake<1)return null;S.goo-=stake;C.jp=(C.jp||jpSeed())+stake*0.02;}
+  var r=[slotSym(),slotSym(),slotSym()],m=0,jp=false,fz=false;
+  if(r[0]===r[1]&&r[1]===r[2]){m=SYM[r[0]].p;if(r[0]===3)jp=true;if(r[0]===4)fz=true;}else if(r[0]===r[1])m=PAIR;
+  var pay=stake*m*luckM();if(jp){pay+=C.jp||0;C.jp=jpSeed();}pay=casPay(pay);S.goo+=pay;if(fz&&!SIM)startFrenzy();
+  C.sSpins=(C.sSpins||0)+1;C.sWon=(C.sWon||0)+pay;C.sSpent=(C.sSpent||0)+(free?0:stake);
+  casWin('slot','🎰 '+r.map(function(k){return SYM[k].i;}).join(''),pay-(free?0:stake),stake);
+  return{r:r,pay:pay,m:m,jp:jp,fz:fz,near:r[0]===r[1]&&r[0]>=2&&r[2]!==r[0]};}
+function slotFreeReady(){return casS().free!==dayStr();}
+// ===== Scratch Cards =====
+var SCT=[{k:'b',n:'Bronze',min:0.1,bon:0.10,c:'#c88a4a'},{k:'s',n:'Silver',min:0.2,bon:0.12,c:'#b8c2d0'},{k:'g',n:'Gold',min:0.3,bon:0.13,c:'#ffc93b'}];
+var SCP=[[1,0.18],[2,0.08],[3,0.04],[5,0.02],[10,0.01],[25,0.003],[100,0.0005]];
+function scPrice(t){return Math.max(100,Math.floor(gps()*60*SCT[t].min));}
+function scRoll(t,price){var r=Math.random(),a=0,m=0;for(var i=0;i<SCP.length;i++){a+=SCP[i][1];if(r<a){m=SCP[i][0];break;}}var bon=Math.random()<SCT[t].bon;return{m:m,bon:bon,price:price,t:t};}
+function scGrid(o){var vals=SCP.map(function(x){return x[0];}),cells=[],cnt={};
+  if(o.m){for(var i=0;i<3;i++)cells.push(o.m);cnt[o.m]=3;}
+  else{var hi=vals[3+((Math.random()*4)|0)];cells.push(hi,hi);cnt[hi]=2;} // near-miss: a big prize shows twice
+  while(cells.length<9){var v=vals[(Math.random()*vals.length)|0];if(v===o.m||(cnt[v]||0)>=2)continue;cnt[v]=(cnt[v]||0)+1;cells.push(v);}
+  for(var j=cells.length-1;j>0;j--){var q=(Math.random()*(j+1))|0,tmp=cells[j];cells[j]=cells[q];cells[q]=tmp;}return cells;}
+function scSettle(o){var C=casS(),pay=casPay(o.price*(o.m+(o.bon?1:0))*luckM());S.goo+=pay;C.cWon=(C.cWon||0)+pay;C.cards_n=(C.cards_n||0)+1;casWin('card','🎟️ '+SCT[o.t].n+' card',pay-(o.free?0:o.price),o.price);return pay;}
+function scBuy(t,free){var C=casS(),price=scPrice(t);C.cards=C.cards||{b:0,s:0,g:0};
+  if(free){if(!(C.cards[SCT[t].k]>0))return null;C.cards[SCT[t].k]--;}else{if(S.goo<price)return null;S.goo-=price;C.cSpent=(C.cSpent||0)+price;}
+  var o=scRoll(t,price);o.free=!!free;return o;}
+function giveCard(t,why){if(SIM)return;var C=casS();C.cards=C.cards||{b:0,s:0,g:0};C.cards[SCT[t].k]++;if(casOn())banner('🎟️ Free '+SCT[t].n+' scratch card'+(why?' · '+why:''),'#7a4fe0',3);}
+// ===== UI =====
+var casTab='t',gAnim=null,gSkip=false,slAnim=null,slAuto=0,slF=0.05,scCur=null,scDown=false,scMoves=0;
+function casTabsHTML(){var C=casS();var t=[['t','🎲 Tables'],['e','🥚 Eggs'],['s',S.feat.slots?'🎰 Slots':'🔒 Slots'],['c','🎟️ Scratch']];
+  var tk=(C.tk||[]).slice(0,4).join(' · ');
+  $('casTabs').innerHTML='<div class="tabs">'+t.map(function(x){return '<button class="tab'+(casTab===x[0]?' on':'')+'" data-ct="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>'+
+   (DON?donHTML():'')+'<div class="ctk">'+(luckyOn()?'<b class="lk">🍀 LUCKY HOUR +5%</b> ':'')+((C.stk||0)>=2?'<b class="stk">🔥 Streak '+C.stk+'</b> ':'')+(tk?'<span>'+esc(tk)+'</span>':'<span>Recent wins show up here</span>')+'</div>';
+  if(DON)bindDon();
+  $('casTabs').querySelectorAll('[data-ct]').forEach(function(b){b.addEventListener('click',function(){if(b.dataset.ct==='s'&&!S.feat.slots){toast('🔒 Slots open a little later');sErr();return;}casTab=b.dataset.ct;sBuy();buildCasino();});});}
+function bigWin(v){var o=$('bigWin');if(!o)return;o.innerHTML='<div><b>BIG WIN!</b><span>+'+fmt(v)+'</span></div>';o.classList.add('on');sWin();fxCoins(S.opt.rfx?20:140);fxConfetti(S.opt.rfx?10:80);setTimeout(function(){o.classList.remove('on');},2600);}
+function buildEggs(){var p=eggPrice(),C=casS(),h='<canvas id="gC" width="640" height="300"></canvas><div id="gRes" class="gres"></div>';
+  h+='<div class="cas"><h3>🥚 Mystery Egg Gacha</h3><p class="sm">Crack an egg for goo, with a chance at gacha-only collectible slimes. Legendary or better guaranteed within '+PITY+' eggs.</p>'+
+  '<div class="pity"><span>Pity</span><div class="ebar"><i style="width:'+Math.round((C.pity||0)/PITY*100)+'%"></i></div><b>'+(C.pity||0)+'/'+PITY+'</b></div>'+
+  '<div class="rar">'+RAR.map(function(r){return '<span style="color:'+r.c+'">●</span> '+r.n+' '+(r.p*100).toFixed(1)+'% · ×'+r.m;}).join('<br>')+'</div>'+
+  '<div class="casrow2"><button class="bb casgo" id="g1" '+(S.goo>=p?'':'disabled')+'>🥚 ×1 · '+fmt(p)+'</button><button class="bb casgo" id="g10" '+(S.goo>=p*10?'':'disabled')+'>🥚 ×10 · '+fmt(p*10)+'</button></div>'+
+  '<p class="sm">Collection: '+Object.keys(C.col||{}).length+' / '+GCOL.length+' (see the Slimedex)</p></div>';
+  $('casBody').innerHTML=h;drawEgg(0,null);
+  $('g1').addEventListener('click',function(){doGacha(1);});$('g10').addEventListener('click',function(){doGacha(10);});}
+function doGacha(n){if(gAnim)return;var r=gachaBuy(n);if(!r){sErr();return;}updUI();gSkip=false;var i=0,box=$('gRes');box.innerHTML=n>1?'<button class="lnk" id="gSk">Skip ⏩</button>':'';
+  var sk=$('gSk');if(sk)sk.addEventListener('click',function(){gSkip=true;});
+  function next(){if(i>=r.res.length||gSkip){finish();return;}var q=r.res[i++];eggAnim(q,n>1?0.9:2.6,function(){addRes(q);next();});}
+  function addRes(q){var d=document.createElement('div');d.className='gr r'+q.k;d.innerHTML='<b style="color:'+RAR[q.k].c+'">'+RAR[q.k].n+'</b> +'+fmt(q.prize)+(q.col>=0?'<br>✨ '+GCOL[q.col].n+'!':'');box.appendChild(d);}
+  function finish(){gAnim=null;flushBig();if(gSkip){box.querySelectorAll('.gr').forEach(function(e){e.remove();});r.res.forEach(addRes);drawEgg(1,r.res[r.res.length-1]);}var s=$('gSk');if(s)s.remove();
+    var net=r.tot-r.cost;var d=document.createElement('div');d.className='gsum';d.textContent=(n>1?'×10 total: ':'')+'+'+fmt(r.tot)+' ('+(net>=0?'+':'')+fmt(Math.abs(net)*(net<0?-1:1))+' net)';if(net<0)d.textContent=(n>1?'×10 total: ':'')+'+'+fmt(r.tot)+' (−'+fmt(-net)+' net)';box.appendChild(d);
+    if(r.best>=3){sWin();fxConfetti(60);}if(net>0)donOffer(net);var C=casS();if(C.pityHit){C.pityHit=0;toast('🎯 Pity guarantee!');}
+    setTimeout(function(){if(openSheet==='shCasino'&&casTab==='e'){var keep=box.innerHTML;buildEggs();$('gRes').innerHTML=keep;}},n>1?600:1200);casTabsHTML();}
+  gAnim=1;next();}
+function eggAnim(q,dur,done){var t0=performance.now(),hb=0;if(S.opt.rfx)dur=Math.min(dur,0.8);
+  function st(now){var t=(now-t0)/1000;if(gSkip){done();return;}if(t-hb>0.45&&t<dur*0.85){hb=t;sHeart();if(t>dur*0.4)sCrack();}drawEgg(Math.min(1,t/dur),q);
+    if(t<dur+0.25)requestAnimationFrame(st);else{if(q.k>=2)sChime();else sPop(q.k*3,0.8);done();}}requestAnimationFrame(st);}
+function drawEgg(p,q){var c=$('gC');if(!c)return;var g=c.getContext('2d'),W2=320,H2=150;g.setTransform(2,0,0,2,0,0);g.clearRect(0,0,W2,H2);
+  var bg=g.createLinearGradient(0,0,0,H2);bg.addColorStop(0,'#2b1a4a');bg.addColorStop(1,'#140a26');g.fillStyle=bg;g.fillRect(0,0,W2,H2);
+  var rc=q?RAR[q.k].c:'#fff',cx=W2/2,cy=H2/2+8,wob=p<0.85?Math.sin(p*40)*(0.05+p*0.2):0;
+  if(q&&p>0.5){var gl=g.createRadialGradient(cx,cy,5,cx,cy,90);gl.addColorStop(0,rc);gl.addColorStop(1,'rgba(0,0,0,0)');g.globalAlpha=Math.min(1,(p-0.5)*2)*(q.k>=3?1:0.6);g.fillStyle=gl;g.fillRect(0,0,W2,H2);g.globalAlpha=1;}
+  if(p<0.86){g.save();g.translate(cx,cy+30);g.rotate(wob);g.fillStyle='#fff6dc';g.beginPath();g.ellipse(0,-34,30,38,0,0,7);g.fill();g.fillStyle='#ff9ec8';for(var k=0;k<4;k++){g.beginPath();g.arc(-14+k*10,-40+(k%2)*14,4,0,7);g.fill();}
+    if(p>0.3){g.strokeStyle='#5a4a3a';g.lineWidth=2;g.beginPath();var n=Math.floor((p-0.3)*14);g.moveTo(-26,-34);for(var j=0;j<=n;j++)g.lineTo(-26+j*5,-34+(j%2?-6:6));g.stroke();}g.restore();}
+  else if(q){var sp=q.col>=0?sprite(GCOL[q.col].t,1,2):sprite(Math.min(S.maxRun,q.k*2+1),q.k>=3?1:0,2),sc=60/(rad(1)*2.4)*(0.8+0.2*Math.min(1,(p-0.86)*6));g.save();g.translate(cx,cy+34);g.scale(sc*rad(1)/rad(q.col>=0?GCOL[q.col].t:Math.min(S.maxRun,q.k*2+1)),sc*rad(1)/rad(q.col>=0?GCOL[q.col].t:Math.min(S.maxRun,q.k*2+1)));g.drawImage(sp,-sp.ox,-sp.oy,sp.cw,sp.ch);g.restore();
+    g.fillStyle=rc;g.font='900 20px ui-rounded,system-ui';g.textAlign='center';g.fillText(RAR[q.k].n.toUpperCase()+'!',cx,26);g.fillStyle='#fff';g.font='800 13px system-ui';g.fillText('+'+fmt(q.prize)+(q.col>=0?'  ✨ '+GCOL[q.col].n:''),cx,H2-8);
+    for(var s2=0;s2<(q.k+1)*3;s2++){var a=s2*2.4+p*6;g.fillStyle=rc;g.beginPath();g.arc(cx+Math.cos(a)*(60+s2*2),cy+Math.sin(a)*40,2.5,0,7);g.fill();}}
+  else{g.fillStyle='rgba(255,255,255,.7)';g.font='800 12px system-ui';g.textAlign='center';g.fillText('Tap ×1 or ×10 to crack an egg',cx,18);}}
+function buildSlots(){var C=casS(),mf=casMaxFrac(),stake=Math.max(1,Math.floor(S.goo*slF)),free=slotFreeReady(),rdy=slF<=0.25||allInReady();
+  var h='<canvas id="slC" width="640" height="260"></canvas><div class="jp">💰 JACKPOT <b>'+fmt(C.jp||jpSeed())+'</b> · 3 👑 wins it</div>'+
+  '<div class="cas"><div class="seg">'+[1,5,10,25,100].filter(function(x){return x<=mf*100;}).map(function(x){return '<button class="chip'+(Math.abs(slF*100-x)<0.5?' on':'')+'" data-sf="'+x+'">'+(x===100?'ALL IN':x+'%')+'</button>';}).join('')+'</div>'+
+  '<div class="casrow"><span>Stake <b>'+fmt(stake)+'</b> · max win '+fmt(casCap())+'</span><span>'+(slAuto?'Auto-spins left <b>'+slAuto+'</b>':'')+'</span></div>'+
+  (free?'<button class="bb casgo" id="slFree">🎁 Free daily spin (stake '+fmt(gps()*300)+')</button>':'')+
+  '<button class="bb casgo'+(slF>=0.999?' hold':'')+'" id="slGo" '+(rdy&&S.goo>=stake?'':'disabled')+'>'+(!rdy?'⏳ Big stakes cool down: '+fmtTime(Math.ceil((C.cd-Date.now())/1000)):slF>=0.999?'✊ HOLD to spin ALL IN':'🎰 SPIN')+'<i id="slHold"></i></button>'+
+  (slF<=0.1?'<button class="bb alt" id="slAu">'+(slAuto?'⏹ Stop auto-spin':'🔁 Auto-spin ×10')+'</button>':'')+
+  '<div class="pt"><b>Paytable</b> (× stake)'+SYM.map(function(s){return '<div>'+s.i+s.i+s.i+' <span>'+s.n+'</span><b>×'+s.p+'</b></div>';}).join('')+'<div>'+'🟢🟢 any first two match<b>×'+PAIR+'</b></div></div></div>';
+  $('casBody').innerHTML=h;drawSlots(null,1);
+  $('casBody').querySelectorAll('[data-sf]').forEach(function(b){b.addEventListener('click',function(){slF=b.dataset.sf/100;slAuto=0;sBuy();buildSlots();});});
+  var fr=$('slFree');if(fr)fr.addEventListener('click',function(){if(slAnim)return;casS().free=dayStr();doSpin(Math.floor(gps()*300),true);});
+  var au=$('slAu');if(au)au.addEventListener('click',function(){if(slAuto){slAuto=0;buildSlots();return;}slAuto=10;buildSlots();if(!slAnim)doSpin();});
+  var go=$('slGo');if(slF>=0.999){var hT=null,hS=0,stop=function(){if(hT){clearInterval(hT);hT=null;$('slHold').style.width='0';}};
+    go.addEventListener('pointerdown',function(e){e.preventDefault();if(go.disabled||slAnim)return;hS=Date.now();sHeart();hT=setInterval(function(){var q=(Date.now()-hS)/1400;$('slHold').style.width=Math.min(100,q*100)+'%';if(q>=1){stop();doSpin();}},30);});
+    ['pointerup','pointerleave','pointercancel'].forEach(function(ev){go.addEventListener(ev,stop);});}
+  else go.addEventListener('click',function(){if(!slAnim)doSpin();});}
+function doSpin(fs,free){if(slAnim)return;var stake=fs||Math.max(1,Math.floor(S.goo*slF));if(!free&&slF>0.25&&!allInReady()){sErr();return;}
+  var r=slotSpin(stake,free);if(!r){slAuto=0;sErr();if(openSheet==='shCasino'&&casTab==='s')buildSlots();return;}if(!free&&slF>0.25)casS().cd=Date.now()+allInCd(slF)*1000;updUI();
+  var t0=performance.now(),stops=[0.9,1.35,r.near?3.3:1.8],last=[-1,-1,-1],hb=0;if(S.opt.rfx)stops=[0.4,0.6,r.near?1.2:0.8];slAnim=1;
+  function st(now){var t=(now-t0)/1000;for(var i=0;i<3;i++){if(t>=stops[i]&&last[i]<0){last[i]=1;sPop(4+i*3,0.6);}}if(r.near&&t>stops[1]&&t<stops[2]&&t-hb>0.35){hb=t;sHeart();}
+    drawSlots(r,t,stops);if(t<stops[2]+0.35)requestAnimationFrame(st);else{slAnim=null;
+      flushBig();if(r.pay>0){sWin();fxCoins(r.m>=10?100:30);if(r.jp)banner('💰 JACKPOT! +'+fmt(r.pay),'#c18a06',4);if(r.fz)banner('⭐⭐⭐ GOLDEN FRENZY!','#c18a06',4);if(r.pay-(free?0:stake)>0)donOffer(r.pay-(free?0:stake));}
+      else if(r.near)toast('😱 So close!');
+      if(openSheet==='shCasino'&&casTab==='s'){buildSlots();drawSlots(r,99,stops);casTabsHTML();}
+      if(slAuto>0){slAuto--;if(slAuto>0&&!DON)setTimeout(function(){if(slAuto>0&&openSheet==='shCasino'&&casTab==='s')doSpin();},500);else slAuto=0;}}}
+  requestAnimationFrame(st);}
+function drawSlots(r,t,stops){var c=$('slC');if(!c)return;var g=c.getContext('2d'),W2=320,H2=130;g.setTransform(2,0,0,2,0,0);g.clearRect(0,0,W2,H2);
+  g.fillStyle='#2b1a4a';g.fillRect(0,0,W2,H2);var rw=86,gap=14,x0=(W2-3*rw-2*gap)/2;
+  for(var i=0;i<3;i++){var x=x0+i*(rw+gap);g.fillStyle='#fff8ec';g.fillRect(x,14,rw,H2-28);g.save();g.beginPath();g.rect(x,14,rw,H2-28);g.clip();
+    var spinning=r&&stops&&t<stops[i],sym=r?r.r[i]:i;
+    if(spinning){var off=(t*(r.near&&i===2&&t>stops[1]?6+(stops[2]-t)*8:22))%1;for(var k=-1;k<3;k++){g.font='40px system-ui';g.textAlign='center';g.textBaseline='middle';g.fillText(SYM[(k+Math.floor(t*20)+i*2+50)%5].i,x+rw/2,14+(k+off)*42+20);}}
+    else{g.font='48px system-ui';g.textAlign='center';g.textBaseline='middle';g.fillText(SYM[sym].i,x+rw/2,H2/2);}
+    g.restore();}
+  g.fillStyle='rgba(255,210,63,.9)';g.fillRect(x0-6,H2/2-1,3*rw+2*gap+12,2);
+  if(r&&t>=stops[2]&&r.pay>0){g.fillStyle='rgba(255,210,63,.25)';g.fillRect(0,0,W2,H2);g.fillStyle='#ffd23f';g.font='900 16px ui-rounded,system-ui';g.textAlign='center';g.fillText('+'+fmt(r.pay),W2/2,12);}}
+function buildScratch(){var C=casS();C.cards=C.cards||{b:0,s:0,g:0};var h='';
+  if(C.pend){h+='<div class="scw"><canvas id="scBase" width="600" height="600"></canvas><canvas id="scTop" width="600" height="600"></canvas></div><div class="casrow2"><button class="bb alt" id="scAll">Reveal all</button></div>';}
+  h+='<div class="cas"><h3>🎟️ Scratch Cards</h3><p class="sm">Scratch with your finger. Match 3 amounts to win that many × the card price. The ⭐ spot adds a bonus. Free cards drop from Devourer burps, Blood Moons and daily quests.</p>'+
+  SCT.map(function(s,i){var pr=scPrice(i),own=C.cards[s.k]||0;return '<div class="item"><div class="ic" style="color:'+s.c+'">🎟️</div><div class="it"><b>'+s.n+'</b><small>Top prize ×100 · bonus '+Math.round(s.bon*100)+'%'+(own?' · <b>'+own+' free</b>':'')+'</small></div><button class="bb" data-sc="'+i+'" '+(C.pend||(!own&&S.goo<pr)?'disabled':'')+'>'+(own?'Use free':'<span class="drop sm"></span>'+fmt(pr))+'</button></div>';}).join('')+'</div>';
+  $('casBody').innerHTML=h;
+  $('casBody').querySelectorAll('[data-sc]').forEach(function(b){b.addEventListener('click',function(){var t=+b.dataset.sc,own=(C.cards[SCT[t].k]||0)>0,o=scBuy(t,own);if(!o){sErr();return;}o.cells=scGrid(o);C.pend=o;sBuy();updUI();buildScratch();});});
+  if(C.pend)setupScratch();}
+function setupScratch(){var C=casS(),o=C.pend,b=$('scBase'),tp=$('scTop'),g=b.getContext('2d'),gt=tp.getContext('2d');g.setTransform(2,0,0,2,0,0);gt.setTransform(2,0,0,2,0,0);
+  var S2=300,cell=88,ox=(S2-3*cell)/2;g.fillStyle='#fff8ec';g.fillRect(0,0,S2,S2);g.fillStyle=SCT[o.t].c;g.fillRect(0,0,S2,8);
+  o.cells.forEach(function(v,i){var x=ox+(i%3)*cell,y=10+Math.floor(i/3)*cell*0.86;g.fillStyle=o.m&&v===o.m?'#fff3c4':'#f2ecff';g.fillRect(x+4,y+4,cell-8,cell*0.86-8);g.fillStyle='#2b2140';g.font='900 18px ui-rounded,system-ui';g.textAlign='center';g.textBaseline='middle';g.fillText('×'+v,x+cell/2,y+cell*0.43-8);g.font='700 11px system-ui';g.fillText(fmt(o.price*v),x+cell/2,y+cell*0.43+12);});
+  g.fillStyle=o.bon?'#ffd23f':'#e7defc';g.fillRect(ox+4,S2-60,3*cell-8,50);g.fillStyle='#2b2140';g.font='900 16px ui-rounded,system-ui';g.fillText(o.bon?'⭐ BONUS +'+fmt(o.price):'⭐ no bonus',S2/2,S2-35);
+  gt.fillStyle='#a8b0c0';gt.fillRect(0,0,S2,S2);gt.fillStyle='#c8d0dc';for(var k=0;k<60;k++){gt.fillRect(Math.random()*S2,Math.random()*S2,30,3);}gt.fillStyle='#6a7080';gt.font='900 22px ui-rounded,system-ui';gt.textAlign='center';gt.fillText('SCRATCH ME! 👆',S2/2,S2/2);
+  gt.globalCompositeOperation='destination-out';
+  function pt(e){var r=tp.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*S2,y:(e.clientY-r.top)/r.height*S2};}
+  function scr(e){var p=pt(e);gt.beginPath();gt.arc(p.x,p.y,17,0,7);gt.fill();if(++scMoves%5===0)noise(0.04,3200,2200,2,0.07);if(scMoves%12===0)checkDone();}
+  tp.addEventListener('pointerdown',function(e){e.preventDefault();scDown=true;tp.setPointerCapture&&tp.setPointerCapture(e.pointerId);scr(e);});
+  tp.addEventListener('pointermove',function(e){if(scDown)scr(e);});['pointerup','pointercancel'].forEach(function(ev){tp.addEventListener(ev,function(){scDown=false;checkDone();});});
+  function checkDone(){var d=gt.getImageData(0,0,tp.width,tp.height).data,clr=0,n=0;for(var y=10;y<tp.height;y+=30)for(var x=10;x<tp.width;x+=30){n++;if(d[(y*tp.width+x)*4+3]<50)clr++;}if(clr/n>0.55)finishScratch();}
+  $('scAll').addEventListener('click',finishScratch);}
+function finishScratch(){var C=casS(),o=C.pend;if(!o)return;C.pend=null;var tp=$('scTop');if(tp)tp.style.opacity='0';var pay=scSettle(o),net=pay-(o.free?0:o.price);setTimeout(flushBig,500);
+  if(pay>0){sWin();fxCoins(40);toast((o.m?'🎉 Match ×'+o.m+'!':'⭐ Bonus!')+' +'+fmt(pay));if(net>0)donOffer(net);}else{sLose();toast('No match… so close!');}
+  setTimeout(function(){if(openSheet==='shCasino'&&casTab==='c'){buildScratch();casTabsHTML();}},1400);updUI();}
+// Slimedex: the gacha collection
+function gachaDexHTML(){var C=casS(),h='<h4 style="margin:14px 0 6px">🥚 Gacha Collection · '+Object.keys(C.col||{}).length+' / '+GCOL.length+'</h4><div class="grid">';
+  GCOL.forEach(function(x,i){h+='<div class="card"><canvas id="gx'+i+'" width="168" height="168"></canvas><b>'+(C.col&&C.col[i]?x.n:'???')+'</b><small>'+(C.col&&C.col[i]?'Gacha only':'Legendary / Mythic eggs')+'</small></div>';});return h+'</div>';}
+function drawGachaDex(){var C=casS();GCOL.forEach(function(x,i){var c=$('gx'+i);if(!c)return;var g=c.getContext('2d');g.setTransform(2,0,0,2,0,0);drawSlime(g,42,76,22,x.t,{t:1.3});g.globalCompositeOperation='source-atop';g.fillStyle=C.col&&C.col[i]?x.c:'rgba(61,52,89,1)';g.fillRect(0,0,84,84);g.globalCompositeOperation='source-over';});}
 
 // ---------- UI (DOM is only written when a value actually changes) ----------
 var TX={};function setT(id,v){if(TX[id]!==v){TX[id]=v;$(id).textContent=v;}}
@@ -1742,7 +1898,7 @@ function updRace(){if(RC&&RC.state==='open'&&T<rToastT){setT('rStat',rToast);ret
 function buildDex(){
   var h='',n=0,cap=cycleCap();
   TIERS.forEach(function(t,i){var d=!!S.disc[i];if(d)n++;h+='<div class="card'+(d&&!S.seen[i]?' new':'')+'"><canvas id="dx'+i+'" width="168" height="168"></canvas><b>'+(d?t.n:'???')+'</b><small>'+(d?fmt(tierGps(i))+' goo/s':i>=NT?'🔒 Secret · the Altar knows':i>cap?'🔒 Rebirth '+Math.ceil((i-14)/5):'Tier '+(i+1))+'</small></div>';});
-  $('dexGrid').innerHTML=h;$('dexCount').textContent=n+' / '+TIERS.length;
+  $('dexGrid').innerHTML=h;var dg=$('dexGacha');if(dg){dg.innerHTML=S.feat.casino?gachaDexHTML():'';if(S.feat.casino)drawGachaDex();}$('dexCount').textContent=n+' / '+TIERS.length;
   TIERS.forEach(function(t,i){var c=$('dx'+i),g=c.getContext('2d');g.scale(2,2);drawSlime(g,42,76,22,i,{t:1.3});
     if(!S.disc[i]){var im=g.getImageData(0,0,c.width,c.height),dd=im.data;for(var q=0;q<dd.length;q+=4){if(dd[q+3]>40){dd[q]=61;dd[q+1]=52;dd[q+2]=89;dd[q+3]=255;}else dd[q+3]=0;}g.putImageData(im,0,0);g.fillStyle='#fff';g.font='900 22px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('?',42,58);}
     S.seen[i]=S.seen[i]||!!S.disc[i];});
@@ -2045,7 +2201,7 @@ document.addEventListener('visibilitychange',function(){
   else{var away=(Date.now()-(S.last||Date.now()))/1000;if(away>2)offline(away,60);saveNow();startLoop();updUI();checkUpdate();}});
 window.addEventListener('pagehide',saveNow);
 // ---------- stale-version guard: Safari / Home Screen apps can keep an old copy cached; offer a one-tap update ----------
-var BUILD='20261029124606',updT=0;
+var BUILD='20261029125947',updT=0;
 function checkUpdate(){if(SIM||!window.fetch||location.protocol==='file:'||Date.now()-updT<6e5)return;updT=Date.now();
   fetch(location.pathname+'?vc='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():'';}).then(function(t){var m=/var BUILD='([0-9a-z_.-]+)'/.exec(t||'');if(m&&m[1]!==BUILD)showUpd();}).catch(function(){});}
 function showUpd(){if($('updBar'))return;var b=document.createElement('button');b.id='updBar';b.textContent='✨ A new version of Slime Farm is ready · tap to update';b.addEventListener('click',function(){saveNow();noSave=true;location.reload();});document.body.appendChild(b);}
@@ -2071,6 +2227,10 @@ function simPlay(hours,opt){opt=opt||{};
     if(opt.gamble&&casOn()){var hold=false;
       if(opt.gamble==='allin'){if(allInReady()&&S.goo>0){var ra=allInPlay(opt.frac||1);if(ra){out.gp=(out.gp||0)+1;if(ra.win)out.gw=(out.gw||0)+1;out.gnet=(out.gnet||0)+ra.gain;
           if(ra.win&&opt.don){DON={pot:ra.gain,step:0};while(DON&&DON.step<opt.don){var dq=donFlip();if(!dq.win)break;}DON=null;}}}else if(opt.hold)hold=true;}
+      if(opt.gamble==='gacha'&&(t|0)%60===0){var ep=eggPrice(),en=Math.min(10,Math.floor(S.goo*(opt.frac||0.2)/ep));if(en>=1){gachaBuy(en);out.gp=(out.gp||0)+en;}}
+      if(opt.gamble==='slots'&&S.feat.slots&&(t|0)%(opt.every||10)===0){var sk=Math.floor(S.goo*(opt.frac||0.1));if(sk>=1){slotSpin(sk);out.gp=(out.gp||0)+1;}if((t|0)%86400===0)slotSpin(Math.floor(gps()*300),true);}
+      if(opt.gamble==='scratch'&&(t|0)%60===0){var st2=opt.tier||1;if(S.goo>=scPrice(st2)&&S.goo*(opt.frac||0.2)>=scPrice(st2)){var oc=scBuy(st2);if(oc){scSettle(oc);out.gp=(out.gp||0)+1;}}}
+      if(opt.gamble==='mix'&&(t|0)%30===0){var mp=eggPrice();if(S.goo*0.15>=mp)gachaBuy(1);if(S.feat.slots){var mk=Math.floor(S.goo*0.05);if(mk>=1)slotSpin(mk);}if(S.goo*0.15>=scPrice(0)){var mo=scBuy(0);if(mo)scSettle(mo);}out.gp=(out.gp||0)+1;}
       if(opt.gamble==='slime'&&slimeBetReady()){var cand=SL.filter(function(s){return !slimeBetOk(s);}).sort(function(a,b){return b.tier-a.tier;})[0];if(cand){var g2=Math.min(opt.gap||1,slimeGapMax(cand));if(g2>=1){var rs=slimeBet(cand,g2);if(rs){out.gp=(out.gp||0)+1;if(rs.win)out.gw=(out.gw||0)+1;}}}}
     }
 
@@ -2110,7 +2270,7 @@ function simPlay(hours,opt){opt=opt||{};
 window.__sf={get S(){return S;},set S(v){S=v;},get SL(){return SL;},get RC(){return RC;},TIERS:TIERS,UPS:UPS,CR:CR,PENS:PENS,FEATS:FEATS,
   tickEco:tickEco,sim:function(sec,step){step=step||0.1;for(var t=0;t<sec;t+=step){tickEco(step);physics(step);raceTick(step);}updUI();},simPlay:simPlay,
   save:saveNow,saveReq:save,checkUpdate:checkUpdate,BUILD:BUILD,load:load,gps:gps,gpsBase:gpsBase,buySlime:buySlime,buyUp:buyUp,buyCrown:buyCrown,doMerge:doMerge,ascend:ascend,rebirth:rebirth,canAscend:canAscend,canRebirth:canRebirth,
-  allInPlay:allInPlay,allInP:allInP,slimeBet:slimeBet,slimeBetOk:slimeBetOk,slimeBetP:slimeBetP,donFlip:donFlip,donP:donP,donOffer:donOffer,donEnd:donEnd,get DON(){return DON;},set DON(v){DON=v;},casCap:casCap,casS:casS,buildCasino:buildCasino,rjGain:rjGain,earlyGain:earlyGain,canEarly:canEarly,ascendEarly:ascendEarly,earlyP:earlyP,openLevels:openLevels,sdGain:sdGain,buyCost:buyCost,fmt:fmt,squish:squish,spawn:spawnSlime,crowdMult:crowdMult,penMax:function(){return penMax();},penCap:penCap,penOpen:penOpen,PR:PR,PIT:PIT,ALT:ALT,CAND:CAND,
+  allInPlay:allInPlay,gachaBuy:gachaBuy,gachaPull:gachaPull,eggPrice:eggPrice,slotSpin:slotSpin,scBuy:scBuy,scSettle:scSettle,scGrid:scGrid,scPrice:scPrice,giveCard:giveCard,get casTab(){return casTab;},set casTab(v){casTab=v;},finishScratch:finishScratch,RAR:RAR,SYM:SYM,SCT:SCT,GCOL:GCOL,allInP:allInP,slimeBet:slimeBet,slimeBetOk:slimeBetOk,slimeBetP:slimeBetP,donFlip:donFlip,donP:donP,donOffer:donOffer,donEnd:donEnd,get DON(){return DON;},set DON(v){DON=v;},casCap:casCap,casS:casS,buildCasino:buildCasino,rjGain:rjGain,earlyGain:earlyGain,canEarly:canEarly,ascendEarly:ascendEarly,earlyP:earlyP,openLevels:openLevels,sdGain:sdGain,buyCost:buyCost,fmt:fmt,squish:squish,spawn:spawnSlime,crowdMult:crowdMult,penMax:function(){return penMax();},penCap:penCap,penOpen:penOpen,PR:PR,PIT:PIT,ALT:ALT,CAND:CAND,
   newRace:newRace,placeBet:placeBet,cancelBet:cancelBet,enterOwn:enterOwn,startRace:startRace,settleRace:settleRace,raceOdds:raceOdds,betMax:betMax,raceDaily:raceDaily,
   offline:offline,startFrenzy:startFrenzy,spawnGolden:spawnGolden,tapGolden:tapGolden,gold:gold,open:open,closeAll:closeAll,buildShop:buildShop,
   closeModals:function(){mq=[];nextModal();},modalOpen:function(){return mOpen;},updUI:updUI,discover:discover,newSlimeModal:newSlimeModal,queueModal:queueModal,
