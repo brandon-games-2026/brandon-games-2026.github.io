@@ -1321,8 +1321,8 @@ function addBless(k,sec){if(k==='curse')achInc('curse');var b=S.alt.bl;b[k]=Math
 function blessDur(t){var rel=Math.max(-2,Math.min(4,t-(S.maxRun-5)));return Math.max(30,Math.min(480,60*Math.pow(2,rel)));}
 function sacrifice(s,mode,force){ // mode: 'bless' | 'gamble'
   if(!altOn()||!s)return false;if(prot(s)&&!force&&!bmMatch(s)){if(!SIM){toast('🔒 '+(s.nm||'This slime')+' is protected');sErr();}return false;}
-  var a=S.alt,res={};removeSlime(s);a.offers++;
-  if(bm&&bmMatch(s)){var b=blessDur(s.tier);addBless('moon',300);res.moon=1;a.mood=Math.min(100,a.mood+25);
+  var a=S.alt,res={},isM=bm&&bmMatch(s),ref=0;removeSlime(s);a.offers++;
+  if(isM){var b=blessDur(s.tier);addBless('moon',BM_BOON);res.moon=1;if(s.tier>0){var gb=spawnSlime(s.tier-1,false,0,s.pn,'Left behind by the Blood Moon, in thanks for '+(s.nm||'a '+TIERS[s.tier].n));if(gb){res.gift=gb;if(!SIM){gb.x=ALT.x+(Math.random()-0.5)*30;gb.y=ALT.y+16;}}}a.mood=Math.min(100,a.mood+25);
     var bone=!S.sec.bone||Math.random()<0.35;if(bone){var n=spawnAt(s.tier,4,1);if(n){res.bone=1;S.sec.bone=1;story(n,'Rose from the Blood Moon offering of '+(s.nm||'a '+TIERS[s.tier].n));}}
     endBloodMoon(true);}
   else if(mode==='gamble'){var p=Math.max(0.2,Math.min(0.85,0.5+a.mood/250+(s.sh?0.1:0)));
@@ -1333,7 +1333,7 @@ function sacrifice(s,mode,force){ // mode: 'bless' | 'gamble'
   if(SIM)return res;
   memorial(s,res.moon?'offered to the Blood Moon':'sacrificed at the Altar');qProg('altar',1);
   if(res.curse){altCrack=1.4;sCurse();banner('💀 The Altar is angry! −30% goo for 90 s'+(res.blow?' and the candles blew out':''),'#5a0f1e',4);if(!S.opt.rfx)shake=14;}
-  else{altBeam=1.8;sBless();var msg=res.moon?'🌕 The Blood Moon is satisfied! ×3 goo for 5 min'+(res.bone?' … and something rises from the bones':''):res.win?'✨ The Altar smiles! ×2 goo, 2× shinies, +'+fmt(res.gift)+(res.shadow?' … a Shadow Slime crawls out!':''):'🕯️ '+BLESS[res.bless].n+': '+BLESS[res.bless].d+' for '+fmtTime(res.dur);
+  else{altBeam=1.8;sBless();var msg=res.moon?'🌕 The Blood Moon is satisfied! ×3 goo for '+Math.round(BM_BOON/60)+' min, a free Gold scratch card'+(res.gift?', and it left a '+TIERS[res.gift.tier].n+' behind':'')+(res.bone?' … and something rises from the bones':''):res.win?'✨ The Altar smiles! ×2 goo, 2× shinies, +'+fmt(res.gift)+(res.shadow?' … a Shadow Slime crawls out!':''):'🕯️ '+BLESS[res.bless].n+': '+BLESS[res.bless].d+' for '+fmtTime(res.dur);
     banner(msg,res.moon?'#8a1020':'#6a4a00',4.5);fxConfetti(S.opt.rfx?10:40,fxW/2,fxH*0.45);}
   if(res.bone||res.shadow)setTimeout(function(){queueModal(function(){var t=res.bone?TIERS[NT]:TIERS[NT+1];showModal('<div class="rays"></div><div class="rel"><span class="newtag">SECRET SLIME!</span><canvas id="nsc" width="460" height="460"></canvas><h2>'+t.n+'</h2><p>'+t.t+'</p><p>Makes <b>×'+(res.bone?3:4)+'</b> the goo of its tier. It cannot merge, and it stays with you through resets.</p><button class="mbtn" id="mOk">Eerie!</button></div>',{mOk:null},'reveal');modalSlime=res.bone?NT:NT+1;nsCtx=$('nsc').getContext('2d');flash();});},1200);
   return res;}
@@ -1352,14 +1352,14 @@ function startBloodMoon(){var pool=SL.filter(function(s){return !s.sp;});if(pool
   var named=SL.filter(function(s){return s.nm;}),dem={};
   if(named.length&&Math.random()<0.3){var f=named[(Math.random()*named.length)|0];dem={uid:f.uid,txt:f.nm+' (your '+TIERS[f.tier].n+')'};}
   else{var ts=pool.map(function(s){return s.tier;}).sort(function(a,b){return a-b;}),t=ts[Math.floor(ts.length*(0.3+Math.random()*0.5))];dem={tier:t,txt:'a '+TIERS[t].n};}
-  bm={t:0,dur:90,uid:dem.uid||0,tier:dem.tier===undefined?-1:dem.tier,txt:dem.txt};S.bms++;tip1('bm','🌕','Blood Moon tip','Drag the slime marked 🩸 onto the Altar for ×3 goo. Or tap "Keep my slime" to say no: the Altar gets upset ('+BM_TXT+')');
+  bm={t:0,dur:90,uid:dem.uid||0,tier:dem.tier===undefined?-1:dem.tier,txt:dem.txt};S.bms++;tip1('bm','🌕','Blood Moon tip','Drag the slime marked 🩸 onto the Altar: you get ×3 goo for '+Math.round(BM_BOON/60)+' min, a free scratch card, and the moon leaves a slime one tier lower behind. Or tap "Keep my slime" to say no: the Altar gets upset ('+BM_TXT+')');
   banner('🩸 Blood Moon! It wants '+dem.txt+'. Drag it onto the Altar within 90 s, or tap Keep my slime','#8a1020',6);if(!SIM)sMoon();return true;}
 // saying no (button or letting the timer run out) is always the same small, fair cost: the slime stays, the Altar sulks for a bit
-var BM_PEN=0.75,BM_PENT=75,BM_TXT='−25% goo for 75 s';
+var BM_PEN=0.75,BM_PENT=75,BM_TXT='−25% goo for 75 s',BM_BOON=600; // accepting: ×3 goo for BM_BOON s + a gold scratch card + the moon leaves a slime one tier lower + ×3 goo for BM_BOON s + a gold scratch card
 function declineBloodMoon(why){if(!bm)return false;var was=bm;bm=null;S.bm=3600+Math.random()*1800;S.alt.bl.upset=BM_PENT;S.bmNo=(S.bmNo||0)+1;
   if(!SIM){sGrumble();if(why==='time')banner('🌑 The moon left without '+was.txt+'. The Altar is upset: '+BM_TXT,'#5a0f1e',4);else showBanner('🙅 You kept '+was.txt+'. The Altar is upset: '+BM_TXT,'#5a0f1e',4);bmUI();save();}return true;}
 var bmShown='';function bmUI(){if(SIM)return;var el=$('bmBar');if(!el)return;var t=bm?'🩸 '+Math.max(0,Math.ceil(bm.dur-bm.t))+'s · wants '+bm.txt:'';if(t===bmShown)return;bmShown=t;el.classList.toggle('on',!!bm);if(bm)$('bmTx').textContent=t;}
-function endBloodMoon(ok){if(!bm)return;if(!ok){declineBloodMoon('time');return;}var was=bm;bm=null;S.bm=3600+Math.random()*1800;giveCard(2,'a Blood Moon gift');achInc('bmok');
+function endBloodMoon(ok){if(!bm)return;if(!ok){declineBloodMoon('time');return;}var was=bm;bm=null;S.bm=3600+Math.random()*1800;giveCard(2,'a Blood Moon gift',true);achInc('bmok');
   if(!SIM){story0('🌅 Dawn breaks. The moon is satisfied.');bmUI();}}
 function bmTick(dt){
   if(!bmOn()||SIM)return;
@@ -2255,7 +2255,7 @@ function buildFarm(){farmSig=farmSignature();['fT','fS','fD','fM'].forEach(funct
       h+='<p class="sm">It only gets hungry while you play. If it starves it sulks, then eats a random slime itself (never a named, pinned or locked one). Feeding it a mutant loses the mutation.</p></div>';}
     if(S.feat.altar){var al=S.alt;h+='<div class="dark"><h3>🕯️ The Altar</h3>'+(penOpen(4)?'<p>Mood '+(al.mood>=40?'😊':al.mood>=0?'😐':al.mood>-40?'😠':'👿')+' '+Math.round(al.mood)+' · candles lit '+al.cand.filter(Boolean).length+'/5 · offerings '+al.offers+'</p>':'<p>Sealed. Unseal the Altar Grove in the Shop.</p>');
       var bl=Object.keys(al.bl);h+=bl.length?bl.map(function(k){return '<p class="tr">'+BLESS[k].i+' <b>'+BLESS[k].n+'</b> · '+BLESS[k].d+' · '+fmtTime(al.bl[k])+'</p>';}).join(''):'<p class="sm">No active blessings. Drag a slime onto the Altar.</p>';
-      if(S.feat.bloodmoon)h+='<p>'+(bm?'🌕 <b>BLOOD MOON NOW</b>: it wants '+bm.txt:'🌑 Next Blood Moon in about '+fmtTime(S.bm)+' of play')+'</p><p class="sm">Give it what it wants for ×3 goo for 5 min, or say no with Keep my slime (the Altar gets upset: '+BM_TXT+').</p>';
+      if(S.feat.bloodmoon)h+='<p>'+(bm?'🌕 <b>BLOOD MOON NOW</b>: it wants '+bm.txt:'🌑 Next Blood Moon in about '+fmtTime(S.bm)+' of play')+'</p><p class="sm">Give it what it wants: ×3 goo for '+Math.round(BM_BOON/60)+' min, a scratch card, and it leaves a slime one tier lower behind. Or say no with Keep my slime (the Altar gets upset: '+BM_TXT+').</p>';
       h+='<p class="sm">Secret slimes found: '+(S.sec.bone?'💀 Bone ':'❓ ')+(S.sec.shadow?'👤 Shadow':'❓')+'</p></div>';}}
   else{h+='<div class="note">🪦 Slimes you loved, lost to the Devourer, the Altar, the Blood Moon or the hills.</div>';if(!S.mem.length)h+='<div class="note">No one here yet. Long may it stay that way.</div>';
     S.mem.forEach(function(m){h+='<div class="item mem"><div class="ic">🪦</div><div class="it"><b>'+(m.n?esc(m.n):(m.sh?'✨ ':'')+TIERS[m.sp?NT+m.sp-1:m.t].n)+'</b><small>'+TIERS[m.sp?NT+m.sp-1:m.t].n+' · '+PERS[m.ps||0].n+(m.h?' · '+'♥'.repeat(m.h):'')+' · '+esc(m.c)+' · '+new Date(m.d).toLocaleDateString()+'</small></div></div>';});}
@@ -2515,7 +2515,7 @@ document.addEventListener('visibilitychange',function(){
   else{var away=(Date.now()-(S.last||Date.now()))/1000;if(away>2)offline(away,60);saveNow();startLoop();updUI();checkUpdate();}});
 window.addEventListener('pagehide',saveNow);
 // ---------- stale-version guard: Safari / Home Screen apps can keep an old copy cached; offer a one-tap update ----------
-var BUILD='20261029220243',updT=0;
+var BUILD='20261029221056',updT=0;
 function checkUpdate(){if(SIM||!window.fetch||location.protocol==='file:'||Date.now()-updT<6e5)return;updT=Date.now();
   fetch(location.pathname+'?vc='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():'';}).then(function(t){var m=/var BUILD='([0-9a-z_.-]+)'/.exec(t||'');if(m&&m[1]!==BUILD)showUpd();}).catch(function(){});}
 function showUpd(){if($('updBar'))return;var b=document.createElement('button');b.id='updBar';b.textContent='✨ A new version of Slime Farm is ready · tap to update';b.addEventListener('click',function(){saveNow();noSave=true;location.reload();});document.body.appendChild(b);}
