@@ -178,6 +178,7 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:ma
 .acats{flex-wrap:wrap;margin:10px 0}.acats .chip{height:34px;min-width:40px;font-size:17px}
 #achBody h4{margin:12px 0 6px;font-size:14px}#achBody h4 small{opacity:.6}
 .ach{display:flex;gap:10px;align-items:center;background:#f8f5ff;border-radius:14px;padding:8px 10px;margin-bottom:6px}.ach>i{font-style:normal;flex:none;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px}.ach>div{flex:1;min-width:0}.ach b{display:flex;justify-content:space-between;gap:6px;font-size:14px}.ach .at{font-size:10px;font-weight:900;text-transform:uppercase}.ach small{display:block;font-size:12px;font-weight:700;color:#6a5a90}.ach small.ok{color:#2a8a3a}.ach .ebar{margin-top:4px;height:7px}.ach.got{background:#f1fbe9}.ach.near{background:#fff6d6;border:2px solid #f0c040}.ach.opt{opacity:.6}
+#bmBar{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:none;align-items:center;gap:8px;background:rgba(60,0,10,.9);color:#ffd0d0;font-weight:900;font-size:13px;padding:5px 5px 5px 12px;border-radius:18px;z-index:5;max-width:96%;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.3)}#bmBar.on{display:flex}#bmBar{pointer-events:none}#bmNo{pointer-events:auto}#bmBar span{overflow:hidden;text-overflow:ellipsis}#bmNo{flex:none;border:0;border-radius:14px;background:#fff;color:#8a1020;font:inherit;font-weight:900;padding:8px 11px;cursor:pointer}#bmNo:active{transform:scale(.95)}
 #banner{position:absolute;left:50%;top:8px;transform:translate(-50%,-140%);max-width:92%;padding:9px 14px;border-radius:16px;color:#fff;font-weight:900;font-size:14px;text-align:center;box-shadow:0 6px 16px rgba(0,0,0,.25);transition:transform .3s cubic-bezier(.2,1.4,.4,1);z-index:4;pointer-events:none;line-height:1.25}
 #banner.on{transform:translate(-50%,0)}
 .fbtns{position:absolute;right:8px;bottom:calc(38% - 8px);display:flex;flex-direction:column;gap:8px;align-items:flex-end;z-index:4}
@@ -228,7 +229,7 @@ textarea#sv{width:100%;height:90px;border-radius:14px;border:2px solid #e4dcf7;f
   </div>
   <div id="goalW"><div id="goal"><div id="goalF"></div><div id="goalT">…</div></div><span id="crowd">👥 ×1.00</span></div>
 </div>
-<div id="field"><canvas id="c"></canvas><div id="banner"></div><div id="achT"></div><button id="rcd"><span id="rcdT">🏁</span></button><div class="fbtns"><button class="fb" id="undoB">↩ <span id="undoT">Undo</span></button><button class="fb" id="donB"><span id="donT">🪙 Double it?</span></button><button class="fb" id="zoomB">🔍+</button></div></div>
+<div id="field"><canvas id="c"></canvas><div id="banner"></div><div id="bmBar"><span id="bmTx"></span><button id="bmNo">🙅 Keep my slime</button></div><div id="achT"></div><button id="rcd"><span id="rcdT">🏁</span></button><div class="fbtns"><button class="fb" id="undoB">↩ <span id="undoT">Undo</span></button><button class="fb" id="donB"><span id="donT">🪙 Double it?</span></button><button class="fb" id="zoomB">🔍+</button></div></div>
 <div id="bottom">
   <button id="buy"><span class="bl"><span id="buyName">Buy Green Blob</span><small id="buySub">Tap to adopt a slime</small></span><span class="bc"><span class="drop sm"></span><span id="buyCost">10</span></span><span id="buyX">×1</span></button>
   <div id="nav">
@@ -383,7 +384,7 @@ function offCapH(l){if(l===undefined)l=cl('dream');return 8+4*l;}
 var frenzyT=0,FRENZY=7;
 function frenzyMult(){return frenzyT>0?FRENZY:1;}
 function blessOn(k){return !!(S.alt&&S.alt.bl&&S.alt.bl[k]>0);}
-function blessMult(){var m=1;if(blessOn('plenty'))m*=2;if(blessOn('moon'))m*=3;if(blessOn('curse'))m*=0.7;return m;}
+function blessMult(){var m=1;if(blessOn('plenty'))m*=2;if(blessOn('moon'))m*=3;if(blessOn('curse'))m*=0.7;if(blessOn('upset'))m*=BM_PEN;return m;}
 function globalMult(){return gooMult()*rjMult()*crowdMult()*sdMult()*frenzyMult()*devMult()*blessMult()*evMult();}
 // ---------- pens: fenced areas on one screen, each with its own rules and slot cap ----------
 var PENS=[
@@ -1006,7 +1007,7 @@ function render(){
   g.setTransform(DPR,0,0,DPR,0,0);g.textAlign='center';g.textBaseline='middle';
   if(bm){var beat=Math.max(0,Math.sin(T*(bm.t>70?11.4:7.4)))*0.12;var vg=g.createRadialGradient(W/2,H/2,Math.min(W,H)*0.3,W/2,H/2,Math.max(W,H)*0.75);vg.addColorStop(0,'rgba(120,0,20,'+(0.18+beat)+')');vg.addColorStop(1,'rgba(40,0,10,'+(0.55+beat)+')');g.fillStyle=vg;g.fillRect(0,0,W,H);
     g.fillStyle='rgba(255,60,60,.25)';g.beginPath();g.arc(W-46,40,34,0,7);g.fill();g.fillStyle='#d01828';g.beginPath();g.arc(W-46,40,22,0,7);g.fill();g.fillStyle='rgba(120,0,10,.5)';g.beginPath();g.arc(W-52,36,5,0,7);g.arc(W-40,46,3.5,0,7);g.fill();
-    g.font=FONT13;var bt='🩸 '+Math.ceil(bm.dur-bm.t)+'s · wants '+bm.txt,bw=g.measureText(bt).width+20;g.fillStyle='rgba(60,0,10,.85)';rr(g,W/2-bw/2,H-34,bw,26,13);g.fill();g.fillStyle='#ffd0d0';g.fillText(bt,W/2,H-21);}
+    /* countdown + Keep my slime button live in the #bmBar DOM bar */}
   if(altCrack>0){var rnd=srand(Math.floor(S.alt.offers*7+3));g.strokeStyle='rgba(220,20,40,'+Math.min(1,altCrack)+')';g.lineWidth=3;for(var c2=0;c2<5;c2++){var x0=W/2,y0=H*0.45,ang=rnd()*6.283;g.beginPath();g.moveTo(x0,y0);for(var sg=0;sg<6;sg++){x0+=Math.cos(ang)*40;y0+=Math.sin(ang)*40;ang+=(rnd()-0.5)*1.2;g.lineTo(x0,y0);}g.stroke();}g.fillStyle='rgba(140,0,20,'+altCrack*0.15+')';g.fillRect(0,0,W,H);}
   if(dvEvo>0){g.fillStyle='rgba(30,0,60,'+Math.min(0.5,dvEvo*0.2)+')';g.fillRect(0,0,W,H);}
   if(frenzyT>0){g.strokeStyle='rgba(255,190,40,'+(0.45+0.3*Math.sin(T*10))+')';g.lineWidth=8;g.strokeRect(4,4,W-8,H-8);}
@@ -1146,6 +1147,7 @@ function sSpinTick(){tone(1500,1100,0.03,'square',0.03);}
 function sGulp(){tone(160,60,0.35,'sine',0.5);noise(0.3,700,120,3,0.3);tone(90,45,0.25,'sine',0.35,0.22);}
 function sBurp(){tone(110,70,0.45,'sawtooth',0.1);tone(85,60,0.45,'sine',0.4);noise(0.4,400,200,5,0.18);}
 function sTantrum(){for(var i=0;i<4;i++){tone(140-i*12,70,0.18,'sawtooth',0.08,i*0.14);noise(0.15,500,200,2,0.15,i*0.14);}}
+function sGrumble(){tone(200,120,0.35,'triangle',0.09);tone(160,100,0.45,'sawtooth',0.025,0.22);tone(130,85,0.55,'triangle',0.08,0.3);} // sad little 'hmph' when you say no
 function sCurse(){tone(300,70,1.1,'sawtooth',0.08);tone(311,74,1.1,'sawtooth',0.07);noise(0.6,2000,200,1,0.12);}
 function sBless(){[523,659,784,1047,1319,1568].forEach(function(f,i){tone(f,f,0.9,'sine',0.07,i*0.09);});noise(1,6000,3000,8,0.03);}
 function sChime(){[1047,1319,1568,2093].forEach(function(f,i){tone(f,f,0.5,'sine',0.08,i*0.12);});}
@@ -1312,7 +1314,7 @@ function tantrumOn(){return dvOn()&&S.dv.hunger<=0&&dvTant>2;}
 function tapGem(G){gems.splice(gems.indexOf(G),1);var v=Math.max(100,gps()*(12+4*dvStage()));addGoo(v);addText(G.x,G.y-20,'💎 +'+fmt(v),1.4,'#7a3fd0',18);burst(G.x,G.y,G.c,14,260,true);sCoin();qProg('tap',1);}
 // ---------- THE ALTAR: candles, mood, sacrifices (blessings) and gambles (blessing or curse) ----------
 var ALT={x:0,y:0,r:20},CAND=[],altBeam=0,altCrack=0,altFlash='',unrestT=0,bmHand=null;
-var BLESS={plenty:{n:'Blessing of Plenty',i:'🌾',d:'×2 goo'},fortune:{n:'Blessing of Fortune',i:'🍀',d:'2× shiny chance'},squish:{n:'Blessing of Taps',i:'👆',d:'×3 Tap Power'},moon:{n:'Blood Moon Boon',i:'🌕',d:'×3 goo'},curse:{n:'Curse',i:'💀',d:'-30% goo'}};
+var BLESS={plenty:{n:'Blessing of Plenty',i:'🌾',d:'×2 goo'},fortune:{n:'Blessing of Fortune',i:'🍀',d:'2× shiny chance'},squish:{n:'Blessing of Taps',i:'👆',d:'×3 Tap Power'},moon:{n:'Blood Moon Boon',i:'🌕',d:'×3 goo'},curse:{n:'Curse',i:'💀',d:'-30% goo'},upset:{n:'Altar upset',i:'😠',d:'−25% goo'}};
 function altOn(){return !!S.feat.altar&&penOpen(4)&&!(S.opt&&S.opt.simple);}
 function blessTick(dt){var b=S.alt.bl;for(var k in b){if(b[k]>0){b[k]-=dt;if(b[k]<=0)delete b[k];}}}
 function addBless(k,sec){if(k==='curse')achInc('curse');var b=S.alt.bl;b[k]=Math.min(k==='curse'?180:900,(b[k]||0)+sec);}
@@ -1350,20 +1352,19 @@ function startBloodMoon(){var pool=SL.filter(function(s){return !s.sp;});if(pool
   var named=SL.filter(function(s){return s.nm;}),dem={};
   if(named.length&&Math.random()<0.3){var f=named[(Math.random()*named.length)|0];dem={uid:f.uid,txt:f.nm+' (your '+TIERS[f.tier].n+')'};}
   else{var ts=pool.map(function(s){return s.tier;}).sort(function(a,b){return a-b;}),t=ts[Math.floor(ts.length*(0.3+Math.random()*0.5))];dem={tier:t,txt:'a '+TIERS[t].n};}
-  bm={t:0,dur:90,uid:dem.uid||0,tier:dem.tier===undefined?-1:dem.tier,txt:dem.txt};S.bms++;tip1('bm','🌕','Blood Moon tip','Find the slime marked 🩸 and drag it onto the Altar before the timer ends. Ignore it and the moon takes one');
-  banner('🩸 Blood Moon! It wants '+dem.txt+'. Drag it onto the Altar within 90 s','#8a1020',6);sMoon();return true;}
-function endBloodMoon(ok){if(!bm)return;var was=bm;bm=null;S.bm=3600+Math.random()*1800;if(ok){giveCard(2,'a Blood Moon gift');achInc('bmok');}
-  if(ok){story0('🌅 Dawn breaks. The moon is satisfied.');return;}
-  var pool=SL.filter(function(s){return !prot(s)&&!s.sp&&s.tier<S.maxRun&&!s.eat;});if(!pool.length)pool=SL.filter(function(s){return !prot(s)&&!s.sp;});
-  var v=pool.length?pool[(Math.random()*pool.length)|0]:null;
-  if(v){bmHand={s:v,t:0};v.eat=1;}
-  if(was.uid){addBless('curse',120);banner('The moon spared your favorite… but took '+(v?(v.nm||'a '+TIERS[v.tier].n):'nothing')+' instead, and cursed the farm','#5a0f1e',5);}
-  else banner(v?'A shadow hand took '+(v.nm||'a '+TIERS[v.tier].n)+' into the night…':'The moon fades away, hungry.','#5a0f1e',4.5);
-  sCurse();}
+  bm={t:0,dur:90,uid:dem.uid||0,tier:dem.tier===undefined?-1:dem.tier,txt:dem.txt};S.bms++;tip1('bm','🌕','Blood Moon tip','Drag the slime marked 🩸 onto the Altar for ×3 goo. Or tap "Keep my slime" to say no: the Altar gets upset ('+BM_TXT+')');
+  banner('🩸 Blood Moon! It wants '+dem.txt+'. Drag it onto the Altar within 90 s, or tap Keep my slime','#8a1020',6);if(!SIM)sMoon();return true;}
+// saying no (button or letting the timer run out) is always the same small, fair cost: the slime stays, the Altar sulks for a bit
+var BM_PEN=0.75,BM_PENT=75,BM_TXT='−25% goo for 75 s';
+function declineBloodMoon(why){if(!bm)return false;var was=bm;bm=null;S.bm=3600+Math.random()*1800;S.alt.bl.upset=BM_PENT;S.bmNo=(S.bmNo||0)+1;
+  if(!SIM){sGrumble();if(why==='time')banner('🌑 The moon left without '+was.txt+'. The Altar is upset: '+BM_TXT,'#5a0f1e',4);else showBanner('🙅 You kept '+was.txt+'. The Altar is upset: '+BM_TXT,'#5a0f1e',4);bmUI();save();}return true;}
+var bmShown='';function bmUI(){if(SIM)return;var el=$('bmBar');if(!el)return;var t=bm?'🩸 '+Math.max(0,Math.ceil(bm.dur-bm.t))+'s · wants '+bm.txt:'';if(t===bmShown)return;bmShown=t;el.classList.toggle('on',!!bm);if(bm)$('bmTx').textContent=t;}
+function endBloodMoon(ok){if(!bm)return;if(!ok){declineBloodMoon('time');return;}var was=bm;bm=null;S.bm=3600+Math.random()*1800;giveCard(2,'a Blood Moon gift');achInc('bmok');
+  if(!SIM){story0('🌅 Dawn breaks. The moon is satisfied.');bmUI();}}
 function bmTick(dt){
   if(!bmOn()||SIM)return;
   if(!bm){S.bm-=dt;if(S.bm<=0){if(!startBloodMoon())S.bm=600;}return;}
-  bm.t+=dt;hbT-=dt;if(hbT<=0){hbT=bm.t>70?0.55:0.85;sHeart();}
+  bm.t+=dt;hbT-=dt;if(hbT<=0){hbT=bm.t>70?0.55:0.85;sHeart();}bmUI();
   if(bm.t>=bm.dur)endBloodMoon(false);}
 function handTick(dt){if(!bmHand)return;bmHand.t+=dt;var s=bmHand.s;if(bmHand.t>1.2&&SL.indexOf(s)>=0){s.y-=dt*260;s.z+=dt*120;}
   if(bmHand.t>2.6){if(SL.indexOf(s)>=0){removeSlime(s);memorial(s,'taken by the Blood Moon');}bmHand=null;}}
@@ -2254,7 +2255,7 @@ function buildFarm(){farmSig=farmSignature();['fT','fS','fD','fM'].forEach(funct
       h+='<p class="sm">It only gets hungry while you play. If it starves it sulks, then eats a random slime itself (never a named, pinned or locked one). Feeding it a mutant loses the mutation.</p></div>';}
     if(S.feat.altar){var al=S.alt;h+='<div class="dark"><h3>🕯️ The Altar</h3>'+(penOpen(4)?'<p>Mood '+(al.mood>=40?'😊':al.mood>=0?'😐':al.mood>-40?'😠':'👿')+' '+Math.round(al.mood)+' · candles lit '+al.cand.filter(Boolean).length+'/5 · offerings '+al.offers+'</p>':'<p>Sealed. Unseal the Altar Grove in the Shop.</p>');
       var bl=Object.keys(al.bl);h+=bl.length?bl.map(function(k){return '<p class="tr">'+BLESS[k].i+' <b>'+BLESS[k].n+'</b> · '+BLESS[k].d+' · '+fmtTime(al.bl[k])+'</p>';}).join(''):'<p class="sm">No active blessings. Drag a slime onto the Altar.</p>';
-      if(S.feat.bloodmoon)h+='<p>'+(bm?'🌕 <b>BLOOD MOON NOW</b>: it wants '+bm.txt:'🌑 Next Blood Moon in about '+fmtTime(S.bm)+' of play')+'</p>';
+      if(S.feat.bloodmoon)h+='<p>'+(bm?'🌕 <b>BLOOD MOON NOW</b>: it wants '+bm.txt:'🌑 Next Blood Moon in about '+fmtTime(S.bm)+' of play')+'</p><p class="sm">Give it what it wants for ×3 goo for 5 min, or say no with Keep my slime (the Altar gets upset: '+BM_TXT+').</p>';
       h+='<p class="sm">Secret slimes found: '+(S.sec.bone?'💀 Bone ':'❓ ')+(S.sec.shadow?'👤 Shadow':'❓')+'</p></div>';}}
   else{h+='<div class="note">🪦 Slimes you loved, lost to the Devourer, the Altar, the Blood Moon or the hills.</div>';if(!S.mem.length)h+='<div class="note">No one here yet. Long may it stay that way.</div>';
     S.mem.forEach(function(m){h+='<div class="item mem"><div class="ic">🪦</div><div class="it"><b>'+(m.n?esc(m.n):(m.sh?'✨ ':'')+TIERS[m.sp?NT+m.sp-1:m.t].n)+'</b><small>'+TIERS[m.sp?NT+m.sp-1:m.t].n+' · '+PERS[m.ps||0].n+(m.h?' · '+'♥'.repeat(m.h):'')+' · '+esc(m.c)+' · '+new Date(m.d).toLocaleDateString()+'</small></div></div>';});}
@@ -2308,7 +2309,7 @@ function buildSet(){
   $('tgS').addEventListener('click',function(){S.sound=!S.sound;this.classList.toggle('on',S.sound);ac();sBuy();save();});
   $('vS').addEventListener('input',function(){o.vol=this.value/100;setVol();});$('vS').addEventListener('change',function(){sPop(3,1);save();});
   $('vA').addEventListener('input',function(){o.amb=this.value/100;});$('vA').addEventListener('change',function(){sHeart();save();});
-  $('tgSm').addEventListener('click',function(){S.opt.simple=!S.opt.simple;this.classList.toggle('on',S.opt.simple);if(S.opt.simple){if(EV)endEvent(false);if(bm)endBloodMoon(true);S.dv.hunger=Math.max(S.dv.hunger,60);}bgKey='';sBuy();save();toast(S.opt.simple?'🌿 Simple Mode on':'🔥 Full farm on');});
+  $('tgSm').addEventListener('click',function(){S.opt.simple=!S.opt.simple;this.classList.toggle('on',S.opt.simple);if(S.opt.simple){if(EV)endEvent(false);if(bm){bm=null;S.bm=3600;bmUI();}S.dv.hunger=Math.max(S.dv.hunger,60);}bgKey='';sBuy();save();toast(S.opt.simple?'🌿 Simple Mode on':'🔥 Full farm on');});
   $('tgV').addEventListener('click',function(){S.vib=!S.vib;this.classList.toggle('on',S.vib);buzz(20);save();});
   $('tgR').addEventListener('click',function(){o.rfx=!o.rfx;this.classList.toggle('on',o.rfx);save();});
   $('nf0').addEventListener('click',function(){o.nf=0;buildSet();updUI();save();});$('nf1').addEventListener('click',function(){o.nf=1;buildSet();updUI();save();});
@@ -2369,8 +2370,8 @@ function updUI(){
   setT('buyCost',fmt(c));setC('buy','off',full||S.goo<c);setT('buyX',buyNLabel());
   setD('rjb',S.rj>0||S.rjCycle>0?'block':'none');setT('rj',fmt(S.rj));
   setD('sdb',S.sd>0?'block':'none');setT('sd',String(S.sd));
-  var bl=Object.keys(S.alt.bl),bt='';if(frenzyT>0)bt='🔥 ×'+FRENZY+' '+Math.ceil(frenzyT)+'s';else if(bl.length){var k=bl[0];bt=BLESS[k].i+' '+Math.ceil(S.alt.bl[k])+'s';}
-  setD('frz',bt?'block':'none');if(bt)setT('frz',bt);setC('frz','curse',!frenzyT&&bl[0]==='curse');
+  var bl=Object.keys(S.alt.bl),bt='';if(blessOn('upset')){bl=['upset'];bt='😠 Altar upset: −25% goo, '+fmtClock(S.alt.bl.upset);}else if(frenzyT>0)bt='🔥 ×'+FRENZY+' '+Math.ceil(frenzyT)+'s';else if(bl.length){var k=bl[0];bt=BLESS[k].i+' '+Math.ceil(S.alt.bl[k])+'s';}
+  setD('frz',bt?'block':'none');if(bt)setT('frz',bt);setC('frz','curse',(!frenzyT||bl[0]==='upset')&&(bl[0]==='curse'||bl[0]==='upset'));
   var any=UPS.some(function(u){var l=lvl(u.k);return featUp(u)&&l<u.mx()&&S.goo>=u.cost(l);})||canAscend()||canRebirth()||CR.some(function(u){var l=cl(u.k);return l<u.max&&S.rj>=u.cost(l);});
   setD('shopDot',any?'block':'none');
   var unseen=0;for(var i=0;i<TIERS.length;i++)if(S.disc[i]&&!S.seen[i])unseen++;
@@ -2420,6 +2421,10 @@ function showWhatsNew3(){queueModal(function(){var L=['<p>🧬 <b>Mutants stay m
   if(S.feat.devourer)L.push('<p>💨 <b>Burps come faster:</b> every feed fills the meter, 6 feeds = a prize.</p>');
   L.push('<p>📝 Clearer words in races, events, quests and the Casino.</p>');
   showModal('<div class="rel"><span class="newtag">POLISHED</span><h2 style="margin-top:12px">A little better! ✨</h2><div class="wn calm">'+L.join('')+'</div><button class="mbtn" id="mOk">Nice!</button></div>',{mOk:null},'reveal');});}
+
+function fmtClock(sec){sec=Math.max(0,Math.ceil(sec));return Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');}
+$('bmNo').addEventListener('pointerdown',function(e){e.stopPropagation();});
+$('bmNo').addEventListener('click',function(e){e.stopPropagation();if(declineBloodMoon('no')){buzz(10);updUI();}});
 
 // ---------- save / load (v3) + clean migration of v1 and v2 saves ----------
 var noSave=false;
@@ -2510,7 +2515,7 @@ document.addEventListener('visibilitychange',function(){
   else{var away=(Date.now()-(S.last||Date.now()))/1000;if(away>2)offline(away,60);saveNow();startLoop();updUI();checkUpdate();}});
 window.addEventListener('pagehide',saveNow);
 // ---------- stale-version guard: Safari / Home Screen apps can keep an old copy cached; offer a one-tap update ----------
-var BUILD='20261029213824',updT=0;
+var BUILD='20261029220243',updT=0;
 function checkUpdate(){if(SIM||!window.fetch||location.protocol==='file:'||Date.now()-updT<6e5)return;updT=Date.now();
   fetch(location.pathname+'?vc='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():'';}).then(function(t){var m=/var BUILD='([0-9a-z_.-]+)'/.exec(t||'');if(m&&m[1]!==BUILD)showUpd();}).catch(function(){});}
 function showUpd(){if($('updBar'))return;var b=document.createElement('button');b.id='updBar';b.textContent='✨ A new version of Slime Farm is ready · tap to update';b.addEventListener('click',function(){saveNow();noSave=true;location.reload();});document.body.appendChild(b);}
@@ -2521,14 +2526,15 @@ var CR_PRI=['start','keep','amf','estate','jar','jelly','keep','luck','hatch','d
 var PEN_PRI=[3,1,0,2,4]; // best slimes go to the Star Pool, then the Hot Spring…
 function simPens(){var srt=SL.slice().sort(function(a,b){return b.tier-a.tier||b.sh-a.sh;}),cap=[0,0,0,0,0],i,j;for(i=0;i<NP;i++)cap[i]=penCap(i);
   for(i=0;i<srt.length;i++){var s=srt[i];for(j=0;j<PEN_PRI.length;j++){var p=PEN_PRI[j];if(cap[p]>0){cap[p]--;s.pn=p;break;}}s.trav=false;}}
-var simAltT=0;
+var simAltT=0,simBmAt=0;
 function simSpare(maxT){var lo=null;for(var i=0;i<SL.length;i++){var s=SL[i];if(prot(s)||s.tier>maxT||(SIMG.hoard&&s.mu))continue;if(!lo||s.tier<lo.tier)lo=s;}return lo;}
 function simDark(t,o){var full=o.aggr?SL.length>4:SL.length>=penMax()-2;
+  if(o.bm&&bmOn()){if(!simBmAt)simBmAt=t+2700;if(t>=simBmAt){simBmAt=t+3600+Math.random()*1800;if(startBloodMoon()){var w=o.bm==='accept'?SL.find(function(s){return bmMatch(s)&&!s.sp;}):null;if(!w||!sacrifice(w,'bless',true))declineBloodMoon('no');}}}
   if(dvOn()&&o.feed!==false&&(S.dv.hunger<50&&full||o.feeder&&S.dv.hunger<25)){var lo=simSpare(S.maxRun-2);if(lo)feedDevourer(lo);}
   if(altOn()&&o.altar!==false&&full&&t-simAltT>=(o.altInt||150)&&!blessOn('plenty')){var c=simSpare(S.maxRun-3);if(c&&c.tier>=S.maxRun-7){simAltT=t;sacrifice(c,'bless');}}}
 function simPlay(hours,opt){opt=opt||{};ACH_SIM=!opt.noach;
   var bk={S:S,SL:SL,fr:frenzyT,T:T,RC:RC,EV:EV,bm:bm},out={_g:-1,_gt:0,gap:0,tiers:{},asc:[],reb:[],log:[],dv:[],feats:{}};
-  SIM=true;S=fresh();SL=[];spawnSlime(0,false,0);spawnSlime(0,false,0);frenzyT=0;autoAcc=amAcc=hatAcc=0;goldT=90;EV=null;bm=null;simAltT=0;rushT=RUSH_MIN+Math.random()*RUSH_VAR;rush={on:0};SIMG.rushTaps=opt.rush;SIMG.hoard=!!opt.hoard;var mp0=MUT_P,mp1=MUT_P2;if(opt.nomut){MUT_P=0;MUT_P2=0;}
+  SIM=true;S=fresh();SL=[];spawnSlime(0,false,0);spawnSlime(0,false,0);frenzyT=0;autoAcc=amAcc=hatAcc=0;goldT=90;EV=null;bm=null;simAltT=0;simBmAt=0;rushT=RUSH_MIN+Math.random()*RUSH_VAR;rush={on:0};SIMG.rushTaps=opt.rush;SIMG.hoard=!!opt.hoard;var mp0=MUT_P,mp1=MUT_P2;if(opt.nomut){MUT_P=0;MUT_P2=0;}
   var dt=opt.dt||1,end=hours*3600,lastNew=0,tapR=opt.taps===undefined?1:opt.taps,mergeR=opt.merges===undefined?0.5:opt.merges,mAcc=0,lastAscT=0,lastStage=0;
   try{
   for(var t=0;t<end;t+=dt){
@@ -2588,7 +2594,7 @@ window.__sf={get S(){return S;},set S(v){S=v;},get SL(){return SL;},get RC(){ret
   get shopTab(){return shopTab;},set shopTab(v){shopTab=v;},
   // Update 1 hooks
   cam:cam,focusPen:focusPen,zoomAt:zoomAt,clampCam:clampCam,feed:feedDevourer,devMult:devMult,dvStage:dvStage,get dvEvo(){return dvEvo;},get DVA(){return DVA;},sacrifice:sacrifice,altarChoice:altarChoice,
-  startBloodMoon:startBloodMoon,endBloodMoon:endBloodMoon,get bm(){return bm;},bmMatch:bmMatch,relight:relight,startEvent:startEvent,endEvent:endEvent,get EV(){return EV;},evTap:evTap,evSlimeTap:evSlimeTap,
+  startBloodMoon:startBloodMoon,declineBloodMoon:declineBloodMoon,BM_PEN:BM_PEN,BM_PENT:BM_PENT,fmtClock:fmtClock,sGrumble:sGrumble,endBloodMoon:endBloodMoon,get bm(){return bm;},bmMatch:bmMatch,relight:relight,startEvent:startEvent,endEvent:endEvent,get EV(){return EV;},evTap:evTap,evSlimeTap:evSlimeTap,
   openProfile:openProfile,doUndo:doUndo,get UNDO(){return UNDO;},checkFeats:checkFeats,claimCal:claimCal,claimQuest:claimQuest,qProg:qProg,newQuests:newQuests,
   giveEgg:giveEgg,eggs:eggs,puds:puds,bubs:bubs,gems:gems,targetTap:targetTap,poke:poke,moveToPen:moveToPen,dropSlime:dropSlime,showWhatsNew:showWhatsNew,exportSave:exportSave,
   blessMult:blessMult,globalMult:globalMult,slimeMult:slimeMult,hearts:hearts,prot:prot,dvTick:dvTick,penAt:penAt,toWorld:toWorld,banner:banner,memorial:memorial};
