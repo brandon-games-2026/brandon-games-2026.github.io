@@ -172,6 +172,8 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:ma
 #buy{position:relative}
 #buyX{position:absolute;right:auto;left:50%;top:-12px;transform:translateX(-50%);height:24px;min-width:44px;border-radius:12px;background:#fff;color:#2f8f2a;font-size:12px;font-weight:900;box-shadow:0 2px 0 #2f8f2a;text-shadow:none;padding:0 8px}
 #achT{position:absolute;left:50%;top:54px;transform:translate(-50%,-30px);opacity:0;pointer-events:none;display:flex;align-items:center;gap:8px;max-width:86%;padding:6px 12px 6px 8px;border-radius:14px;background:rgba(255,255,255,.95);border:2px solid #7a4fe0;box-shadow:0 4px 12px rgba(40,20,80,.22);transition:transform .3s,opacity .3s;z-index:4}#achT.on{transform:translate(-50%,0);opacity:1}#achT i{font-style:normal;font-size:22px}#achT b{display:block;font-size:13px;color:#3a2a60}#achT small{display:block;font-size:11px;font-weight:700;color:#6a5a90;line-height:1.2}
+.mutc{background:#f4eeff;border-radius:14px;padding:8px 10px;margin:8px 0;font-size:18px}.mutc b{font-size:14px;margin-right:6px}.mutc span{margin:0 2px}.mutc small{display:block;font-size:11px;font-weight:700;color:#6a5a90}#dexMut h4{margin:14px 0 4px}#dexMut h4 small{opacity:.6}
+.item small.tip{color:#2b2140;font-weight:800;opacity:.85}.tipn{background:#eaffe4!important;color:#1d5a26}
 .ahead{background:linear-gradient(#fff6d6,#ffe9a8);border-radius:16px;padding:10px 12px;margin-bottom:8px}.ahead b{font-size:17px}.ahead small{display:block;font-weight:800;color:#7a5a10;margin-bottom:6px}
 .acats{flex-wrap:wrap;margin:10px 0}.acats .chip{height:34px;min-width:40px;font-size:17px}
 #achBody h4{margin:12px 0 6px;font-size:14px}#achBody h4 small{opacity:.6}
@@ -245,7 +247,7 @@ textarea#sv{width:100%;height:90px;border-radius:14px;border:2px solid #e4dcf7;f
 
 <div class="sheet" id="shShop"><div class="panel"><div class="ph"><span>Shop</span><button class="x" data-close>✕</button></div><div class="pb"><div class="tabs"><button class="tab on" id="tabU">🛒 Upgrades</button><button class="tab" id="tabC">👑 Crown Shop</button></div><div id="shopList"></div></div></div></div>
 <div class="sheet" id="shRace"><div class="panel"><div class="ph"><span>🏁 Slime Races<span class="streak" id="rStreak" style="display:none"></span></span><button class="x" data-close>✕</button></div><div class="pb" id="raceBody"><canvas id="track"></canvas><div class="rstat" id="rStat"></div><div id="racers"></div><div id="betUI"></div></div></div></div>
-<div class="sheet" id="shDex"><div class="panel"><div class="ph"><span>Slimedex<small id="dexCount"></small></span><button class="x" data-close>✕</button></div><div class="pb"><div class="grid" id="dexGrid"></div><div id="dexGacha"></div></div></div></div>
+<div class="sheet" id="shDex"><div class="panel"><div class="ph"><span>Slimedex<small id="dexCount"></small></span><button class="x" data-close>✕</button></div><div class="pb"><div class="grid" id="dexGrid"></div><div id="dexMut"></div><div id="dexGacha"></div></div></div></div>
 <div class="sheet" id="shSet"><div class="panel"><div class="ph"><span>Settings</span><button class="x" data-close>✕</button></div><div class="pb" id="setList"></div></div></div>
 <div class="sheet" id="shFarm"><div class="panel"><div class="ph"><span>🏡 My Farm</span><button class="x" data-close>✕</button></div><div class="pb"><div class="ftabs"><button class="tab on" id="fT">📋 Today</button><button class="tab" id="fS">🐾 Slimes</button><button class="tab" id="fD">👄 Dark</button><button class="tab" id="fM">🪦 Memorial</button></div><div id="farmList"></div></div></div></div>
 <div class="sheet" id="shProf"><div class="panel"><div class="ph"><span>Slime profile</span><button class="x" data-close>✕</button></div><div class="pb" id="profBody"></div></div></div>
@@ -340,29 +342,29 @@ function breedMax(){return 5+3*Math.min(2,S.reb||0);}       // v1 allowed 9; now
 function cycleCap(){return Math.min(MAXT,14+5*(S.reb||0));} // tiers beyond Cosmic Overlord unlock via Rebirth
 function ascTier(){return Math.min(cycleCap(),9+(S.ascC||0));} // requirement rises with each ascension
 var UPS=[
- {k:'sq',n:'Squish Power',i:'👆',mx:function(){return 200;},cost:function(l){return 30*Math.pow(2.8,l);},v:function(l){return '×'+fmt2(sqMult(l));},
-  d:function(l){var nm=(Math.floor(l/10)+1)*10;return 'Squishes give '+this.v(l)+' → '+this.v(l+1)+' · ×1.12 per level, ×2 bonus at Lv '+nm+(l+1===nm?' (next level!)':'');}},
- {k:'mult',n:'Goo Boost',i:'💧',mx:function(){return 300;},cost:function(l){return 60*Math.pow(2.7,l);},v:function(l){return '×'+fmt2(gooMult(l));},d:function(l){return 'All goo/sec '+this.v(l)+' → '+this.v(l+1)+' (×1.2 per level)';}},
- {k:'pen',n:'Bigger Meadow',i:'🏡',mx:function(){return 10;},cost:function(l){return 150*Math.pow(3.2,l);},v:function(l){return penCap(0,l)+' slots';},d:function(l){return 'Meadow room '+this.v(l)+' → '+this.v(l+1)+' · every slime boosts the whole farm +3%';}},
- {k:'pS',n:'Hot Spring',pen:1,feat:'spring',i:'♨️',mx:function(){return 5;},cost:function(l){return 2e4*Math.pow(9,l);},v:function(l){return l?penCap(1,l)+' slots':'not built';},d:function(l){return (l?'Spring room ':'Build it: ×2 goo, sleepy slimes · ')+this.v(l)+' → '+this.v(l+1);}},
- {k:'pF',n:'Flower Bed',pen:2,feat:'flower',i:'🌸',mx:function(){return 5;},cost:function(l){return 3e6*Math.pow(10,l);},v:function(l){return l?penCap(2,l)+' slots':'not built';},d:function(l){return (l?'Flower Bed room ':'Plant it: ×3 squish, attracts pests · ')+this.v(l)+' → '+this.v(l+1);}},
- {k:'pT',n:'Star Pool',pen:3,feat:'star',i:'🌟',mx:function(){return 5;},cost:function(l){return 2e9*Math.pow(12,l);},v:function(l){return l?penCap(3,l)+' slots':'not built';},d:function(l){return (l?'Star Pool room ':'Fill it: ×3 goo, 2× shinies, storms · ')+this.v(l)+' → '+this.v(l+1);}},
- {k:'pA',n:'Altar Grove',pen:4,feat:'altar',i:'🕯️',mx:function(){return 4;},cost:function(l){return 5e7*Math.pow(10,l);},v:function(l){return l?penCap(4,l)+' slots':'sealed';},d:function(l){return (l?'Grove room ':'Unseal the Altar: sacrifices, blessings, Blood Moons · ')+this.v(l)+' → '+this.v(l+1);}},
- {k:'spawn',n:'Better Breeding',i:'🥚',mx:breedMax,cost:function(l){return 2000*Math.pow(300,l);},v:function(l){return l<=MAXT?(S.disc[l]||l===0?TIERS[l].n:'??? (tier '+(l+1)+')'):'—';},d:function(l){return 'Adopt: '+this.v(l)+(l<breedMax()?' → '+this.v(l+1):' (max '+breedMax()+(S.reb<2?', +3 per Rebirth':'')+')');}},
- {k:'auto',n:'Auto-Squisher',i:'🤖',mx:function(){return 25;},cost:function(l){return 400*Math.pow(2.7,l);},v:function(l){return fmt2(autoRate(l))+'/s';},d:function(l){return (l?'Squishes '+this.v(l):'Squishes slimes for you')+' → '+this.v(l+1)+(l>=10?' (×1.15 per level)':'');}},
- {k:'hat',n:'Slime Hatchery',i:'🐣',mx:function(){return 12;},cost:function(l){return 5000*Math.pow(6,l);},v:function(l){return l?fmt2(hatInt(l))+'s':'off';},d:function(l){return (l?'Free slime every '+this.v(l):'Hatches free slimes over time')+' → every '+this.v(l+1);}},
- {k:'am',n:'Auto-Merge',i:'🧲',mx:function(){return 6;},cost:function(l){return 5000*Math.pow(5,l);},v:function(l){return l?fmt2(amInt(l))+'s':'off';},d:function(l){return (l?'Merges twins every '+this.v(l):'Merges matching slimes for you')+' → every '+this.v(l+1);}}
+ {k:'sq',n:'Tap Power',i:'👆',mx:function(){return 200;},cost:function(l){return 30*Math.pow(2.8,l);},v:function(l){return '×'+fmt2(sqMult(l));},
+  tip:'More goo every time you tap a slime.',d:function(l){var nm=(Math.floor(l/10)+1)*10;return 'Goo per tap '+this.v(l)+' → '+this.v(l+1)+(l+1===nm?' (×2 bonus level!)':' (+12%)')+' · doubles every 10 levels';}},
+ {k:'mult',n:'Goo Boost',i:'💧',mx:function(){return 300;},cost:function(l){return 60*Math.pow(2.7,l);},v:function(l){return '×'+fmt2(gooMult(l));},tip:'All your slimes make more goo.',d:function(l){return 'All goo '+this.v(l)+' → '+this.v(l+1)+' (+20%)';}},
+ {k:'pen',n:'Bigger Meadow',i:'🏡',mx:function(){return 10;},cost:function(l){return 150*Math.pow(3.2,l);},v:function(l){return penCap(0,l)+' slots';},tip:'More room in the Meadow. Every slime adds +3% goo to the whole farm.',d:function(l){return 'Room: '+this.v(l)+' → '+this.v(l+1);}},
+ {k:'pS',n:'Hot Spring',pen:1,feat:'spring',i:'♨️',mx:function(){return 5;},cost:function(l){return 2e4*Math.pow(9,l);},v:function(l){return l?penCap(1,l)+' slots':'not built';},tip:'A cosy pen: slimes here make double goo, but tap them awake when they nap.',d:function(l){return l?'Room: '+this.v(l)+' → '+this.v(l+1):'Build it: +100% goo here, but slimes doze off';}},
+ {k:'pF',n:'Flower Bed',pen:2,feat:'flower',i:'🌸',mx:function(){return 5;},cost:function(l){return 3e6*Math.pow(10,l);},v:function(l){return l?penCap(2,l)+' slots':'not built';},tip:'Taps (and the Auto-Tapper) give triple goo here. Shoo the pests!',d:function(l){return l?'Room: '+this.v(l)+' → '+this.v(l+1):'Plant it: taps here give ×3 goo, but pests visit';}},
+ {k:'pT',n:'Star Pool',pen:3,feat:'star',i:'🌟',mx:function(){return 5;},cost:function(l){return 2e9*Math.pow(12,l);},v:function(l){return l?penCap(3,l)+' slots':'not built';},tip:'The richest pen: triple goo and more shiny slimes, but storms slow it down.',d:function(l){return l?'Room: '+this.v(l)+' → '+this.v(l+1):'Fill it: ×3 goo and 2× shinies here, but storms roll in';}},
+ {k:'pA',n:'Altar Grove',pen:4,feat:'altar',i:'🕯️',mx:function(){return 4;},cost:function(l){return 5e7*Math.pow(10,l);},v:function(l){return l?penCap(4,l)+' slots':'sealed';},tip:'Offer slimes at the Altar for big blessings. Blood Moons may follow.',d:function(l){return l?'Room: '+this.v(l)+' → '+this.v(l+1):'Unseal it: offer slimes for blessings';}},
+ {k:'spawn',n:'Better Breeding',i:'🥚',mx:breedMax,cost:function(l){return 2000*Math.pow(300,l);},v:function(l){return l<=MAXT?(S.disc[l]||l===0?TIERS[l].n:'??? (tier '+(l+1)+')'):'—';},tip:'Slimes you adopt start at a higher tier.',d:function(l){return 'New slimes: '+this.v(l)+(l<breedMax()?' → '+this.v(l+1):' (max '+breedMax()+(S.reb<2?', more after a Rebirth':'')+')');}},
+ {k:'auto',n:'Auto-Tapper',i:'🤖',mx:function(){return 25;},cost:function(l){return 400*Math.pow(2.7,l);},v:function(l){return fmt2(autoRate(l))+'/s';},tip:'Taps slimes for you, even while you do other things.',d:function(l){return (l?this.v(l):'Off')+' → '+this.v(l+1)+' taps per second'+(l>=10?' (+15%)':'');}},
+ {k:'hat',n:'Slime Hatchery',i:'🐣',mx:function(){return 12;},cost:function(l){return 5000*Math.pow(6,l);},v:function(l){return l?fmt2(hatInt(l))+'s':'off';},tip:'Free slimes pop out on their own.',d:function(l){return (l?'A free slime every '+this.v(l):'Off')+' → every '+this.v(l+1);}},
+ {k:'am',n:'Auto-Merge',i:'🧲',mx:function(){return 6;},cost:function(l){return 5000*Math.pow(5,l);},v:function(l){return l?fmt2(amInt(l))+'s':'off';},tip:'Merges matching slimes for you.',d:function(l){return (l?'Merges every '+this.v(l):'Off')+' → every '+this.v(l+1);}}
 ];
 var CR=[
- {k:'start',n:'Royal Nursery',i:'🍼',max:3,cost:function(l){return [5,30,150][l];},v:function(l){return 'Lv '+l;},d:function(l){return 'Start every run with Better Breeding '+this.v(l)+' → '+this.v(l+1);}},
- {k:'keep',n:'Heirloom',i:'💎',max:4,cost:function(l){return [10,50,200,800][l];},v:function(l){var a=['Auto-Merge','Auto-Squisher','Hatchery','Bigger Pen'];return l?a.slice(0,l).join(', '):'nothing';},d:function(l){return 'Kept when you ascend: '+this.v(l)+' → '+this.v(l+1);}},
- {k:'amf',n:'Magnet Polish',i:'✨',max:5,cost:function(l){return 8*Math.pow(3,l);},v:function(l){return '+'+(25*l)+'%';},d:function(l){return 'Auto-Merge speed '+this.v(l)+' → '+this.v(l+1);}},
- {k:'luck',n:'Four-Leaf Goo',i:'🍀',max:5,cost:function(l){return 12*Math.pow(3,l);},v:function(l){return fmt2(shinyP(l)*100)+'%';},d:function(l){return 'Shiny chance '+this.v(l)+' → '+this.v(l+1)+', Golden Slime more often';}},
- {k:'hatch',n:'Golden Incubator',i:'🪺',max:5,cost:function(l){return 20*Math.pow(3,l);},v:function(l){return fmt2((1/Math.pow(0.88,l)-1)*100)+'% faster, '+(10*l)+'% +1 tier';},d:function(l){return 'Hatchery '+this.v(l)+' → '+this.v(l+1);}},
- {k:'estate',n:'Royal Estate',i:'🏰',max:5,cost:function(l){return 15*Math.pow(3,l);},v:function(l){return '+'+(2*l);},d:function(l){return this.v(l)+' → '+this.v(l+1)+' pen slots (crowd bonus!)';}},
- {k:'jelly',n:'Royal Recipe',i:'🍯',max:5,cost:function(l){return 25*Math.pow(3,l);},v:function(l){return '+'+(10+2*l)+'%';},d:function(l){return 'Each Royal Jelly earned: '+this.v(l)+' → '+this.v(l+1)+' goo';}},
- {k:'jar',n:'Jelly Jar',i:'🫙',max:10,cost:function(l){return 30*Math.pow(2,l);},v:function(l){return '×'+fmt2(jarMult(l));},d:function(l){return 'Royal Jelly from ascending '+this.v(l)+' → '+this.v(l+1)+' (×1.15 per level)';}},
- {k:'dream',n:'Dream Pens',i:'💤',max:3,cost:function(l){return 10*Math.pow(4,l);},v:function(l){return offCapH(l)+'h cap, +'+(25*l)+'% goo';},d:function(l){return 'Offline: '+this.v(l)+' → '+this.v(l+1);}}
+ {k:'start',n:'Royal Nursery',i:'🍼',max:3,cost:function(l){return [5,30,150][l];},v:function(l){return 'Lv '+l;},tip:'Skip the slow start after each Ascension.',d:function(l){return 'Start every restart with Better Breeding '+this.v(l)+' → '+this.v(l+1);}},
+ {k:'keep',n:'Heirloom',i:'💎',max:4,cost:function(l){return [10,50,200,800][l];},v:function(l){var a=['Auto-Merge','Auto-Tapper','Hatchery','Bigger Pen'];return l?a.slice(0,l).join(', '):'nothing';},tip:'Keep some upgrades when you restart.',d:function(l){return 'Kept when you ascend: '+this.v(l)+' → '+this.v(l+1);}},
+ {k:'amf',n:'Magnet Polish',i:'✨',max:5,cost:function(l){return 8*Math.pow(3,l);},v:function(l){return '+'+(25*l)+'%';},tip:'Auto-Merge works faster.',d:function(l){return 'Auto-Merge '+this.v(l)+' → '+this.v(l+1)+' faster';}},
+ {k:'luck',n:'Four-Leaf Goo',i:'🍀',max:5,cost:function(l){return 12*Math.pow(3,l);},v:function(l){return fmt2(shinyP(l)*100)+'%';},tip:'More shiny slimes (×5 goo) and more Golden Slimes.',d:function(l){return 'Shiny chance '+this.v(l)+' → '+this.v(l+1)+', Golden Slime more often';}},
+ {k:'hatch',n:'Golden Incubator',i:'🪺',max:5,cost:function(l){return 20*Math.pow(3,l);},v:function(l){return fmt2((1/Math.pow(0.88,l)-1)*100)+'% faster, '+(10*l)+'% +1 tier';},tip:'A faster Hatchery that sometimes hatches bigger slimes.',d:function(l){return 'Hatchery '+this.v(l)+' → '+this.v(l+1);}},
+ {k:'estate',n:'Royal Estate',i:'🏰',max:5,cost:function(l){return 15*Math.pow(3,l);},v:function(l){return '+'+(2*l);},tip:'More room everywhere. More slimes = more crowd bonus.',d:function(l){return this.v(l)+' → '+this.v(l+1)+' extra pen slots';}},
+ {k:'jelly',n:'Royal Recipe',i:'🍯',max:5,cost:function(l){return 25*Math.pow(3,l);},v:function(l){return '+'+(10+2*l)+'%';},tip:'Makes every Royal Jelly worth more goo.',d:function(l){return 'Each 👑 Royal Jelly earned gives '+this.v(l)+' → '+this.v(l+1)+' goo';}},
+ {k:'jar',n:'Jelly Jar',i:'🫙',max:10,cost:function(l){return 30*Math.pow(2,l);},v:function(l){return '×'+fmt2(jarMult(l));},tip:'Get more Royal Jelly each time you ascend.',d:function(l){return 'Royal Jelly from each Ascension '+this.v(l)+' → '+this.v(l+1)+' (+15%)';}},
+ {k:'dream',n:'Dream Pens',i:'💤',max:3,cost:function(l){return 10*Math.pow(4,l);},v:function(l){return offCapH(l)+'h cap, +'+(25*l)+'% goo';},tip:'Earn more goo while you are away.',d:function(l){return 'Away from the game: '+this.v(l)+' → '+this.v(l+1);}}
 ];
 // 3 significant digits for multipliers / rates, so before → after never looks identical
 function fmt2(n){if(typeof n!=='number'||n!==n)return '0';if(!isFinite(n))n=1e300;if(n>=1000)return fmt(n);
@@ -402,7 +404,7 @@ function slimeMult(s){ // per-slime production multiplier
   var v=(s.sh?5:1)*SPX[s.sp||0],p=PENS[s.pn]||PENS[0];
   if(!s.trav&&!s.esc){v*=p.mult*penEvMult(s.pn);if(SIM&&s.pn===1)v*=0.75;}
   if(s.asleep)v*=0.75;if(s.sick||s.fight)v=0;
-  v*=1+0.04*hearts(s);if(s.ps===1)v*=1.1;if(s.budIn)v*=1.1;
+  v*=(1+0.04*hearts(s))*mutM(s);if(s.ps===1)v*=1.1;if(s.budIn)v*=1.1;
   return v;}
 function gpsBase(){var sum=0;for(var i=0;i<SL.length;i++){var s=SL[i];sum+=TG[s.tier]*slimeMult(s);}return sum;}
 function gps(){return safe(gpsBase()*globalMult());}
@@ -475,8 +477,8 @@ function doMerge(a,b,manual){
     story(n,keep.nm?'Merged with '+(other.nm||'a '+TIERS[other.tier].n)+' and grew into a '+TIERS[n.tier].n+'!':'Born when two '+TIERS[a.tier].n+'s merged');
     for(var q=0;q<SL.length;q++){var o=SL[q];if(o.bud===keep.uid)o.bud=n.uid;else if(o.bud===other.uid)o.bud=0;}}
   var shChance=(a.sh||b.sh)?0.5:shinyP()*shinyMul(n.pn);
-  n.sh=Math.random()<shChance?1:0;SL.push(n);S.merges++;
-  if(n.sh&&!(a.sh&&b.sh))gotShiny(n);
+  n.sh=Math.random()<shChance?1:0;n.mu=mutMergeRoll(a,b);SL.push(n);S.merges++;
+  if(n.sh&&!(a.sh&&b.sh))gotShiny(n);if(n.mu)gotMutant(n,'merge');
   if(!SIM){
     var r=rad(n.tier),cy=n.y-r*0.9;
     combo=comboT>0?combo+1:1;comboT=1.6;
@@ -754,14 +756,15 @@ function stepPools(dt){var i;
 // ---------- per-tier sprite cache (drawn once, reused). variants: 0 normal 1 eyes closed 2 squished 3 look left 4 look right 5 sick ----------
 var SPR={},sprS=0,sprBase=0,DPR=1;
 function sprScale(){return Math.min(4,DPR*1.6);}
-function sprite(t,sh,v,sp){
+function sprite(t,sh,v,sp,mu){mu=mu||0;
   var sc=sprScale();if(sprS!==sc||sprBase!==baseR){SPR={};sprS=sc;sprBase=baseR;}
-  var dt=sp?NT+sp-1:t,k=((dt*2+sh)*6+v)*30+t,c=SPR[k];if(c)return c;
+  var dt=sp?NT+sp-1:t,k=(((dt*2+sh)*6+v)*30+t)*8+mu,c=SPR[k];if(c)return c;
   var R=rad(t),w=R*4.2,h=R*3.9,ox=w/2,oy=h-R*0.35;
   c=document.createElement('canvas');c.width=Math.ceil(w*sc);c.height=Math.ceil(h*sc);
   var g=c.getContext('2d');g.setTransform(sc,0,0,sc,0,0);
   drawSlime(g,ox,oy,R,dt,{t:1.3,blink:v===1,fsq:v===2?0.4:0,look:v===3?-1:v===4?1:0});
   if(sh)shinyOverlay(g,ox,oy,R);
+  if(mu)mutOverlay(g,ox,oy,R,mu,1.3,v===2?0.4:0);
   if(v===5){g.save();g.globalCompositeOperation='source-atop';g.fillStyle='rgba(120,200,60,.45)';g.fillRect(0,0,w,h);g.restore();}
   c.ox=ox;c.oy=oy;c.cw=w;c.ch=h;SPR[k]=c;return c;
 }
@@ -903,7 +906,7 @@ function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);
 function easeBack(p){var c=2.2;p=Math.min(1,p);return 1+(c+1)*Math.pow(p-1,3)+c*Math.pow(p-1,2);}
 function orderCmp(a,b){return (a.dragging?1e6:a.y)-(b.dragging?1e6:b.y);}
 function sprV(s){return s.sick?5:(s.bl>0||s.asleep)?1:(s.s>0.3?2:s.look<0?3:s.look>0?4:0);}
-function drawSpr(g,s,x,y,sc){var c=sprite(s.tier,s.sh,sprV(s),s.sp),sq=s.s,br=1+0.018*Math.sin(T*2.4+s.ph);
+function drawSpr(g,s,x,y,sc){if(s.mu)drawAura(g,s,x,y);var c=sprite(s.tier,s.sh,sprV(s),s.sp,s.mu),sq=s.s,br=1+0.018*Math.sin(T*2.4+s.ph);
   g.save();g.translate(x,y);if(s.lean)g.transform(1,0,s.lean,1,0,0);g.scale((1+sq*0.75)*sc*br,(1-sq)*sc/br);g.drawImage(c,-c.ox,-c.oy,c.cw,c.ch);g.restore();}
 var FONT15='800 15px ui-rounded,-apple-system,system-ui,sans-serif',FONT13='800 13px ui-rounded,-apple-system,system-ui,sans-serif',FONT10='800 10px ui-rounded,-apple-system,system-ui,sans-serif';
 function drawDevourer(g){var R=PIT,st=dvStage(),d=S.dv,cx=R.x+R.w/2,by=R.y+R.h*0.86,Rd=Math.min(R.w*0.36,R.h*0.34)*(1+0.14*st+0.015*Math.min(20,Math.log2(1+d.mass)));
@@ -966,7 +969,7 @@ function render(){
   var v=viewR();
   if(penOpen(1)&&vis(PR[1],v)){g.fillStyle='rgba(255,255,255,.28)';var r0=PR[1];for(var q=0;q<4;q++){var ph=(T*0.4+q/4)%1;g.globalAlpha=0.6*(1-ph);g.beginPath();g.arc(r0.x+r0.w*(0.2+q*0.2),r0.y+r0.h*0.55-ph*30,6+ph*8,0,7);g.fill();}g.globalAlpha=1;}
   if(penOpen(3)&&vis(PR[3],v)){var R3=PR[3];g.fillStyle='#fff';for(q=0;q<5;q++){var tw=Math.sin(T*2+q*1.7);if(tw>0.3){g.globalAlpha=tw;star4(g,R3.x+R3.w*((q*0.37+0.1)%1),R3.y+R3.h*((q*0.53+0.2)%1),3);}}g.globalAlpha=1;}
-  if(dvOn()&&vis(PIT,v))drawDevourer(g);
+  if(dvOn()&&vis(PIT,v)){drawDevourer(g);drawBurpMeter(g);}
   if(altOn()&&vis(PR[4],v))drawAltar(g);
   for(i=0;i<NP;i++)if(penOpen(i)&&vis(PR[i],v)){countPens();var R=PR[i];g.font=FONT10;g.textAlign='right';g.textBaseline='middle';var tx=pcnt[i]+'/'+penCap(i),full=pcnt[i]>=penCap(i);g.fillStyle=full?'rgba(255,77,109,.9)':'rgba(255,255,255,.85)';var tw2=g.measureText(tx).width+10;rr(g,R.x+R.w-tw2-6,R.y+1,tw2,16,8);g.fill();g.fillStyle=full?'#fff':'#2b2140';g.fillText(tx,R.x+R.w-11,R.y+9.5);}
   order.length=0;for(i=0;i<SL.length;i++){s=SL[i];r=rad(s.tier);if(s.x+r*2<v.x0||s.x-r*2>v.x1||s.y+r<v.y0||s.y-r*3.2>v.y1)continue;order.push(s);}order.sort(orderCmp);
@@ -991,6 +994,7 @@ function render(){
   drawEvent(g);drawHand(g);
   if(gold.on){g.fillStyle='rgba(20,70,30,.2)';g.beginPath();g.ellipse(gold.x,gold.y,18,5,0,0,7);g.fill();var gc=sprite(11,1,0,0),gs=0.75;g.save();g.translate(gold.x,gold.y-gold.z);g.scale(gold.dir*gs,gs);g.drawImage(gc,-gc.ox,-gc.oy,gc.cw,gc.ch);g.restore();
     g.strokeStyle='rgba(255,220,90,.7)';g.lineWidth=2.5;for(var l=0;l<3;l++){g.beginPath();g.moveTo(gold.x-gold.dir*(22+l*7),gold.y-12-l*7-gold.z);g.lineTo(gold.x-gold.dir*(38+l*9),gold.y-12-l*7-gold.z);g.stroke();}}
+  drawRush(g);
   for(i=0;i<rings.length;i++){var Rg=rings[i];g.strokeStyle='rgba(255,255,255,'+Math.max(0,Rg.life/Rg.max*0.8)+')';g.lineWidth=5*Rg.life+1;g.beginPath();g.arc(Rg.x,Rg.y,Rg.r,0,7);g.stroke();}
   for(i=0;i<parts.length;i++){var P=parts[i];g.globalAlpha=Math.min(1,P.life*2);g.fillStyle=P.col;if(P.st)star4(g,P.x,P.y,P.r*0.8);else{g.beginPath();g.arc(P.x,P.y,P.r*0.8,0,7);g.fill();}}
   g.globalAlpha=1;
@@ -1026,12 +1030,13 @@ function hit(x,y){var tol=1/Math.max(1,cam.z*0.8);for(var i=order.length-1;i>=0;
 function mergeTarget(d){var r=rad(d.tier),best=null,bd=r*1.4;for(var i=0;i<SL.length;i++){var s=SL[i];if(s===d||!canMerge(d,s))continue;var dd=Math.hypot(s.x-d.x,(s.y-d.y));if(dd<bd){bd=dd;best=s;}}return best;}
 function clearLP(){if(lpT){clearTimeout(lpT);lpT=null;}}
 cv.addEventListener('pointerdown',function(e){
-  e.preventDefault();ac();var sp=pt(e);PTR[e.pointerId]=sp;nPtr=Object.keys(PTR).length;try{cv.setPointerCapture(e.pointerId);}catch(_){}
+  e.preventDefault();ac();lastIn=performance.now();var sp=pt(e);PTR[e.pointerId]=sp;nPtr=Object.keys(PTR).length;try{cv.setPointerCapture(e.pointerId);}catch(_){}
   if(nPtr===2){clearLP();var ids=Object.keys(PTR),a=PTR[ids[0]],b=PTR[ids[1]];
     if(drag){var ds=drag.s;if(drag.moved){ds.dragging=false;ds.trav=true;}drag=null;}
     pan=null;pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,z:cam.z,m:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},w:toWorld((a.x+b.x)/2,(a.y+b.y)/2)};return;}
   if(nPtr>2)return;
   var p=toWorld(sp.x,sp.y);ptrW=p;
+  if(rushHit(p)){rushTap();return;}
   if(gold.on&&Math.hypot(p.x-gold.x,p.y-(gold.y-gold.z-20))<46){tapGolden();return;}
   for(var i=0;i<drops.length;i++){var D=drops[i];if(Math.hypot(p.x-D.x,p.y-(D.y-D.z))<34){collectDrop(D);return;}}
   if(targetTap(p.x,p.y))return;
@@ -1154,6 +1159,16 @@ function sBubble(){var f=500+Math.random()*400;tone(f,f*2.2,0.07,'sine',0.2);}
 function sSplat(){noise(0.12,1200,300,1.5,0.25);tone(200,90,0.1,'sine',0.25);}
 function sPoke(){tone(700,1100,0.06,'triangle',0.12);tone(400,300,0.1,'sine',0.15,0.05);}
 function buzz(p){if(S.vib&&navigator.vibrate&&!(navigator.userActivation&&!navigator.userActivation.hasBeenActive)){try{navigator.vibrate(p);}catch(e){}}}
+// ---- Update 2 sounds (all synth, all respect mute + volume via tone()/noise()) ----
+function sMutate(r){var n=[784,988,1175,1568,1976,2349];for(var i=0;i<4+Math.min(2,r);i++)tone(n[i],n[i]*1.01,0.28,'triangle',0.07,i*0.07);tone(220,440,0.5,'sine',0.06);if(r>=1)tone(1568,3136,0.6,'sine',0.04,0.35);}
+function sRushAppear(){[659,784,988,1319].forEach(function(f,i){tone(f,f,0.18,'square',0.035,i*0.06);});tone(1319,1760,0.4,'triangle',0.05,0.26);}
+function sRushTap(n){var f=520*Math.pow(1.045,Math.min(30,n));tone(f,f*1.5,0.09,'triangle',0.07);tone(f*2,f*2,0.05,'sine',0.03,0.03);}
+function sRushEsc(){tone(900,260,0.45,'sine',0.06);noise(0.35,3000,600,1,0.05);}
+function sRushDone(){[523,659,784,1047,1319,1568].forEach(function(f,i){tone(f,f,0.22,'triangle',0.07,i*0.07);});tone(2093,2093,0.6,'sine',0.05,0.45);}
+function sBurpFill(f){var b=220+f*500;tone(b,b*1.6,0.12,'sine',0.06);}
+function sJackBurp(){tone(95,55,0.9,'sawtooth',0.12);tone(70,48,0.9,'sine',0.1);noise(0.8,500,120,4,0.16);[523,784,1047].forEach(function(f,i){tone(f,f,0.3,'triangle',0.06,1.0+i*0.09);});}
+function sRegurg(){tone(180,90,0.25,'sawtooth',0.08);tone(140,260,0.3,'square',0.04,0.22);noise(0.3,900,300,3,0.12,0.1);}
+function sSting(){tone(392,392,0.15,'square',0.05);tone(523,523,0.15,'square',0.05,0.12);tone(784,1568,0.7,'triangle',0.07,0.24);tone(1047,1047,0.7,'sine',0.05,0.24);}
 
 // ---------- SLIME RACES (goo only, odds shown, bets capped at 25% of goo) ----------
 var RACE_INT=180,RACE_MC=600,BET_FR=[0.05,0.10,0.25],HOUSE=0.92,MAXPAY=50;
@@ -1265,12 +1280,12 @@ function feedDevourer(s,force){
   if(!dvOn()||!s)return false;
   if(prot(s)&&!force){if(!SIM){toast('🔒 '+(s.nm||'This slime')+' is protected');sErr();}return false;}
   var d=S.dv,f=foodOf(s);removeSlime(s);
-  d.mass=safe(d.mass+f);d.eaten++;d.hunger=Math.min(100,d.hunger+25+5*s.tier);
+  d.mass=safe(d.mass+f);d.eaten++;var spat=Math.random()<REG_P;burpFeed(s);if(spat)regurg(s);d.hunger=Math.min(100,d.hunger+25+5*s.tier);
   var k=s.sh?'glit':s.tier<6?'nib':s.tier<14?'glut':'cos';d.tr[k]=safe((d.tr[k]||0)+f);
   if(!(d.top>=s.tier))d.top=s.tier;
   dvTant=0;dvWarn=false;
   if(SIM){dvCheckEvo();return true;}
-  memorial(s,'fed to the Devourer');qProg('feed',1);
+  if(!spat)memorial(s,'fed to the Devourer');qProg('feed',1);if(d.eaten===1)tip1('dv','👄','Fed the Devourer!','Each feed fills the 💨 burp meter under the pit. Full meter = a surprise prize');
   DVA={t:0,tier:s.tier,sh:s.sh,sp:s.sp||0,x0:s.x,y0:s.y-s.z};dvGulp=0;sGulp();
   return true;}
 function dvCheckEvo(){var d=S.dv;while(d.stage<2&&d.mass>=DV_ST[d.stage+1].need){d.stage++;if(!SIM){dvEvo=3.2;story0('The Devourer evolved into '+DV_ST[d.stage].n);
@@ -1334,7 +1349,7 @@ function startBloodMoon(){var pool=SL.filter(function(s){return !s.sp;});if(pool
   var named=SL.filter(function(s){return s.nm;}),dem={};
   if(named.length&&Math.random()<0.3){var f=named[(Math.random()*named.length)|0];dem={uid:f.uid,txt:f.nm+' (your '+TIERS[f.tier].n+')'};}
   else{var ts=pool.map(function(s){return s.tier;}).sort(function(a,b){return a-b;}),t=ts[Math.floor(ts.length*(0.3+Math.random()*0.5))];dem={tier:t,txt:'a '+TIERS[t].n};}
-  bm={t:0,dur:90,uid:dem.uid||0,tier:dem.tier===undefined?-1:dem.tier,txt:dem.txt};S.bms++;
+  bm={t:0,dur:90,uid:dem.uid||0,tier:dem.tier===undefined?-1:dem.tier,txt:dem.txt};S.bms++;tip1('bm','🌕','Blood Moon tip','Find the slime marked 🩸 and drag it onto the Altar before the timer ends. Ignore it and the moon takes one');
   banner('🩸 BLOOD MOON! It demands '+dem.txt+'. Drag it to the Altar within 90s…','#8a1020',6);sMoon();return true;}
 function endBloodMoon(ok){if(!bm)return;var was=bm;bm=null;S.bm=3600+Math.random()*1800;if(ok){giveCard(2,'a Blood Moon gift');achInc('bmok');}
   if(ok){story0('🌅 Dawn breaks. The moon is satisfied.');return;}
@@ -1445,7 +1460,7 @@ function featOrder(){var L=S.lad||{};if(!L.on)return FEATS;return LAD_ORDER.map(
 function checkFeats(){var L=S.lad||(S.lad={on:0,el:9999,mr:0});var F=featOrder();
   for(var i=0;i<F.length;i++){var f=F[i];if(S.feat[f.k]||!f.c())continue;if(S.opt&&S.opt.simple&&DARK_FEATS[f.k])continue;
     if(!silentFeats){var g=ladGap();if(!(L.el>=g||(S.maxRun>L.mr&&L.el>=g/4)))return;if(!SIM&&(mOpen||Date.now()-lastModalClose<30000))return;}
-    S.feat[f.k]=1;L.el=0;L.mr=S.maxRun;if(!SIM&&!silentFeats){revealFeat(f);if(f.k==='ach')achOnUnlock();}if(!silentFeats)return;}}
+    S.feat[f.k]=1;L.el=0;L.mr=S.maxRun;if(!SIM&&!silentFeats){revealFeat(f);if(f.k==='ach')achOnUnlock();featTip(f.k);}if(!silentFeats)return;}}
 function revealFeat(f){queueModal(function(){showModal('<div class="rays"></div><div class="rel"><span class="newtag">UNLOCKED!</span><div style="font-size:78px;margin:18px 0 6px">'+f.i+'</div><h2>'+f.n+'</h2><p>'+f.d+'</p><button class="mbtn" id="mOk">Got it!</button></div>',{mOk:null},'reveal');flash();sNew(6);fxConfetti(S.opt.rfx?10:50);});}
 function nextFeat(){for(var i=0;i<FEATS.length;i++)if(!S.feat[FEATS[i].k])return FEATS[i];return null;}
 // ---------- banners (DOM) ----------
@@ -1521,7 +1536,7 @@ function wantPen(s){var open=[];for(var p=0;p<4;p++)if(penOpen(p))open.push(p);i
 function poke(s){s.asleep=false;s.awake=50+Math.random()*70;s.bd+=1;s.s=0.4;addText(s.x,s.y-rad(s.tier)*2,'!',0.8,'#ff8a00',20);var v=squishVal(s)*2;addGoo(v);sPoke();qProg('poke',1);achInc('poke');}
 // ---------- QoL: 3-second undo, auto-buy, buy ×N ----------
 var UNDO=null;
-function snapSlime(s){return{tier:s.tier,sh:s.sh,sp:s.sp,pn:s.pn,x:s.x,y:s.y,uid:s.uid,ps:s.ps,bd:s.bd,nm:s.nm,pin:s.pin,lk:s.lk,born:s.born,bud:s.bud,st:S.story[s.uid]?S.story[s.uid].slice():null};}
+function snapSlime(s){return{tier:s.tier,sh:s.sh,sp:s.sp,mu:s.mu||0,pn:s.pn,x:s.x,y:s.y,uid:s.uid,ps:s.ps,bd:s.bd,nm:s.nm,pin:s.pin,lk:s.lk,born:s.born,bud:s.bud,st:S.story[s.uid]?S.story[s.uid].slice():null};}
 function setUndo(snap,n){UNDO={snap:snap,id:n.id,t:3};}
 function undoTick(dt){if(UNDO){UNDO.t-=dt;if(UNDO.t<=0)UNDO=null;}}
 function doUndo(){if(!UNDO)return false;var n=null;for(var i=0;i<SL.length;i++)if(SL[i].id===UNDO.id)n=SL[i];if(!n){UNDO=null;return false;}
@@ -1534,7 +1549,7 @@ function autoBuyTick(){if(!S.feat.autobuy)return;if(S.ab.adopt){var g=0;while(g+
 function buyUpN(k,n){var u=upByK(k),c=0;if(n==='max')n=999;for(var i=0;i<n;i++){if(!buyUp(k))break;c++;}return c;}
 function buySlimeN(n){var c=0;if(n==='max')n=99;for(var i=0;i<n;i++){if(!buySlime())break;c++;}return c;}
 // ---------- the per-tick hook used by tickEco ----------
-function tickExtra(dt){casTick(dt);achTick(dt);if(S.lad)S.lad.el+=dt;featT-=dt;if(featT<=0){featT=1;checkFeats();}
+function tickExtra(dt){casTick(dt);achTick(dt);rushTick(dt);if(!SIM)burpTick(dt);if(S.lad)S.lad.el+=dt;featT-=dt;if(featT<=0){featT=1;checkFeats();}
   darkTick(dt);
   if(SIM)return;
   evTick(dt);targetsTick(dt);socialTick(dt);undoTick(dt);bannerTick(dt);}
@@ -1581,12 +1596,13 @@ function donEnd(){DON=null;donPill=0;var b=$('donB');if(b)b.style.display='none'
 function casTick(dt){if(donPill>0&&!(openSheet==='shCasino')){donPill-=dt;if(donPill<=0&&DON&&DON.step===0)donEnd();}}
 // ---- the sheet ----
 var casF=0.1,casSel=-1,casG=1,casAnimR=null;
-function buildCasino(){maybeLucky();casTabsHTML();if(casTab==='e')buildEggs();else if(casTab==='s'&&S.feat.slots)buildSlots();else if(casTab==='c')buildScratch();else buildTables();}
+function buildCasino(){maybeLucky();casTabsHTML();if(casTab==='e')buildEggs();else if(casTab==='s'&&S.feat.slots)buildSlots();else if(casTab==='c')buildScratch();else buildTables();casTip();}
+function casTip(){S.tips=S.tips||{};if((S.tips.cas||0)>3||(casTab!=='t'&&casTab))return;var b=$('casBody');if(!b||b.querySelector('.tipn'))return;var d=document.createElement('div');d.className='note tipn';d.innerHTML='💡 Small bets are best. Every game shows its odds, the house keeps a small edge, and big wins are capped. <button class="lnk" id="casTipX">Got it</button>';b.appendChild(d);$('casTipX').addEventListener('click',function(){S.tips.cas=9;d.remove();save();});}
 function buildTables(){var C=casS(),h='',cap=casCap(),mf=casMaxFrac();casF=Math.min(casF,mf);
   h+='<canvas id="casC" width="640" height="300"></canvas><div id="casMsg" class="casmsg"></div>';
   var stake=Math.floor(S.goo*casF),p=allInP(casF),rdy=allInReady(),left=Math.ceil((C.cd-Date.now())/1000);
   h+='<div class="cas"><h3>🎲 All-In Table</h3><p class="sm">Drop a slime: lands green, your stake doubles. Bigger stakes get slightly better odds. Wins pay up to <b>'+fmt(cap)+'</b> (30 min of income).</p>'+
-    '<input type="range" id="casR" min="1" max="'+Math.round(mf*100)+'" value="'+Math.round(casF*100)+'"><div class="casrow"><span>Stake <b id="casSt">'+fmt(stake)+'</b> (<b id="casPc">'+Math.round(casF*100)+'%</b>)</span><span>Win chance <b id="casP">'+(p*100).toFixed(1)+'%</b></span></div>'+
+    '<input type="range" id="casR" min="1" max="'+Math.round(mf*100)+'" value="'+Math.round(casF*100)+'"><div class="casrow"><span>Stake <b id="casSt">'+fmt(stake)+'</b> (<b id="casPc">'+Math.round(casF*100)+'%</b>)</span><span>Win chance <b id="casP">'+(p*100).toFixed(1)+'% ('+oddsTxt(p)+')</b></span></div>'+
     '<div class="seg">'+[10,25,50,100].filter(function(x){return x<=mf*100;}).map(function(x){return '<button class="chip" data-f="'+x+'">'+(x===100?'ALL IN':x+'%')+'</button>';}).join('')+'</div>'+
     '<button class="bb casgo'+(casF>=0.999?' hold':'')+'" id="casGo" '+(rdy&&stake>=1?'':'disabled')+'>'+(!rdy?'⏳ Table cools down: '+fmtTime(left):casF>=0.999?'✊ HOLD to go ALL IN':'🎲 Drop the slime!')+'<i id="casHold"></i></button></div>';
   if(!S.opt.simple){var el=SL.filter(function(s){return !slimeBetOk(s);}).sort(function(a,b){return b.tier-a.tier;}).slice(0,12),srdy=slimeBetReady(),sl=Math.ceil((C.scd-Date.now())/1000);
@@ -1595,13 +1611,13 @@ function buildTables(){var C=casS(),h='',cap=casCap(),mf=casMaxFrac();casF=Math.
     if(!el.length)h+='<p class="sm"><b>No slime can be bet right now</b> (not your last slime or your only top-tier one).</p>';
     else{h+='<div class="casl">'+el.map(function(s){return '<button class="cs'+(s.uid===casSel?' on':'')+'" data-u="'+s.uid+'"><canvas width="64" height="64" data-cu="'+s.uid+'"></canvas><small>'+(s.nm?esc(s.nm):TIERS[s.tier].n)+'</small></button>';}).join('')+'</div>';
       var gm=slimeGapMax(sel);casG=Math.max(1,Math.min(casG,gm));
-      h+='<div class="seg">'+[1,2,3].filter(function(g){return g<=gm;}).map(function(g){return '<button class="chip'+(g===casG?' on':'')+'" data-g="'+g+'">+'+g+' tier'+(g>1?'s':'')+' · '+(slimeBetP(g)*100).toFixed(1)+'%</button>';}).join('')+'</div>'+
+      h+='<div class="seg">'+[1,2,3].filter(function(g){return g<=gm;}).map(function(g){return '<button class="chip'+(g===casG?' on':'')+'" data-g="'+g+'">+'+g+' tier'+(g>1?'s':'')+'<small>'+oddsTxt(slimeBetP(g))+'</small></button>';}).join('')+'</div>'+
       '<button class="bb casgo" id="casSB" '+(srdy?'':'disabled')+'>'+(srdy?'Bet '+(sel.nm?esc(sel.nm):'this '+TIERS[sel.tier].n)+' for a '+(S.disc[sel.tier+casG]?TIERS[sel.tier+casG].n:'tier '+(sel.tier+casG+1)):'⏳ '+fmtTime(sl))+'</button>';}
     h+='</div>';}
   h+='<p class="sm" style="text-align:center">Casino record: '+C.plays+' drops · won '+fmt(C.won)+' · lost '+fmt(C.lost)+' · best double streak '+C.best+'</p>';
   $('casBody').innerHTML=h;drawCas(0,null);
   $('casBody').querySelectorAll('canvas[data-cu]').forEach(function(c){var s=SL.filter(function(q){return q.uid===+c.dataset.cu;})[0];if(!s)return;var g=c.getContext('2d'),sp=sprite(s.tier,s.sh,0,s.sp),sc=52/(rad(s.tier)*2.4);g.save();g.translate(32,60);g.scale(sc,sc);g.drawImage(sp,-sp.ox,-sp.oy,sp.cw,sp.ch);g.restore();});
-  var R=$('casR');R.addEventListener('input',function(){casF=this.value/100;var st=Math.floor(S.goo*casF);$('casSt').textContent=fmt(st);$('casPc').textContent=this.value+'%';$('casP').textContent=(allInP(casF)*100).toFixed(1)+'%';var g2=$('casGo');if(allInReady()){g2.firstChild.textContent=casF>=0.999?'✊ HOLD to go ALL IN':'🎲 Drop the slime!';g2.classList.toggle('hold',casF>=0.999);}});
+  var R=$('casR');R.addEventListener('input',function(){casF=this.value/100;var st=Math.floor(S.goo*casF);$('casSt').textContent=fmt(st);$('casPc').textContent=this.value+'%';$('casP').textContent=(allInP(casF)*100).toFixed(1)+'% ('+oddsTxt(allInP(casF))+')';var g2=$('casGo');if(allInReady()){g2.firstChild.textContent=casF>=0.999?'✊ HOLD to go ALL IN':'🎲 Drop the slime!';g2.classList.toggle('hold',casF>=0.999);}});
   $('casBody').querySelectorAll('.chip[data-f]').forEach(function(b){b.addEventListener('click',function(){casF=b.dataset.f/100;sBuy();buildCasino();});});
   $('casBody').querySelectorAll('.chip[data-g]').forEach(function(b){b.addEventListener('click',function(){casG=+b.dataset.g;sBuy();buildCasino();});});
   $('casBody').querySelectorAll('.cs').forEach(function(b){b.addEventListener('click',function(){casSel=+b.dataset.u;sBuy();buildCasino();});});
@@ -1616,7 +1632,7 @@ function buildTables(){var C=casS(),h='',cap=casCap(),mf=casMaxFrac();casF=Math.
     else askConfirm('🎁','Bet this slime?','Win ('+(slimeBetP(casG)*100).toFixed(1)+'%): it becomes a '+(S.disc[s.tier+casG]?TIERS[s.tier+casG].n:'bigger slime')+'. Lose: it wanders off.','Bet it',go2);});}
 function donHTML(){var p=donP(DON.step),full=DON.step>=DON_MAX||DON.maxed;
   return '<div class="cas don s'+Math.min(6,DON.step)+'"><h3>🪙 Double or Nothing'+(DON.step?' · <span class="chain">×'+Math.pow(2,DON.step)+' chain '+DON.step+'/'+DON_MAX+'</span>':'')+'</h3><div class="pot">'+fmt(DON.pot)+' goo on the line</div>'+
-   (full?'<p class="sm">Max chain reached. Cash out!</p>':'<p class="sm">Flip: heads doubles it, tails loses it. Chance <b>'+(p*100).toFixed(0)+'%</b> (gets harder each flip).</p>')+
+   (full?'<p class="sm">Max chain reached. Cash out!</p>':'<p class="sm">Flip: heads doubles it, tails loses it. Chance <b>'+(p*100).toFixed(0)+'%</b>, '+oddsTxt(p)+' (a bit harder each flip).</p>')+
    '<div class="casrow2">'+(full?'':'<button class="bb casgo" id="donF">🪙 Flip for '+fmt(DON.pot*2)+'</button>')+'<button class="bb alt" id="donC">💰 Cash out</button></div></div>';}
 function bindDon(){var f=$('donF');if(f)f.addEventListener('click',function(){if(casAnimR||!DON)return;if(casTab!=='t'){casTab='t';buildCasino();}var r=donFlip();sHeart();casAnim('coin',r.win,function(){if(r.win){sWin();fxCoins(30+DON.step*15);casMsg('🪙 Heads! '+fmt(DON.pot)+' on the line'+(DON.step>=DON_MAX?' · max chain!':''),'#2a8a3a');}else{sLose();casMsg('Tails… lost '+fmt(DON.lost)+'. Better luck next time','#c0283a');donEnd();}buildCasino();casMsgKeep();});});
   var c=$('donC');if(c)c.addEventListener('click',function(){if(casAnimR||!DON)return;var v=DON.pot,st=DON.step;donEnd();sCoin();casMsg(st?'💰 Cashed out '+fmt(v)+' after a ×'+Math.pow(2,st)+' chain!':'💰 Kept '+fmt(v),'#2a8a3a');fxCoins(30);buildCasino();casMsgKeep();updUI();});}
@@ -1666,7 +1682,7 @@ function gachaPull(price){var C=casS();C.pity=(C.pity||0)+1;var r=Math.random(),
   var prize=casPay(price*RAR[k].m*luckM()),col=-1;
   if(k===4||(k===3&&Math.random()<0.25)){C.col=C.col||{};var miss=GCOL.map(function(x,i){return i;}).filter(function(i){return !C.col[i];});if(miss.length){col=miss[(Math.random()*miss.length)|0];C.col[col]=1;}}
   return{k:k,prize:prize,col:col};}
-function gachaBuy(n){var price=eggPrice(),cost=price*n;if(S.goo<cost)return null;S.goo-=cost;var C=casS(),res=[],tot=0;for(var i=0;i<n;i++){var q=gachaPull(price);res.push(q);tot+=q.prize;}
+function gachaBuy(n,free){var price=eggPrice(),cost=free?0:price*n,C0=casS();if(free){if(!((C0.fEgg||0)>=n))return null;C0.fEgg-=n;}else{if(S.goo<cost)return null;S.goo-=cost;}var C=casS(),res=[],tot=0;for(var i=0;i<n;i++){var q=gachaPull(price);res.push(q);tot+=q.prize;}
   tot=casPay(tot);S.goo+=tot;C.gPulls=(C.gPulls||0)+n;C.gWon=(C.gWon||0)+tot;C.gSpent=(C.gSpent||0)+cost;var best=res.reduce(function(a,b){return b.k>a?b.k:a;},0);casWin('egg','🥚 '+RAR[best].n,tot-cost,cost);
   return{res:res,tot:tot,cost:cost,best:best};}
 // ===== Slime Slots =====
@@ -1708,12 +1724,12 @@ function bigWin(v){var o=$('bigWin');if(!o)return;o.innerHTML='<div><b>BIG WIN!<
 function buildEggs(){var p=eggPrice(),C=casS(),h='<canvas id="gC" width="640" height="300"></canvas><div id="gRes" class="gres"></div>';
   h+='<div class="cas"><h3>🥚 Mystery Egg Gacha</h3><p class="sm">Crack an egg for goo, with a chance at gacha-only collectible slimes. Legendary or better guaranteed within '+PITY+' eggs.</p>'+
   '<div class="pity"><span>Pity</span><div class="ebar"><i style="width:'+Math.round((C.pity||0)/PITY*100)+'%"></i></div><b>'+(C.pity||0)+'/'+PITY+'</b></div>'+
-  '<div class="rar">'+RAR.map(function(r){return '<span style="color:'+r.c+'">●</span> '+r.n+' '+(r.p*100).toFixed(1)+'% · ×'+r.m;}).join('<br>')+'</div>'+
+  '<div class="rar">'+RAR.map(function(r){return '<span style="color:'+r.c+'">●</span> '+r.n+': '+oddsTxt(r.p)+' · pays '+r.m+'× the egg';}).join('<br>')+'</div>'+(C.fEgg>0?'<button class="bb casgo" id="gF" style="width:100%;margin-bottom:8px">🎁 Free egg ('+C.fEgg+' left)</button>':'')+
   '<div class="casrow2"><button class="bb casgo" id="g1" '+(S.goo>=p?'':'disabled')+'>🥚 ×1 · '+fmt(p)+'</button><button class="bb casgo" id="g10" '+(S.goo>=p*10?'':'disabled')+'>🥚 ×10 · '+fmt(p*10)+'</button></div>'+
   '<p class="sm">Collection: '+Object.keys(C.col||{}).length+' / '+GCOL.length+' (see the Slimedex)</p></div>';
   $('casBody').innerHTML=h;drawEgg(0,null);
-  $('g1').addEventListener('click',function(){doGacha(1);});$('g10').addEventListener('click',function(){doGacha(10);});}
-function doGacha(n){if(gAnim)return;var r=gachaBuy(n);if(!r){sErr();return;}updUI();gSkip=false;var i=0,box=$('gRes');box.innerHTML=n>1?'<button class="lnk" id="gSk">Skip ⏩</button>':'';
+  $('g1').addEventListener('click',function(){doGacha(1);});var gf=$('gF');if(gf)gf.addEventListener('click',function(){doGacha(1,true);});$('g10').addEventListener('click',function(){doGacha(10);});}
+function doGacha(n,free){if(gAnim)return;var r=gachaBuy(n,free);if(!r){sErr();return;}updUI();gSkip=false;var i=0,box=$('gRes');box.innerHTML=n>1?'<button class="lnk" id="gSk">Skip ⏩</button>':'';
   var sk=$('gSk');if(sk)sk.addEventListener('click',function(){gSkip=true;});
   function next(){if(i>=r.res.length||gSkip){finish();return;}var q=r.res[i++];eggAnim(q,n>1?0.9:2.6,function(){addRes(q);next();});}
   function addRes(q){var d=document.createElement('div');d.className='gr r'+q.k;d.innerHTML='<b style="color:'+RAR[q.k].c+'">'+RAR[q.k].n+'</b> +'+fmt(q.prize)+(q.col>=0?'<br>✨ '+GCOL[q.col].n+'!':'');box.appendChild(d);}
@@ -1802,7 +1818,7 @@ function drawGachaDex(){var C=casS();GCOL.forEach(function(x,i){var c=$('gx'+i);
 function aS(){if(!S.ach)S.ach={got:{},c:{},n:0,retro:0};return S.ach;}
 function achInc(k,n){if(SIM&&!ACH_SIM)return;var A=aS();A.c[k]=(A.c[k]||0)+(n||1);}
 function ac_(k){return (S.ach&&S.ach.c[k])||0;}
-var ACH_SIM=true,ACH=[],ACH_CAT=[['tier','🧬','Merging & Tiers'],['squish','👆','Squishing'],['goo','💧','Goo'],['asc','👑','Ascension & Crown'],['pen','🏡','Pens'],['dv','👄','The Devourer'],['alt','🕯️','Altar & Blood Moon'],['fix','🛠️','Farm Trouble'],['day','📋','Daily'],['race','🏁','Races'],['love','💕','Your Slimes'],['cas','🎰','Casino'],['sec','🤫','Secret']];
+var ACH_SIM=true,ACH=[],ACH_CAT=[['tier','🧬','Merging & Tiers'],['squish','👆','Squishing'],['goo','💧','Goo'],['asc','👑','Ascension & Crown'],['pen','🏡','Pens'],['dv','👄','The Devourer'],['alt','🕯️','Altar & Blood Moon'],['fix','🛠️','Farm Trouble'],['day','📋','Daily'],['race','🏁','Races'],['love','💕','Your Slimes'],['mut','🧬','Mutants & Surprises'],['cas','🎰','Casino'],['sec','🤫','Secret']];
 var TIERN=['Bronze','Silver','Gold'],TIERC=['#c88a4a','#9aa6b8','#e0a800'],REWS=[30,90,240];
 function A1(id,cat,i,n,d,val,goal,o){o=o||{};ACH.push({id:id,cat:cat,i:i,n:n,d:d,val:val,goal:goal,t:o.t===undefined?0:o.t,h:!!o.h,sys:o.sys||'',feat:o.feat||''});}
 function A3(id,cat,i,n,d,val,goals,o){for(var k=0;k<goals.length;k++){var oo={};for(var q in (o||{}))oo[q]=o[q];oo.t=goals.length===2?k*2:k;A1(id+(k+1),cat,i,n+' '+['I','II','III'][k],d.replace('#',fmtA(goals[k])),val,goals[k],oo);}}
@@ -1823,8 +1839,8 @@ function cnt(o){return o?Object.keys(o).length:0;}
  A1('early','asc','🌗','It\'s Just a Phase','Ascend early',function(){return S.ascE||0;},1,{t:0,h:1});
  [[1,'Hot Tub Time','Build the Hot Spring'],[2,'Flower Power','Plant the Flower Bed'],[3,'Wish Upon a Star','Fill the Star Pool'],[4,'Grove Keeper','Unseal the Altar Grove']].forEach(function(x){A1('pen'+x[0],'pen',PENS[x[0]].icon,x[1],x[2],function(){return penOpen(x[0])?1:0;},1,{t:x[0]>2?1:0});});
  A3('eat','dv','👄','Snack Dispenser','Feed the Devourer # slimes',function(){return S.dv.eaten||0;},[10,500]);
- A1('maw','dv','🦷','The Maw','Evolve the Devourer into The Maw',function(){return S.dv.stage>=2?1:0;},1,{t:1});
- A1('void','dv','🕳️','Void Belly','Evolve the Devourer into the Void Belly',function(){return S.dv.stage>=3?1:0;},1,{t:2});
+ A1('maw','dv','🦷','The Maw','Evolve the Devourer into The Maw',function(){return S.dv.stage>=1?1:0;},1,{t:1});
+ A1('void','dv','🕳️','Void Belly','Evolve the Devourer into the Void Belly',function(){return S.dv.stage>=2?1:0;},1,{t:2});
  A3('off','alt','🕯️','Devout','Make # Altar offerings',function(){return S.alt.offers||0;},[5,200],{sys:'dark'});
  A1('bm1','alt','🌕','Moon Pleaser','Satisfy a Blood Moon',function(){return ac_('bmok');},1,{t:0,sys:'dark'});
  A1('bm10','alt','🩸','Lunatic','Satisfy 10 Blood Moons',function(){return ac_('bmok');},10,{t:2,sys:'dark'});
@@ -1861,6 +1877,15 @@ function cnt(o){return o?Object.keys(o).length:0;}
  A1('sbw','cas','🎁','Upgrade Day','Win a Bet Your Slime',function(){return casS().slimeW||0;},1,{t:0,sys:'risky',feat:'casino'});
  A1('heart','cas','💔','Heartbreaker','Lose a named slime in a bet',function(){return ac_('heart');},1,{t:1,h:1,sys:'risky',feat:'casino'});
  A1('lucky','cas','🍀','Lucky Hour','Catch a Lucky Hour',function(){return ac_('lucky');},1,{t:0,feat:'casino'});
+ A1('mut1','mut','🧬','It\'s Alive!','Get your first mutant',function(){return S.mut?S.mut.n:0;},1,{t:0});
+ A3('mutc','mut','🧪','Mutant Collector','Find # kinds of mutant',function(){return S.mut?cnt(S.mut.col):0;},[3,6]);
+ A1('mutr','mut','❄️','Rare Breed','Find a Frosty mutant or rarer',function(){var c=S.mut?S.mut.col:{};return (c[4]||0)+(c[5]||0)+(c[6]||0);},1,{t:1});
+ A1('mutv','mut','🌌','Into the Void','Find the Void mutant',function(){return S.mut&&S.mut.col[6]?1:0;},1,{t:2,h:1});
+ A3('rush','mut','✨','Gold Digger','Tap Golden Slimes # times',function(){return S.rush?S.rush.taps:0;},[50,1000]);
+ A1('rushd','mut','💰','Rush Hour','Complete a Golden Rush',function(){return S.rush?S.rush.done:0;},1,{t:1});
+ A3('burp','mut','💨','Jackpot Burps','Get # jackpot burps from the Devourer',function(){return S.dv.burps||0;},[1,25],{feat:'devourer'});
+ A1('burpjp','mut','🤑','Big Burp','Get the burp JACKPOT',function(){return S.dv.jp||0;},1,{t:2,feat:'devourer'});
+ A1('reg','mut','🤮','Regurgitated','The Devourer spits a slime back out',function(){return S.dv.reg||0;},1,{t:1,h:1,feat:'devourer'});
  A1('owl','sec','🦉','Night Owl','Squish slimes between 2 and 5 AM',function(){return ac_('owl');},1,{t:0,h:1});
  A1('undo','sec','↩️','Butterfingers','Undo 10 merges',function(){return ac_('undo');},10,{t:0,h:1});
 })();
@@ -1872,7 +1897,7 @@ function achScore(){var A=aS(),p=0;ACH.forEach(function(a){if(A.got[a.id])p+=ach
 function achTitle(){var p=achScore(),t=TITLES[0][1];TITLES.forEach(function(x){if(p>=x[0])t=x[1];});return t;}
 var achT=0,achQ=[],achShow=0,tapTs=[];
 function achTick(dt){if(SIM&&!ACH_SIM)return;achT-=dt;
-  if(!SIM){if(achShow>0){achShow-=dt;if(achShow<=0){$('achT').classList.remove('on');}}else if(achQ.length&&!mOpen){var m=achQ.shift();showAchToast(m);}}
+  if(!SIM){if(achShow>0){achShow-=dt;if(achShow<=0){$('achT').classList.remove('on');}}else if(achQ.length&&!mOpen&&!openSheet){var m=achQ.shift();showAchToast(m);}}
   if(achT>0)return;achT=2;achCheck(false);}
 function achCheck(silent){var A=aS(),news=[];
   for(var i=0;i<ACH.length;i++){var a=ACH[i];if(A.got[a.id])continue;if(a.feat&&!S.feat[a.feat])continue;if(achProg(a)>=1){A.got[a.id]=SIM?1:Date.now();A.n++;news.push(a);}}
@@ -1897,6 +1922,7 @@ function buildAch(){var A=aS(),vis=ACH.filter(function(a){return !(a.feat&&!S.fe
   var near=vis.filter(function(a){return !A.got[a.id]&&!a.h&&!achOpt(a)&&!(a.feat&&!S.feat[a.feat]);}).map(function(a){return{a:a,p:achProg(a)};}).sort(function(x,y){return y.p-x.p;}).slice(0,3);
   var h='<div class="ahead"><div><b>'+achTitle()+'</b><small>'+got+' / '+tot+' achievements · '+achScore()+' pts</small></div><div class="ebar"><i style="width:'+Math.round(got/Math.max(1,tot)*100)+'%"></i></div></div>';
   if(near.length)h+='<h4>🎯 Almost there</h4>'+near.map(function(x){return achRow(x.a,true);}).join('');
+  h+=mutColHTML(true);
   h+='<div class="seg acats">'+[['all','All']].concat(ACH_CAT.map(function(c){return [c[0],c[1]];})).map(function(c){return '<button class="chip'+(achCat===c[0]?' on':'')+'" data-ac="'+c[0]+'">'+c[1]+'</button>';}).join('')+'</div>';
   ACH_CAT.forEach(function(c){if(achCat!=='all'&&achCat!==c[0])return;var L=vis.filter(function(a){return a.cat===c[0];});if(!L.length)return;
     var main=L.filter(function(a){return !achOpt(a);}),opt=L.filter(achOpt);
@@ -1909,6 +1935,130 @@ function achRow(a,hi){var A=aS(),g=!!A.got[a.id],p=g?1:achProg(a),hid=a.h&&!g,lo
    (g?'<small class="ok">✓ Earned</small>':hid||lock?'':'<div class="ebar"><i style="width:'+Math.round(p*100)+'%"></i></div>')+'</div></div>';}
 $('bAch').addEventListener('click',function(){ac();if(!S.feat.ach){toast('🔒 Achievements unlock soon');sErr();return;}open('shAch');});
 
+// ===================== Update 2: mutations, Golden Rush, jackpot burps, regurgitation =====================
+// ---------- MUTATIONS: any merge has a small chance to make a mutant (own look + a small bonus for that slime only) ----------
+var MUT=[null,
+ {k:'glow',n:'Glowing',i:'💡',w:46,m:1.10,c:'#7ff3ff',d:'+10% goo'},
+ {k:'stripe',n:'Striped',i:'🦓',w:26,m:1.15,c:'#b06cff',d:'+15% goo'},
+ {k:'polka',n:'Polka-Dot',i:'🔴',w:18,m:1.15,c:'#ff7ab0',d:'+15% goo'},
+ {k:'frost',n:'Frosty',i:'❄️',w:7.5,m:1.25,c:'#a8dcff',d:'+25% goo',rare:1},
+ {k:'rainbow',n:'Rainbow',i:'🌈',w:2.3,m:1.5,c:'#ff8ae0',d:'+50% goo',rare:2},
+ {k:'void',n:'Void',i:'🌌',w:0.2,m:2,c:'#7a3cff',d:'×2 goo',rare:3}];
+var MUT_P=0.015,MUT_P2=0.08,MUT_W=0;MUT.forEach(function(m){if(m)MUT_W+=m.w;});
+function mS(){if(!S.mut||typeof S.mut!=='object')S.mut={col:{},n:0};if(!S.mut.col)S.mut.col={};return S.mut;}
+function mutRoll(boost){boost=boost||1;var tot=0,i;for(i=1;i<MUT.length;i++)tot+=MUT[i].w*(MUT[i].rare?boost:1);var r=Math.random()*tot;for(i=1;i<MUT.length;i++){r-=MUT[i].w*(MUT[i].rare?boost:1);if(r<=0)return i;}return 1;}
+function mutM(s){return s.mu&&MUT[s.mu]?MUT[s.mu].m:1;}
+function mutOdds(i){return Math.round(1/(MUT_P*MUT[i].w/MUT_W));}
+function mutMergeRoll(a,b){return Math.random()<((a.mu||b.mu)?MUT_P2:MUT_P)?mutRoll():0;}
+function gotMutant(s,src){var M=mS(),m=MUT[s.mu];if(!m)return;M.n++;M.col[s.mu]=(M.col[s.mu]||0)+1;if(SIM)return;
+  var r=rad(s.tier),first=M.n===1;story(s,(src==='spit'?'Came back out of the Devourer as a ':'Mutated into a ')+m.n+' mutant!');
+  addText(s.x,s.y-r*2.6,'🧬 '+m.n+' mutant! '+m.d,1.9,m.rare>1?'#d0208a':'#6a2cc0',18);burst(s.x,s.y-r,m.c,S.opt.rfx?10:26,360);addRing(s.x,s.y-r*0.8,r*0.6,0.7);
+  sMutate(m.rare||0);
+  if(m.rare)mutReveal(s,first,src);else if(first)achQ.push({i:'🧬',n:'Your first mutant: '+m.n+'!',d:'Any merge can mutate: a new look and '+m.d+'. Collect all 6 (Slimedex)',c:m.c});else achQ.push({i:m.i,n:m.n+' mutant!',d:m.d+' for this slime · see the Slimedex',c:m.c});}
+var modalMu=0;
+function mutReveal(s,first,src){var m=MUT[s.mu],tier=s.sp?NT+s.sp-1:s.tier,mu=s.mu;
+  queueModal(function(){showModal('<div class="rays"></div><div class="rel"><span class="newtag">'+(m.rare>=3?'ULTRA RARE ':m.rare===2?'VERY RARE ':m.rare?'RARE ':'')+'MUTATION!</span><canvas id="nsc" width="460" height="460"></canvas><h2>'+m.i+' '+m.n+' '+TIERS[tier].n+'</h2>'+
+    '<p><b>'+m.d+'</b> for this slime · about 1 in '+fmtA(mutOdds(mu))+' merges</p>'+(src==='spit'?'<p class="sm">The Devourer spat it back out… changed.</p>':'')+
+    (first?'<p class="sm">Any merge can make a mutant. Each kind has its own look and a small goo bonus. Merging a mutant uses it up, but the new slime is more likely to mutate. Collect all 6 in the Slimedex!</p>':'')+
+    '<button class="mbtn" id="mOk">'+(m.rare>=2?'WOW!':'Cool!')+'</button></div>',{mOk:null},'reveal');
+    modalSlime=tier;modalMu=mu;nsCtx=$('nsc').getContext('2d');flash();fxConfetti(m.rare>=2?140:60);if(m.rare>=2){sSting();fxCoins(S.opt.rfx?10:40);}});}
+function mutOverlay(g,x,y,R,mu,t,sq){if(!mu||!MUT[mu])return;sq=sq||0;g.save();g.translate(x,y);g.scale(1+sq*0.75,1-sq);bodyPath(g,R,t||1.3,0,false);g.clip();var i,rnd=srand(mu*97+11);
+  if(mu===1){var gr=g.createRadialGradient(0,-R*0.8,R*0.1,0,-R*0.8,R*1.2);gr.addColorStop(0,'rgba(200,255,255,.55)');gr.addColorStop(1,'rgba(120,240,255,.1)');g.fillStyle=gr;g.fillRect(-R*2,-R*2.2,R*4,R*2.6);}
+  else if(mu===2){g.rotate(-0.55);g.fillStyle='rgba(60,20,90,.28)';for(i=-5;i<=5;i++)g.fillRect(i*R*0.42-R*0.09,-R*3,R*0.2,R*6);}
+  else if(mu===3){g.fillStyle='rgba(255,255,255,.62)';for(i=0;i<9;i++){g.beginPath();g.arc((rnd()-0.5)*1.8*R,-rnd()*1.55*R,R*(0.09+rnd()*0.07),0,7);g.fill();}}
+  else if(mu===4){g.fillStyle='rgba(185,228,255,.42)';g.fillRect(-R*2,-R*2.2,R*4,R*2.6);g.fillStyle='rgba(255,255,255,.9)';for(i=0;i<8;i++)star4(g,(rnd()-0.5)*1.7*R,-rnd()*1.5*R,R*(0.07+rnd()*0.05));
+    g.fillStyle='rgba(255,255,255,.6)';g.fillRect(-R*2,-R*1.62,R*4,R*0.1);}
+  else if(mu===5){var gl=g.createLinearGradient(-R,-R*1.7,R,0);for(i=0;i<=6;i++)gl.addColorStop(i/6,'hsla('+((i*55)%360)+',95%,62%,.5)');g.fillStyle=gl;g.fillRect(-R*2,-R*2.2,R*4,R*2.6);}
+  else if(mu===6){g.fillStyle='rgba(28,4,64,.66)';g.fillRect(-R*2,-R*2.2,R*4,R*2.6);g.fillStyle='#fff';for(i=0;i<14;i++){var sx=(rnd()-0.5)*1.8*R,sy=-rnd()*1.55*R;if(i%4)g.fillRect(sx,sy,R*0.04,R*0.04);else star4(g,sx,sy,R*0.08);}}
+  g.restore();}
+var AURA={};function auraC(col){var c=AURA[col];if(c)return c;c=document.createElement('canvas');c.width=c.height=64;var g=c.getContext('2d'),gr=g.createRadialGradient(32,32,4,32,32,32);gr.addColorStop(0,col);gr.addColorStop(0.55,col+'88');gr.addColorStop(1,col+'00');g.fillStyle=gr;g.fillRect(0,0,64,64);AURA[col]=c;return c;}
+function auraImg(mu){return auraC(MUT[mu].c);}
+function drawAura(g,s,x,y){var r=rad(s.tier),m=MUT[s.mu];g.globalAlpha=(m.rare?0.55:0.38)+0.18*Math.sin(T*3+s.ph);var k=r*(m.rare?3.6:3.1);g.drawImage(auraImg(s.mu),x-k/2,y-r*0.8-k/2,k,k);g.globalAlpha=1;
+  if(m.rare>=2&&Math.random()<0.15)burst(x+(Math.random()-0.5)*r*2,y-r*(0.4+Math.random()*1.2),m.c,1,60,true);}
+function mutColHTML(compact){var M=mS(),got=0;for(var i=1;i<MUT.length;i++)if(M.col[i])got++;
+  if(compact)return '<div class="mutc"><b>🧬 Mutants '+got+'/6</b> '+MUT.slice(1).map(function(m,j){return '<span title="'+m.n+'">'+(M.col[j+1]?m.i:'❔')+'</span>';}).join('')+'<small>Any merge can mutate · full list in the Slimedex</small></div>';
+  return '<h4>🧬 Mutant Collection <small>'+got+' / 6 · '+M.n+' found</small></h4><p class="sm">Any merge has a small chance to make a mutant: a special look and a small goo bonus for that slime.</p>'+MUT.slice(1).map(function(m,j){var n=M.col[j+1]||0;
+    return '<div class="ach'+(n?' got':'')+'"><i style="background:'+(n?m.c:'#e7defc')+'">'+(n?m.i:'❔')+'</i><div><b>'+(n?m.n:'???')+'<span class="at" style="color:'+(m.rare>=2?'#d0208a':m.rare?'#2a6ad0':'#7a6a9a')+'">'+(m.rare>=3?'Ultra rare':m.rare===2?'Very rare':m.rare?'Rare':'Common')+'</span></b><small>'+(n?m.d+' · found ×'+n:'Not found yet')+' · about 1 in '+fmtA(mutOdds(j+1))+' merges</small></div></div>';}).join('');}
+// ---------- GOLDEN RUSH: every ~8-15 min of active play a golden slime dashes around for 10 s; every tap pays more (capped) ----------
+var RUSH_MIN=480,RUSH_VAR=420,RUSH_DUR=10,RUSH_CAP=60,RUSH_TAPS_SIM=15;
+var rush={on:0},rushT=RUSH_MIN+Math.random()*RUSH_VAR,lastIn=0;
+function rS(){if(!S.rush||typeof S.rush!=='object')S.rush={n:0,taps:0,best:0,done:0,esc:0};return S.rush;}
+function rushPay(n,base){return base*(2+0.6*n);}            // tap n pays 2.6, 3.2, 3.8 … seconds of income
+function rushBase(){return gps()/frenzyMult();}
+function rushActive(){if(SIM)return true;return performance.now()-lastIn<60000&&!mOpen&&!openSheet&&!document.hidden&&!(S.tut<3&&S.best<2);}
+function rushTick(dt){if(rush.on){if(!SIM)stepRush(dt);return;}
+  if(!rushActive())return;rushT-=dt;if(rushT>0)return;
+  if(!SIM&&(gold.on||bm||dvEvo>0||burpSlow>0)){rushT=15;return;}
+  rushT=RUSH_MIN+Math.random()*RUSH_VAR;startRush();}
+function startRush(){var R=rS(),base=rushBase();R.n++;
+  if(SIM){var n=SIMG.rushTaps===undefined?RUSH_TAPS_SIM:SIMG.rushTaps,paid=0,cap=base*RUSH_CAP;for(var i=1;i<=n&&paid<cap;i++)paid+=Math.min(cap-paid,rushPay(i,base));addGoo(paid);R.taps+=n;if(n>R.best)R.best=n;if(paid>=cap*0.999)R.done++;return;}
+  var v=viewR();rush={on:1,t:0,n:0,paid:0,base:base,cap:base*RUSH_CAP,x:(v.x0+v.x1)/2+(Math.random()-0.5)*(v.x1-v.x0)*0.4,y:v.y0+(v.y1-v.y0)*(0.35+Math.random()*0.3),vx:(Math.random()<0.5?-1:1),vy:(Math.random()-0.5),turn:0.8,esc:0,z:0,hop:0,boost:0};
+  var sp=150/cam.z,l=Math.hypot(rush.vx,rush.vy)||1;rush.vx*=sp/l;rush.vy*=sp/l;sRushAppear();
+  banner(R.n===1?'✨ A Golden Slime! Tap it as fast as you can before it runs away!':'✨ GOLDEN RUSH! Tap tap tap!','#c18a06',3);}
+function stepRush(dt){var r=rush,v=viewR();r.t+=dt;r.hop+=dt*9;r.z=Math.abs(Math.sin(r.hop))*12/cam.z;if(r.boost>0)r.boost-=dt;var k=r.boost>0?1.8:1;
+  if(r.esc){r.x+=r.vx*dt;r.y+=r.vy*dt;if(r.x<v.x0-80||r.x>v.x1+80||r.y<v.y0-80||r.y>v.y1+80)r.on=0;return;}
+  r.turn-=dt;if(r.turn<=0){r.turn=0.6+Math.random()*0.8;var a=Math.atan2(r.vy,r.vx)+(Math.random()-0.5)*2.2,sp=(140+Math.random()*60)/cam.z;r.vx=Math.cos(a)*sp;r.vy=Math.sin(a)*sp*0.7;}
+  r.x+=r.vx*dt*k;r.y+=r.vy*dt*k;var pad=40/cam.z;
+  if(r.x<v.x0+pad){r.x=v.x0+pad;r.vx=Math.abs(r.vx);}if(r.x>v.x1-pad){r.x=v.x1-pad;r.vx=-Math.abs(r.vx);}
+  if(r.y<v.y0+pad*2){r.y=v.y0+pad*2;r.vy=Math.abs(r.vy);}if(r.y>v.y1-pad*0.6){r.y=v.y1-pad*0.6;r.vy=-Math.abs(r.vy);}
+  if(Math.random()<dt*25)burst(r.x,r.y-14/cam.z,'#ffe680',1,70,true);
+  if(r.t>=RUSH_DUR)endRush(false);}
+function rushHit(p){return rush.on&&!rush.esc&&Math.hypot(p.x-rush.x,p.y-(rush.y-rush.z-18/cam.z))<Math.max(34,52/cam.z);}
+function rushTap(){var r=rush,R=rS();r.n++;R.taps++;var v=Math.min(r.cap-r.paid,rushPay(r.n,r.base));r.paid+=v;addGoo(v);r.boost=0.2;
+  var c=['#e0a800','#f08a00','#ff5a3c','#ff3d9a','#b04dff'][Math.min(4,(r.n/6)|0)];addText(r.x+(Math.random()-0.5)*30/cam.z,r.y-50/cam.z-r.z,'+'+fmt(v),0.9,c,(14+Math.min(18,r.n*0.8))/Math.sqrt(cam.z));
+  if(r.n%5===0)addText(r.x,r.y-80/cam.z,'×'+r.n+'!',0.9,c,(18+Math.min(14,r.n*0.5))/Math.sqrt(cam.z));
+  burst(r.x,r.y-18/cam.z,r.n>15?'#ff8ad0':'#ffd23f',S.opt.rfx?3:8+Math.min(14,r.n),220+r.n*8);sRushTap(r.n);if(!S.opt.rfx)shake=Math.min(8,2+r.n*0.2);buzz(8);
+  if(r.paid>=r.cap*0.999)endRush(true);}
+function endRush(done){var r=rush,R=rS();if(r.n>R.best)R.best=r.n;
+  if(done){R.done++;r.on=0;sRushDone();fxCoins(S.opt.rfx?20:90);fxConfetti(S.opt.rfx?15:50);burst(r.x,r.y-20,'#ffd23f',36,460);banner('💰 GOLDEN RUSH COMPLETE! +'+fmt(r.paid)+' goo ('+r.n+' taps)','#c18a06',3.5);return;}
+  R.esc++;r.esc=1;var v=viewR(),cx=(v.x0+v.x1)/2;r.vx=(r.x<cx?-1:1)*520/cam.z;r.vy=-60/cam.z;sRushEsc();
+  banner(r.n?'💨 It got away! +'+fmt(r.paid)+' goo from '+r.n+' tap'+(r.n>1?'s':''):'💨 The Golden Slime got away! Tap it next time','#8a6a10',3);}
+function drawRush(g){var r=rush;if(!r.on)return;var zc=1/Math.sqrt(cam.z),gc=sprite(11,1,0,0),gs=0.95*zc,x=r.x,y=r.y-r.z;
+  g.fillStyle='rgba(20,70,30,.22)';g.beginPath();g.ellipse(r.x,r.y,24*zc,6*zc,0,0,7);g.fill();
+  g.globalAlpha=0.5+0.2*Math.sin(T*8);var k=110*zc;g.drawImage(auraC('#ffd23f'),x-k/2,y-30*zc-k/2,k,k);g.globalAlpha=1;
+  g.save();g.translate(x,y);g.scale((r.vx<0?-1:1)*gs*(1+(r.boost>0?0.12:0)),gs*(1-(r.boost>0?0.1:0)));g.drawImage(gc,-gc.ox,-gc.oy,gc.cw,gc.ch);g.restore();
+  g.font='900 '+Math.round(16*zc)+'px system-ui';g.textAlign='center';g.fillText('👑',x,y-58*zc);
+  if(!r.esc){var left=Math.max(0,1-r.t/RUSH_DUR);g.strokeStyle='rgba(255,255,255,.85)';g.lineWidth=4*zc;g.beginPath();g.arc(x,y-24*zc,40*zc,-Math.PI/2,-Math.PI/2+left*6.283);g.stroke();
+    if(r.n===0&&(T*3%2)<1.4){g.font='900 '+Math.round(15*zc)+'px ui-rounded,system-ui';g.fillStyle='#c18a06';g.strokeStyle='#fff';g.lineWidth=4*zc;g.strokeText('TAP!',x,y-78*zc);g.fillText('TAP!',x,y-78*zc);}}}
+// ---------- DEVOURER JACKPOT BURPS: every feed fills the burp meter; a full meter = a slow-mo burp with a surprise prize ----------
+var BURP_N=8,BURP_CD=900e3,burpSlow=0,burpPend=0;
+var BURPT=[{k:'goo',w:40,n:'Goo shower'},{k:'card',w:18,n:'Gold scratch card'},{k:'egg',w:14,n:'2 free egg pulls'},{k:'mut',w:20,n:'A mutant slime'},{k:'jp',w:8,n:'JACKPOT'}];
+function burpFill(s){return s.tier>=S.maxRun-4?1:0.34;}
+function burpFeed(s){var d=S.dv;d.burp=Math.min(BURP_N,(d.burp||0)+burpFill(s));
+  if(d.burp>=BURP_N&&casNow()>=(d.bcd||0)){d.burp=0;d.bcd=casNow()+BURP_CD;if(SIM)jackpotBurp();else burpPend=1.1;}
+  else if(!SIM&&d.burp>=BURP_N)toast('😮‍💨 The Devourer is still digesting its last burp…');else if(!SIM)sBurpFill(d.burp/BURP_N);}
+function burpRoll(){var t=0,i;for(i=0;i<BURPT.length;i++)t+=BURPT[i].w;var r=Math.random()*t;for(i=0;i<BURPT.length;i++){r-=BURPT[i].w;if(r<=0)return BURPT[i].k;}return 'goo';}
+function jackpotBurp(force){var d=S.dv,k=force||burpRoll(),base=gps()/frenzyMult(),txt='',v=0;d.burps=(d.burps||0)+1;
+  if(k==='egg'&&!casOn())k='goo';
+  if(k==='mut'){var pn=freePen(0);if(pn<0)k='goo';else{var t=Math.max(0,Math.min(cycleCap(),S.maxRun-4)),s=spawnSlime(t,false,0,0,'Burped up by the Devourer');if(!s)k='goo';else{s.mu=mutRoll(3);if(!SIM){s.x=PIT.x+PIT.w/2;s.y=PIT.y+PIT.h*0.4;s.trav=true;}gotMutant(s,'burp');txt='🧬 It burped up a '+MUT[s.mu].n+' mutant!';}}}
+  if(k==='goo'){v=base*30;addGoo(v);txt='💧 Goo shower! +'+fmt(v);}
+  else if(k==='card'){giveCard(2,'');txt='🎟️ A gold scratch card!';}
+  else if(k==='egg'){var C=casS();C.fEgg=(C.fEgg||0)+2;txt='🥚 2 free egg pulls (in the Casino)!';}
+  else if(k==='jp'){v=base*180;addGoo(v);d.jp=(d.jp||0)+1;txt='💰 JACKPOT BURP! +'+fmt(v);}
+  if(SIM)return k;
+  burpSlow=1.6;sJackBurp();if(!S.opt.rfx)shake=14;burst(PIT.x+PIT.w/2,PIT.y+PIT.h*0.35,'#ffd23f',S.opt.rfx?12:40,420);
+  setTimeout(function(){banner(txt,k==='jp'?'#c18a06':'#5a2a8a',3.5);if(k==='jp'){sSting();fxCoins(S.opt.rfx?20:120);fxConfetti(S.opt.rfx?20:90);if(!S.opt.rfx)shake=16;}else if(k==='goo')fxCoins(S.opt.rfx?15:50);sWin();
+    if(d.burps===1)achQ.push({i:'💨',n:'Jackpot Burp!',d:'Every feed fills the burp meter under the pit. Full meter = a prize',c:'#7a4fe0'});},1300);
+  return k;}
+function burpTick(dt){if(burpSlow>0)burpSlow-=dt;if(burpPend>0){burpPend-=dt;if(burpPend<=0)jackpotBurp();}}
+function drawBurpMeter(g){if(!dvOn())return;var R=PIT,d=S.dv,f=Math.min(1,(d.burp||0)/BURP_N),dig=f>=1&&casNow()<(d.bcd||0),w=R.w*0.7,x=R.x+(R.w-w)/2,y=R.y+R.h-13;
+  g.fillStyle='rgba(30,10,50,.55)';rr(g,x,y,w,9,4.5);g.fill();if(f>0){g.fillStyle=f>=1?(dig?'#9a8ab8':'rgba(255,'+(190+Math.round(60*Math.sin(T*8)))+',60,1)'):'#c07aff';rr(g,x+1,y+1,Math.max(7,(w-2)*f),7,3.5);g.fill();}
+  g.font=FONT10;g.textAlign='center';g.textBaseline='middle';g.fillStyle='#fff';g.fillText(dig?'💨 digesting…':'💨 '+Math.floor((d.burp||0))+'/'+BURP_N,x+w/2,y-7);
+  if(burpSlow>0){var a=Math.min(1,burpSlow);g.font='900 '+Math.round((24+(1.6-burpSlow)*12)/Math.sqrt(cam.z))+'px ui-rounded,system-ui';g.globalAlpha=a;g.lineWidth=6;g.strokeStyle='#2a0a3a';g.fillStyle='#ffd23f';g.strokeText('BURRRP!',R.x+R.w/2,R.y-10);g.fillText('BURRRP!',R.x+R.w/2,R.y-10);g.globalAlpha=1;}}
+// ---------- REGURGITATION: a fed slime is very rarely spat back out as a mutant ----------
+var REG_P=0.01;
+function regurg(s){var d=S.dv;d.reg=(d.reg||0)+1;var o={tier:s.tier,nm:s.nm,uid:s.uid,born:s.born,ps:s.ps,bd:s.bd,sh:s.sh,pin:s.pin,lk:s.lk};
+  function spit(){var pn=freePen(0);if(pn<0)return;var n=mk(o.tier,SIM?0:PIT.x+PIT.w/2,SIM?0:PIT.y+PIT.h*0.3,SIM?0:40);n.pn=pn;n.sh=o.sh;n.uid=o.uid||newUid();n.nm=o.nm||'';n.born=o.born||Date.now();n.ps=o.ps||0;n.bd=o.bd||0;n.pin=!!o.pin;n.lk=!!o.lk;n.mu=mutRoll(2);n.trav=true;SL.push(n);
+    if(!SIM){sRegurg();if(!S.opt.rfx)shake=10;burst(n.x,n.y-20,'#c07aff',20,320);banner('🤮 BLEH! The Devourer spat '+(o.nm||'it')+' back out… as a mutant!','#5a2a8a',3.5);}gotMutant(n,'spit');}
+  if(SIM)spit();else setTimeout(spit,1400);}
+// ---------- first-time tips (once each, queued with the other little pills) ----------
+function tip1(k,i,n,d){if(SIM)return;S.tips=S.tips||{};if(S.tips[k])return;S.tips[k]=1;achQ.push({i:i,n:n,d:d,c:'#2a8a3a'});save();}
+function oddsTxt(p){if(p>=0.995)return 'certain';if(p>=0.4)return 'about 1 in 2';var n=1/p;return 'about 1 in '+(n<20?Math.round(n):n<100?Math.round(n/5)*5:fmtA(Math.round(n/50)*50));}
+function featTip(k){var T1={devourer:['👄','The Devourer','Drag a slime into the pit to feed it. Fed = bigger goo bonus, and the 💨 meter fills toward a surprise burp'],
+  altar:['🕯️','The Altar','Unseal it in the Shop, then drag a slime onto it for a blessing. Keep its candles lit'],
+  casino:['🎰','The Casino','Find it under ☰ More. Small bets are best; every game shows its odds'],
+  races:['🏁','Races','Pick a racer and bet a little goo. The odds show what you win']}[k];if(T1)tip1('f_'+k,T1[0],T1[1],T1[2]);}
+
 // ---------- UI (DOM is only written when a value actually changes) ----------
 var TX={};function setT(id,v){if(TX[id]!==v){TX[id]=v;$(id).textContent=v;}}
 var DS={};function setD(id,v){if(DS[id]!==v){DS[id]=v;$(id).style.display=v;}}
@@ -1916,7 +2066,7 @@ var CLS={};function setC(id,c,on){var k=id+'.'+c;if(CLS[k]!==on){CLS[k]=on;$(id)
 function esc(t){return String(t).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 var openSheet=null,shopTab='u',shopSig='',rSel=-1,farmTab='q',farmSig='',profS=null;
 var SHEETS=['shShop','shDex','shSet','shRace','shFarm','shProf','shCasino','shAch'];
-function open(id){closeAll();openSheet=id;$(id).classList.add('open');if(id==='shShop')buildShop();if(id==='shDex')buildDex();if(id==='shSet')buildSet();if(id==='shRace')buildRace();if(id==='shFarm')buildFarm();if(id==='shCasino')buildCasino();if(id==='shAch')buildAch();}
+function open(id){closeAll();openSheet=id;$(id).classList.add('open');if(id==='shShop')buildShop();if(id==='shDex')buildDex();if(id==='shSet')buildSet();if(id==='shRace')buildRace();if(id==='shFarm')buildFarm();if(id==='shCasino'){S.tips=S.tips||{};S.tips.cas=(S.tips.cas||0)+1;buildCasino();}if(id==='shAch')buildAch();}
 function closeAll(){SHEETS.forEach(function(i){$(i).classList.remove('open');});openSheet=null;profS=null;}
 document.querySelectorAll('[data-close]').forEach(function(b){b.addEventListener('click',closeAll);});
 document.querySelectorAll('.sheet').forEach(function(sh){sh.addEventListener('click',function(e){if(e.target===sh)closeAll();});});
@@ -1953,15 +2103,15 @@ function buildShop(){
   else{var g=rjGain(),at=ascTier(),ca=canAscend(),bb=bestBuy();
     h+='<div class="seg"><span>Buy</span>'+[1,10,0].map(function(n){return '<button class="chip'+(S.buyN===n?' on':'')+'" data-n="'+n+'">'+(n===1?'×1':n===10?'×10':'Max')+'</button>';}).join('')+'</div>';
     if(S.feat.autobuy)h+='<div class="row sm">🤖 Auto-adopt<button class="tg'+(S.ab.adopt?' on':'')+'" id="abA"></button></div><div class="row sm">🤖 Auto-upgrade (cheapest first)<button class="tg'+(S.ab.up?' on':'')+'" id="abU"></button></div>';
-    h+='<div class="asc"><h3>👑 Slime Ascension</h3>';
-    if(S.best>=8||S.asc>0||S.maxRun>=EARLY_MIN)h+='<p>Reset goo, slimes &amp; upgrades for Royal Jelly: each 👑 earned = +'+(10+2*cl('jelly'))+'% goo, and spend 👑 in the Crown Shop. Named &amp; secret slimes come with you (as babies). Requirement rises each ascension.<br>Next requirement: <b>'+TIERS[at].n+'</b> (tier '+(at+1)+')</p><button class="bb" id="ascBtn" '+(ca?'':'disabled')+'>'+(S.maxRun<at?'Reach '+TIERS[at].n+' this run':g<1?'Earn more goo to ascend':'Ascend for +'+g+' 👑')+'</button>'+(canEarly()?earlyHTML():'');
+    h+='<div class="asc"><h3>👑 Ascend: restart stronger</h3>';
+    if(S.best>=8||S.asc>0||S.maxRun>=EARLY_MIN)h+='<p>Start over with a permanent boost. Goo, slimes and upgrades reset, and you get 👑 Royal Jelly: each one is <b>+'+(10+2*cl('jelly'))+'% goo forever</b>, and you can spend them in the Crown Shop. Named and secret slimes come with you (as babies).<br>Needs: <b>'+TIERS[at].n+'</b> (tier '+(at+1)+') this run. It gets a little higher each time.</p><button class="bb" id="ascBtn" '+(ca?'':'disabled')+'>'+(S.maxRun<at?'Reach '+TIERS[at].n+' this run':g<1?'Earn more goo to ascend':'Ascend for +'+g+' 👑')+'</button>'+(canEarly()?earlyHTML():'');
     else h+='<p>Discover the '+(S.disc[8]?TIERS[8].n:'tier 9 slime')+' to unlock Ascension and earn permanent bonuses.</p>';
     h+='</div>';
     if(S.best>=14||S.reb>0)h+=rebirthHTML();
     UPS.forEach(function(u){if(!featUp(u))return;var l=lvl(u.k),mx=l>=u.mx(),cn=mx?{c:0,k:0}:upCostN(u,l),c=mx?0:u.cost(l);
-      h+='<div class="item'+(u.k===bb?' best':'')+'"><div class="ic">'+u.i+'</div><div class="it"><b>'+u.n+'<span class="lv">'+(mx?'MAX':'Lv '+l)+'</span>'+(u.k===bb?'<span class="bbt">⭐ Best buy</span>':'')+'<button class="lvi" data-li="'+u.k+'" aria-label="All levels">ⓘ</button></b><small>'+u.d(l)+'</small>'+(u.pen!==undefined||u.k==='pen'?'<small class="pd">'+PENS[u.pen||0].icon+' '+PENS[u.pen||0].d+'</small>':'')+'</div><button class="bb" data-k="'+u.k+'" '+(mx||S.goo<c?'disabled':'')+'>'+(mx?'MAX':'<span class="drop sm"></span>'+fmt(S.buyN!==1&&cn.k>0&&cn.c<=S.goo?cn.c:c)+(S.buyN!==1?'<small>'+(cn.c<=S.goo&&cn.k>0?'×'+cn.k:buyNLabel())+'</small>':''))+'</button></div>';});
+      h+='<div class="item'+(u.k===bb?' best':'')+'"><div class="ic">'+u.i+'</div><div class="it"><b>'+u.n+'<span class="lv">'+(mx?'MAX':'Lv '+l)+'</span>'+(u.k===bb?'<span class="bbt">⭐ Best buy</span>':'')+'<button class="lvi" data-li="'+u.k+'" aria-label="All levels">ⓘ</button></b><small class="tip">'+u.tip+'</small><small>'+u.d(l)+'</small></div><button class="bb" data-k="'+u.k+'" '+(mx||S.goo<c?'disabled':'')+'>'+(mx?'MAX':'<span class="drop sm"></span>'+fmt(S.buyN!==1&&cn.k>0&&cn.c<=S.goo?cn.c:c)+(S.buyN!==1?'<small>'+(cn.c<=S.goo&&cn.k>0?'×'+cn.k:buyNLabel())+'</small>':''))+'</button></div>';});
     var lockedPens=UPS.filter(function(u){return !featUp(u);}).length;if(lockedPens)h+='<div class="note">❓ '+lockedPens+' more pen'+(lockedPens>1?'s':'')+' to discover as you merge higher tiers</div>';
-    h+='<div class="note">👥 Crowd bonus ×'+fmt2(crowdMult())+' ('+SL.length+' slimes, +3% each)</div>';}
+    h+='<div class="note">👥 Crowd bonus: +'+Math.round((crowdMult()-1)*100)+'% goo ('+SL.length+' slimes, +3% each)</div>';}
   $('shopList').innerHTML=h;
   $('shopList').querySelectorAll('.bb[data-k]').forEach(function(b){b.addEventListener('click',function(){var n=S.buyN===1?1:S.buyN===10?10:'max';if(buyUpN(b.dataset.k,n)){buildShop();updUI();}});});
   $('shopList').querySelectorAll('.chip[data-n]').forEach(function(b){b.addEventListener('click',function(){S.buyN=+b.dataset.n;sBuy();buildShop();updUI();});});
@@ -1970,14 +2120,14 @@ function buildShop(){
   $('shopList').querySelectorAll('.bb[data-c]').forEach(function(b){b.addEventListener('click',function(){if(buyCrown(b.dataset.c)){fxConfetti(24);buildShop();updUI();}});});
   var eb=$('ascE');if(eb)eb.addEventListener('click',function(){var ge=earlyGain(),gf=rjGain();queueModal(function(){showModal('<div style="font-size:54px">🌗</div><h2>Ascend early?</h2><p>Goo, slimes and upgrades reset just like a full ascension.<br>You get only <b>+'+ge+' Royal Jelly</b> now. Reaching <b>'+TIERS[ascTier()].n+'</b> first would give <b>+'+gf+'</b> or more.<br><small>Early ascensions don\'t raise the requirement and don\'t count as ascensions.</small></p><button class="mbtn pur" id="mOk">Ascend early</button><button class="mbtn alt" id="mNo">Keep going</button>',{mOk:function(){if(ascendEarly()){fxConfetti(40);shopTab='c';closeAll();}},mNo:null});});});
   $('shopList').querySelectorAll('.lvi').forEach(function(b){b.addEventListener('click',function(ev){ev.stopPropagation();openLevels(b.dataset.li||b.dataset.lc,!!b.dataset.lc);});});
-  var ab=$('ascBtn');if(ab)ab.addEventListener('click',function(){var gg=rjGain();queueModal(function(){showModal('<div style="font-size:54px">👑</div><h2>Ascend?</h2><p>Goo, slimes and upgrades reset'+(cl('keep')?' (Heirloom keeps some)':'')+'. Named and secret slimes come along as babies.<br>You gain <b>+'+gg+' Royal Jelly</b>: +'+(gg*(10+2*cl('jelly')))+'% goo forever, plus 👑 to spend in the Crown Shop.</p><button class="mbtn pur" id="mOk">Ascend!</button><button class="mbtn alt" id="mNo">Not yet</button>',{mOk:function(){if(ascend()){fxConfetti(90);shopTab='c';closeAll();}},mNo:null});});});
+  var ab=$('ascBtn');if(ab)ab.addEventListener('click',function(){var gg=rjGain();queueModal(function(){showModal('<div style="font-size:54px">👑</div><h2>Ascend? (restart stronger)</h2><p>Goo, slimes and upgrades reset'+(cl('keep')?' (Heirloom keeps some)':'')+'. Named and secret slimes come along as babies.<br>You gain <b>+'+gg+' Royal Jelly</b>: +'+(gg*(10+2*cl('jelly')))+'% goo forever, plus 👑 to spend in the Crown Shop.</p><button class="mbtn pur" id="mOk">Ascend!</button><button class="mbtn alt" id="mNo">Not yet</button>',{mOk:function(){if(ascend()){fxConfetti(90);shopTab='c';closeAll();}},mNo:null});});});
   var rb=$('rebBtn');if(rb)rb.addEventListener('click',function(){var gg=sdGain();queueModal(function(){showModal('<div style="font-size:54px">🌠</div><h2>Cosmic Rebirth?</h2><p>Resets goo, slimes, upgrades, ascensions <b>and your Royal Jelly goo bonus</b>. Crown perks, unspent 👑, the Devourer and Slimedex stay.<br>Gain <b>+'+gg+' Stardust</b> (each doubles all goo and speeds the Hatchery +5%)'+(S.reb<2?', unlock 5 new tiers and +3 Better Breeding':'')+'.</p><button class="mbtn pur" id="mOk">Be reborn!</button><button class="mbtn alt" id="mNo">Not yet</button>',{mOk:function(){if(rebirth()){fxConfetti(140);flash();closeAll();}},mNo:null});});});
 }
 function rebirthHTML(){var cap=cycleCap(),ok=canRebirth();
-  return '<div class="reb"><h3>🌠 Cosmic Rebirth</h3><p>The deeper prestige. Resets your 👑 goo bonus &amp; ascensions, keeps Crown perks and unspent 👑. Stardust: <b>'+S.sd+'</b> (×'+fmt(sdMult())+' goo).'+(S.reb<2?' Unlocks tiers '+(cap+2)+'–'+(cap+6)+' and +3 Better Breeding.':'')+'<br>Requirement: <b>'+TIERS[cap].n+'</b> this run</p><button class="bb" id="rebBtn" '+(ok?'':'disabled')+'>'+(ok?'Rebirth for +'+sdGain()+' 🌠':'Reach '+TIERS[cap].n+' this run')+'</button></div>';}
+  return '<div class="reb"><h3>🌠 Cosmic Rebirth: the big restart</h3><p>Like Ascending, but bigger. Your 👑 goo bonus and ascensions reset; Crown perks and unspent 👑 stay. You get 🌠 Stardust: each one doubles all goo. Stardust: <b>'+S.sd+'</b> (×'+fmt(sdMult())+' goo).'+(S.reb<2?' Unlocks tiers '+(cap+2)+'–'+(cap+6)+' and +3 Better Breeding.':'')+'<br>Requirement: <b>'+TIERS[cap].n+'</b> this run</p><button class="bb" id="rebBtn" '+(ok?'':'disabled')+'>'+(ok?'Rebirth for +'+sdGain()+' 🌠':'Reach '+TIERS[cap].n+' this run')+'</button></div>';}
 function crownHTML(){var h='<div class="asc" style="background:linear-gradient(135deg,#fff3c4,#ffe7b0)"><h3>👑 Crown Shop</h3><p>You have <b>'+S.rj+'</b> 👑 to spend. Perks are permanent (they even survive Cosmic Rebirth). Spending 👑 never lowers your goo bonus: that comes from 👑 earned ('+S.rjCycle+' → +'+fmt(S.rjCycle*(10+2*cl('jelly')))+'%).</p></div>';
   CR.forEach(function(u){var l=cl(u.k),mx=l>=u.max,c=mx?0:u.cost(l);
-    h+='<div class="item"><div class="ic">'+u.i+'</div><div class="it"><b>'+u.n+'<span class="lv">'+(mx?'MAX':'Lv '+l+'/'+u.max)+'</span><button class="lvi" data-lc="'+u.k+'" aria-label="All levels">ⓘ</button></b><small>'+u.d(Math.min(l,u.max-1))+'</small></div><button class="bb rj" data-c="'+u.k+'" '+(mx||S.rj<c?'disabled':'')+'>'+(mx?'MAX':'👑 '+fmt(c))+'</button></div>';});
+    h+='<div class="item"><div class="ic">'+u.i+'</div><div class="it"><b>'+u.n+'<span class="lv">'+(mx?'MAX':'Lv '+l+'/'+u.max)+'</span><button class="lvi" data-lc="'+u.k+'" aria-label="All levels">ⓘ</button></b><small class="tip">'+u.tip+'</small><small>'+u.d(Math.min(l,u.max-1))+'</small></div><button class="bb rj" data-c="'+u.k+'" '+(mx||S.rj<c?'disabled':'')+'>'+(mx?'MAX':'👑 '+fmt(c))+'</button></div>';});
   return h;}
 function refreshShop(){if(openSheet!=='shShop')return;if(shopSignature()!==shopSig){var st=$('shopList').parentNode.scrollTop;buildShop();$('shopList').parentNode.scrollTop=st;}}
 
@@ -2018,7 +2168,7 @@ function updRace(){if(RC&&RC.state==='open'&&T<rToastT){setT('rStat',rToast);ret
 function buildDex(){
   var h='',n=0,cap=cycleCap();
   TIERS.forEach(function(t,i){var d=!!S.disc[i];if(d)n++;h+='<div class="card'+(d&&!S.seen[i]?' new':'')+'"><canvas id="dx'+i+'" width="168" height="168"></canvas><b>'+(d?t.n:'???')+'</b><small>'+(d?fmt(tierGps(i))+' goo/s':i>=NT?'🔒 Secret · the Altar knows':i>cap?'🔒 Rebirth '+Math.ceil((i-14)/5):'Tier '+(i+1))+'</small></div>';});
-  $('dexGrid').innerHTML=h;var dg=$('dexGacha');if(dg){dg.innerHTML=S.feat.casino?gachaDexHTML():'';if(S.feat.casino)drawGachaDex();}$('dexCount').textContent=n+' / '+TIERS.length;
+  $('dexGrid').innerHTML=h;var dmu=$('dexMut');if(dmu)dmu.innerHTML=mutColHTML();var dg=$('dexGacha');if(dg){dg.innerHTML=S.feat.casino?gachaDexHTML():'';if(S.feat.casino)drawGachaDex();}$('dexCount').textContent=n+' / '+TIERS.length;
   TIERS.forEach(function(t,i){var c=$('dx'+i),g=c.getContext('2d');g.scale(2,2);drawSlime(g,42,76,22,i,{t:1.3});
     if(!S.disc[i]){var im=g.getImageData(0,0,c.width,c.height),dd=im.data;for(var q=0;q<dd.length;q+=4){if(dd[q+3]>40){dd[q]=61;dd[q+1]=52;dd[q+2]=89;dd[q+3]=255;}else dd[q+3]=0;}g.putImageData(im,0,0);g.fillStyle='#fff';g.font='900 22px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('?',42,58);}
     S.seen[i]=S.seen[i]||!!S.disc[i];});
@@ -2030,14 +2180,14 @@ var lastModalClose=0;
 function nextModal(){var fn=mq.shift();if(!fn&&mOpen)lastModalClose=Date.now();$('modal').classList.remove('reveal');if(fn){mOpen=true;fn();}else{mOpen=false;$('modal').classList.remove('open');modalSlime=-1;nsCtx=null;spin=null;}}
 function showModal(html,handlers,cls){
   $('mbox').innerHTML=html;$('modal').classList.add('open');if(cls)$('modal').classList.add(cls);
-  Object.keys(handlers||{}).forEach(function(id){var el=$(id);if(el)el.addEventListener('click',function(){var f=handlers[id];if(f&&f()===false)return;modalSlime=-1;nsCtx=null;nextModal();});});
+  Object.keys(handlers||{}).forEach(function(id){var el=$(id);if(el)el.addEventListener('click',function(){var f=handlers[id];if(f&&f()===false)return;modalSlime=-1;modalMu=0;nsCtx=null;nextModal();});});
 }
 function flash(){var f=document.createElement('div');f.className='flash';document.body.appendChild(f);setTimeout(function(){f.remove();},800);}
 function newSlimeModal(t,bonus){
   showModal('<div class="rays"></div><div class="rel"><span class="newtag">'+(t>=15?'BEYOND! ':'')+'NEW SLIME!</span><div class="tierno">TIER '+(t+1)+' / '+TIERS.length+'</div><canvas id="nsc" width="460" height="460"></canvas><h2>'+TIERS[t].n+'</h2><p>'+TIERS[t].t+'</p><p>Makes <b>'+fmt(tierGps(t))+' goo/s</b> each</p><p style="color:#ffd96a">+'+fmt(bonus)+' discovery bonus!</p><button class="mbtn" id="mOk">Awesome!</button></div>',{mOk:null},'reveal');
-  modalSlime=t;nsCtx=$('nsc').getContext('2d');flash();fxConfetti(70+t*3);
+  modalSlime=t;modalMu=0;nsCtx=$('nsc').getContext('2d');flash();fxConfetti(70+t*3);
 }
-function drawModalSlime(){if(modalSlime<0||!nsCtx)return;var g=nsCtx;g.setTransform(2,0,0,2,0,0);g.clearRect(0,0,230,230);var b=Math.abs(Math.sin(T*3));g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(115,205,60*(1-b*0.3),12,0,0,7);g.fill();drawSlime(g,115,205-b*26,62,modalSlime,{t:T,sq:b<0.2?0.2-b:-(b-0.2)*0.08,blink:(T%3)<0.12});}
+function drawModalSlime(){if(modalSlime<0||!nsCtx)return;var g=nsCtx;g.setTransform(2,0,0,2,0,0);g.clearRect(0,0,230,230);var b=Math.abs(Math.sin(T*3));g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(115,205,60*(1-b*0.3),12,0,0,7);g.fill();if(modalMu){g.globalAlpha=0.55+0.2*Math.sin(T*3);g.drawImage(auraImg(modalMu),115-110,205-b*26-50-110,220,220);g.globalAlpha=1;}var sqm=b<0.2?0.2-b:-(b-0.2)*0.08;drawSlime(g,115,205-b*26,62,modalSlime,{t:T,sq:sqm,blink:(T%3)<0.12});if(modalMu)mutOverlay(g,115,205-b*26,62,modalMu,T,sqm);}
 var WHEEL=[1.5,2,1.5,3,2,1.5,2,5],WCOL=['#7fe86f','#62bcff','#7fe86f','#ff93d0','#62bcff','#7fe86f','#62bcff','#ffd23f'];
 function drawWheel(rot){var c=$('wheel');if(!c)return;var g=c.getContext('2d'),R=100;g.setTransform(2,0,0,2,0,0);g.clearRect(0,0,220,220);g.save();g.translate(110,112);g.rotate(rot);
   for(var i=0;i<WHEEL.length;i++){var a0=i/WHEEL.length*6.283-1.5708,a1=(i+1)/WHEEL.length*6.283-1.5708;g.fillStyle=WCOL[i];g.beginPath();g.moveTo(0,0);g.arc(0,0,R,a0,a1);g.closePath();g.fill();g.strokeStyle='#fff';g.lineWidth=3;g.stroke();
@@ -2093,11 +2243,12 @@ function refreshFarm(){if(openSheet!=='shFarm')return;if(farmSignature()!==farmS
 function openProfile(s){if(!s||SL.indexOf(s)<0)return;closeAll();profS=s;openSheet='shProf';$('shProf').classList.add('open');buildProf();sPoke();if(!S.feat.name){S.feat.name=1;}}
 function buildProf(){var s=profS;if(!s)return;var P=PERS[s.ps],h=hearts(s),nb=10*Math.pow(h+1,2),pb=10*h*h,bud=null;for(var i=0;i<SL.length;i++)if(SL[i].uid===s.bud)bud=SL[i];
   var st=(S.story[s.uid]||[]).slice().reverse(),tier=s.sp?NT+s.sp-1:s.tier,prod=TG[s.tier]*slimeMult(s)*globalMult();
-  var x='<div class="pf"><canvas id="pfc" width="240" height="240"></canvas><div class="pfi"><div class="pnm">'+(s.nm?esc(s.nm):'<i>unnamed</i>')+'</div><small>'+TIERS[tier].n+(s.sh?' · ✨ shiny':'')+(s.sp?' · secret':'')+'</small>'+
+  var x='<div class="pf"><canvas id="pfc" width="240" height="240"></canvas><div class="pfi"><div class="pnm">'+(s.nm?esc(s.nm):'<i>unnamed</i>')+'</div><small>'+TIERS[tier].n+(s.sh?' · ✨ shiny':'')+(s.sp?' · secret':'')+(s.mu?' · '+MUT[s.mu].i+' '+MUT[s.mu].n+' mutant':'')+'</small>'+
     '<div class="hearts">'+'♥'.repeat(h)+'<span>'+'♡'.repeat(5-h)+'</span></div>'+(h<5?'<div class="qb"><div style="width:'+Math.round(100*(s.bd-pb)/(nb-pb))+'%"></div></div><small>Squish, poke and cure it to grow its bond (+4% goo per ♥)</small>':'<small>Best friends forever</small>')+'</div></div>';
   x+='<div class="nmrow"><input id="nmI" maxlength="14" placeholder="Give it a name" value="'+(s.nm?esc(s.nm):'')+'" autocomplete="off"><button class="chip" id="nmR">🎲</button><button class="bb" id="nmOk">'+(s.nm?'Rename':'Name')+'</button></div>';
   x+='<div class="row sm">'+P.i+' <b>'+P.n+'</b><span class="pd2">'+P.d+'</span></div>';
   x+='<div class="row sm">💧 Makes <b>'+fmt(prod)+'/s</b> in the '+PENS[s.pn].icon+' '+PENS[s.pn].n+'</div>';
+  if(s.mu)x+='<div class="row sm">🧬 <b>'+MUT[s.mu].n+' mutant</b><span class="pd2">'+MUT[s.mu].d+' for this slime. Merging it uses up the mutation (the new slime is more likely to mutate)</span></div>';
   x+='<div class="row sm">💞 Buddy: <b>'+(bud?slimeName(bud):'none yet')+'</b>'+(bud&&s.budIn?' <span class="pd2">together: +10% goo</span>':'')+'</div>';
   x+='<div class="row sm">📌 Pin (stays in its pen, protected)<button class="tg'+(s.pin?' on':'')+'" id="pPin"></button></div>';
   x+='<div class="row sm">🔒 Lock (never merged, fed or offered by accident)<button class="tg'+(s.lk?' on':'')+'" id="pLk"></button></div>';
@@ -2112,7 +2263,7 @@ function buildProf(){var s=profS;if(!s)return;var P=PERS[s.ps],h=hearts(s),nb=10
   $('pLk').addEventListener('click',function(){s.lk=!s.lk;this.classList.toggle('on',s.lk);sBuy();save();});
   $('pFind').addEventListener('click',function(){var t=s;closeAll();cam.z=2;cam.x=t.x-W/4;cam.y=t.y-H/4;clampCam();t.emo='👋';t.emoT=2;});}
 function drawProf(){if(!profS||openSheet!=='shProf')return;var c=$('pfc');if(!c)return;var s=profS,g=c.getContext('2d'),b=Math.abs(Math.sin(T*2.4)),tier=s.sp?NT+s.sp-1:s.tier;g.setTransform(2,0,0,2,0,0);g.clearRect(0,0,120,120);
-  g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(60,108,34*(1-b*0.2),7,0,0,7);g.fill();drawSlime(g,60,108-b*10,34,tier,{t:T,sq:b<0.2?0.2-b:-(b-0.2)*0.06,blink:(T%3.4)<0.12||s.asleep,look:Math.sin(T*0.7)>0.6?1:Math.sin(T*0.7)<-0.6?-1:0});if(s.sh)shinyOverlay(g,60,108-b*10,34);}
+  g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(60,108,34*(1-b*0.2),7,0,0,7);g.fill();drawSlime(g,60,108-b*10,34,tier,{t:T,sq:b<0.2?0.2-b:-(b-0.2)*0.06,blink:(T%3.4)<0.12||s.asleep,look:Math.sin(T*0.7)>0.6?1:Math.sin(T*0.7)<-0.6?-1:0});if(s.sh)shinyOverlay(g,60,108-b*10,34);if(s.mu)mutOverlay(g,60,108-b*10,34,s.mu,T,b<0.2?0.2-b:-(b-0.2)*0.06);}
 function buildSet(){
   var o=S.opt,h='<div class="row">🔊 Sound<button class="tg'+(S.sound?' on':'')+'" id="tgS"></button></div>';
   h+='<div class="row sm">🔉 Effects volume<input type="range" id="vS" min="0" max="100" value="'+Math.round(o.vol*100)+'"></div>';
@@ -2126,7 +2277,7 @@ function buildSet(){
   h+='<h4>📊 Where your goo comes from</h4><div class="stats">'+statsBreakdown()+'</div>';
   var nd=S.disc.filter(Boolean).length;
   h+='<h4>🏅 Stats</h4><div class="stats">Total goo made: <b>'+fmt(S.total)+'</b> · Play time: <b>'+fmtTime(S.playT)+'</b><br>Squishes: <b>'+fmt(S.squishes)+'</b> · Merges: <b>'+fmt(S.merges)+'</b> · Shinies: <b>'+S.shinies+'</b> · Golden catches: <b>'+S.goldens+'</b><br>Slimedex: <b>'+nd+'/'+TIERS.length+'</b> · Ascensions: <b>'+S.asc+'</b> · Rebirths: <b>'+S.reb+'</b> · 🌠 <b>'+S.sd+'</b><br>Races: <b>'+S.race.races+'</b> · bets won <b>'+S.race.wins+'</b> · goo won <b>'+fmt(S.race.won)+'</b> / lost <b>'+fmt(S.race.lost)+'</b><br>Named slimes: <b>'+(S.named||0)+'</b> · Trouble fixed: <b>'+(S.fixes||0)+'</b> · Altar offerings: <b>'+S.alt.offers+'</b> · Blood Moons: <b>'+(S.bms||0)+'</b></div>';
-  h+='<button class="rbtn alt" id="wnB">✨ What\'s new in Update 1</button>';
+  h+='<button class="rbtn alt" id="wnB">✨ What\'s new</button>';
   h+='<button class="danger" id="rst">Reset all progress</button><div class="stats" style="text-align:center;padding-top:14px">Slime Farm · Update 1 · progress autosaves on this device</div>';
   $('setList').innerHTML=h;
   $('tgS').addEventListener('click',function(){S.sound=!S.sound;this.classList.toggle('on',S.sound);ac();sBuy();save();});
@@ -2138,7 +2289,7 @@ function buildSet(){
   $('nf0').addEventListener('click',function(){o.nf=0;buildSet();updUI();save();});$('nf1').addEventListener('click',function(){o.nf=1;buildSet();updUI();save();});
   $('a2hs').addEventListener('click',a2hsTip);
   $('exp').addEventListener('click',exportSave);$('imp').addEventListener('click',importSave);
-  $('wnB').addEventListener('click',function(){closeAll();showWhatsNew();});
+  $('wnB').addEventListener('click',function(){closeAll();showWhatsNew2();});
   $('rst').addEventListener('click',function(){queueModal(function(){showModal('<div style="font-size:54px">⚠️</div><h2>Reset everything?</h2><p>All goo, slimes, upgrades, Royal Jelly, Stardust, perks, the Devourer and your Slimedex will be deleted. This cannot be undone.</p><button class="mbtn red" id="mOk">Yes, reset</button><button class="mbtn alt" id="mNo">Cancel</button>',{mOk:hardReset,mNo:null});});});
 }
 function statsBreakdown(){var r=[['🐾 Slimes (base)',fmt(gpsBase())+'/s'],['💧 Goo Boost','×'+fmt2(gooMult())],['👑 Royal Jelly','×'+fmt2(rjMult())],['👥 Crowd ('+SL.length+')','×'+fmt2(crowdMult())],['🌠 Stardust','×'+fmt2(sdMult())]];
@@ -2157,7 +2308,7 @@ function hardReset(){try{localStorage.removeItem(KEY);}catch(e){}S=fresh();SL=[]
 function showWhatsNew(){queueModal(function(){showModal('<div class="rel"><span class="newtag">UPDATE 1</span><h2 style="margin-top:12px">Welcome back! 🌱</h2><div class="wn calm">'+
   '<p>Your farm is safe: every slime, upgrade and 👑 is still yours.</p>'+
   '<p>New things will unlock slowly as you play, one at a time.</p>'+
-  '<p>🏆 New: Achievements, with small goo rewards. Your past progress already counts.</p>'+
+  '<p>🏆 New: Achievements, mutant slimes and a Golden Slime to catch. Your past progress already counts.</p>'+
   '<p>How do you like your farm?</p></div>'+
   '<button class="mbtn" id="wnS">🌿 Keep it simple</button><button class="mbtn pur" id="wnB">🔥 Bring it on</button>'+
   '<p class="sm">Simple Mode turns off farm trouble, the Altar and Blood Moons. Change it any time in Settings.</p><button class="lnk" id="wnL">Decide later</button></div>',
@@ -2232,12 +2383,19 @@ function openLevels(k,cr){var u=null,L=cr?CR:UPS,i;for(i=0;i<L.length;i++)if(L[i
   var c=$('lvCur');if(c)setTimeout(function(){c.scrollIntoView({block:'center'});},30);}
 function closeLevels(){$('shLvl').classList.remove('open');}
 $('lvlX').addEventListener('click',closeLevels);$('shLvl').addEventListener('click',function(e){if(e.target===this)closeLevels();});
+function showWhatsNew2(){queueModal(function(){var L=['<p>🧬 <b>Mutant slimes!</b> Any merge can now make a rare mutant with its own look and a small goo bonus. Collect all 6.</p>',
+  '<p>✨ <b>Golden Rush!</b> Every so often a Golden Slime dashes around for 10 seconds. Tap it as fast as you can.</p>'];
+  if(S.feat.devourer)L.push('<p>💨 <b>Jackpot Burps!</b> Feeding the Devourer fills a burp meter. Full meter = a surprise prize.</p>');
+  L.push('<p>📝 <b>Clearer words</b> everywhere: Squish Power is now <b>Tap Power</b>, and upgrades show plain % and odds.</p>');if(S.feat.ach)L.push('<p>🏆 10 new achievements to find.</p>');
+  showModal('<div class="rel"><span class="newtag">NEW</span><h2 style="margin-top:12px">Fresh goo on the farm! 🧬</h2><div class="wn calm">'+L.join('')+'<p class="sm">Nothing else changed: your farm and progress are just as you left them.</p></div><button class="mbtn" id="mOk">Let\'s go!</button></div>',{mOk:null},'reveal');});}
+// tap the goo counter to see the full number
+$('goo').addEventListener('click',function(){var n=S.goo,t=n<1e21?Math.floor(n).toLocaleString('en-US'):n.toExponential(3).replace('+','');banner('💧 '+t+' goo','#2b2140',2.2);});
 
 // ---------- save / load (v3) + clean migration of v1 and v2 saves ----------
 var noSave=false;
 var saveReq=false,lastSave=0;
 function save(){if(SIM||noSave)return;saveReq=true;} // coalesced: written at most every 2s by the frame loop (and immediately on hide)
-function saveNow(){if(SIM||noSave)return;saveReq=false;lastSave=Date.now();S.sl=SL.filter(function(s){return !s.eat;}).map(function(s){return[s.tier,s.sh,s.pn,s.uid,s.ps,Math.round((s.bd||0)*10)/10,s.nm||'',(s.pin?1:0)|(s.lk?2:0),s.sp||0,s.born||0,s.bud||0];});S.last=Date.now();
+function saveNow(){if(SIM||noSave)return;saveReq=false;lastSave=Date.now();S.sl=SL.filter(function(s){return !s.eat;}).map(function(s){return[s.tier,s.sh,s.pn,s.uid,s.ps,Math.round((s.bd||0)*10)/10,s.nm||'',(s.pin?1:0)|(s.lk?2:0),s.sp||0,s.born||0,s.bud||0,s.mu||0];});S.last=Date.now();
   S.rc=RC&&RC.state!=='done'&&(RC.bet||RC.entry)?{seed:RC.seed,rs:RC.rs,start:RC.start,bet:RC.bet,entry:RC.entry,saved:RC.saved||null}:null;
   try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function num(v,d){return (typeof v==='number'&&isFinite(v))?safe(v):d;}
@@ -2278,14 +2436,14 @@ function load(){
     sl.forEach(function(e){var t=Math.min(cycleCap(),Math.max(0,e[0]|0)),pn=e[2]|0,sp=e[8]|0;if(sp)t=Math.max(0,e[0]|0);
       if(!(pn>=0&&pn<NP)||!penOpen(pn)||!penRoom(pn))pn=freePen(0);if(pn<0){if(old){addGoo(buyCost()*2);}return;} // (only if a slime truly cannot fit: refunded)
       var p=randPos(t,pn),s=mk(t,p.x,p.y,0);s.age=5;s.sh=e[1]?1:0;s.pn=pn;s.uid=e[3]||newUid();s.ps=e[4]>=0&&e[4]<5?e[4]:(Math.random()*5)|0;s.bd=num(e[5],0);s.nm=e[6]?String(e[6]).slice(0,14):'';
-      s.pin=!!((e[7]|0)&1);s.lk=!!((e[7]|0)&2);s.sp=sp>0&&sp<3?sp:0;s.born=e[9]||Date.now();s.bud=e[10]||0;SL.push(s);});
+      s.pin=!!((e[7]|0)&1);s.lk=!!((e[7]|0)&2);s.sp=sp>0&&sp<3?sp:0;s.born=e[9]||Date.now();s.bud=e[10]||0;var mu=e[11]|0;s.mu=mu>0&&mu<MUT.length?mu:0;SL.push(s);});
     S.uid=Math.max(S.uid||1,SL.reduce(function(m,s){return Math.max(m,s.uid+1);},1));
     if(old)SL.forEach(function(s){story(s,'Lived on the farm before Update 1');});
     if(!SL.length){spawnSlime(lvl('spawn'),false,0);spawnSlime(lvl('spawn'),false,0);}
     if(S.rc&&S.rc.rs&&S.rc.rs.length===4){RC={seed:S.rc.seed,rs:S.rc.rs,start:S.rc.start,bet:S.rc.bet,entry:S.rc.entry,saved:S.rc.saved,state:'open',p:[0,0,0,0],odds:[1,1,1,1]};raceOdds();}
     if(old){S.feat={};if(lvl('pS')>0)S.feat.spring=1;if(lvl('pF')>0)S.feat.flower=1;if(lvl('pT')>0)S.feat.star=1;if(S.race&&S.race.races>0||S.best>=4)S.feat.races=1;S.lad={on:1,el:0,mr:S.maxRun};S.tut=3;}
     return true;}
-  S=fresh();S.wn=1;SL=[];spawnSlime(0,false,0);spawnSlime(0,false,0);return false;
+  S=fresh();S.wn=2;SL=[];spawnSlime(0,false,0);spawnSlime(0,false,0);return false;
 }
 // ---------- boot ----------
 function resize(){
@@ -2296,7 +2454,7 @@ window.addEventListener('resize',resize);if(window.ResizeObserver)new ResizeObse
 resize();
 var had=load();
 if(S.migrated&&!wasV2){delete S.migrated;}else if(S.migrated)delete S.migrated;
-if(had&&!S.wn){S.wn=1;showWhatsNew();}
+if(had&&!S.wn){S.wn=2;showWhatsNew();}else if(had&&S.wn<2){S.wn=2;showWhatsNew2();}
 if(had){var away=(Date.now()-(S.last||Date.now()))/1000;if(away>5)offline(away,60);}
 if(!RC)newRace();
 if(!S.quest||S.quest.day!==dayStr())if(S.feat.quests)newQuests();
@@ -2306,7 +2464,7 @@ function frame(now){
   var t0=performance.now(),dt=(now-lastT)/1000;lastT=now;
   if(dt>3){offline(dt,60);dt=0;}
   dt=Math.min(dt,0.05);
-  var ts=dvEvo>0?0.35:1; // slow-motion during the Devourer's evolution (visuals only; the economy runs at real speed)
+  var ts=dvEvo>0||burpSlow>0?0.35:1; // slow-motion during the Devourer's evolution (visuals only; the economy runs at real speed)
   tickEco(dt);physics(dt*ts);raceTick(dt);stepSpin(dt);render();fxStep(dt*ts);drawModalSlime();drawProf();if(openSheet==='shRace')drawTrack();
   uiAcc+=dt;if(uiAcc>0.1){uiAcc=0;updUI();}
   if(saveReq&&Date.now()-lastSave>2000)saveNow();
@@ -2322,7 +2480,7 @@ document.addEventListener('visibilitychange',function(){
   else{var away=(Date.now()-(S.last||Date.now()))/1000;if(away>2)offline(away,60);saveNow();startLoop();updUI();checkUpdate();}});
 window.addEventListener('pagehide',saveNow);
 // ---------- stale-version guard: Safari / Home Screen apps can keep an old copy cached; offer a one-tap update ----------
-var BUILD='20261029200847',updT=0;
+var BUILD='20261029210100',updT=0;
 function checkUpdate(){if(SIM||!window.fetch||location.protocol==='file:'||Date.now()-updT<6e5)return;updT=Date.now();
   fetch(location.pathname+'?vc='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():'';}).then(function(t){var m=/var BUILD='([0-9a-z_.-]+)'/.exec(t||'');if(m&&m[1]!==BUILD)showUpd();}).catch(function(){});}
 function showUpd(){if($('updBar'))return;var b=document.createElement('button');b.id='updBar';b.textContent='✨ A new version of Slime Farm is ready · tap to update';b.addEventListener('click',function(){saveNow();noSave=true;location.reload();});document.body.appendChild(b);}
@@ -2340,7 +2498,7 @@ function simDark(t,o){var full=o.aggr?SL.length>4:SL.length>=penMax()-2;
   if(altOn()&&o.altar!==false&&full&&t-simAltT>=(o.altInt||150)&&!blessOn('plenty')){var c=simSpare(S.maxRun-3);if(c&&c.tier>=S.maxRun-7){simAltT=t;sacrifice(c,'bless');}}}
 function simPlay(hours,opt){opt=opt||{};ACH_SIM=!opt.noach;
   var bk={S:S,SL:SL,fr:frenzyT,T:T,RC:RC,EV:EV,bm:bm},out={_g:-1,_gt:0,gap:0,tiers:{},asc:[],reb:[],log:[],dv:[],feats:{}};
-  SIM=true;S=fresh();SL=[];spawnSlime(0,false,0);spawnSlime(0,false,0);frenzyT=0;autoAcc=amAcc=hatAcc=0;goldT=90;EV=null;bm=null;simAltT=0;
+  SIM=true;S=fresh();SL=[];spawnSlime(0,false,0);spawnSlime(0,false,0);frenzyT=0;autoAcc=amAcc=hatAcc=0;goldT=90;EV=null;bm=null;simAltT=0;rushT=RUSH_MIN+Math.random()*RUSH_VAR;rush={on:0};SIMG.rushTaps=opt.rush;var mp0=MUT_P,mp1=MUT_P2;if(opt.nomut){MUT_P=0;MUT_P2=0;}
   var dt=opt.dt||1,end=hours*3600,lastNew=0,tapR=opt.taps===undefined?1:opt.taps,mergeR=opt.merges===undefined?0.5:opt.merges,mAcc=0,lastAscT=0,lastStage=0;
   try{
   for(var t=0;t<end;t+=dt){
@@ -2385,12 +2543,12 @@ function simPlay(hours,opt){opt=opt||{};ACH_SIM=!opt.noach;
         for(var z2=0;z2<40;z2++){var bb2=null,bc2=Infinity;CR.forEach(function(u){var l=cl(u.k);if(l>=u.max)return;var c=u.cost(l)*(CR_PRI.indexOf(u.k)<0?3:1+CR_PRI.indexOf(u.k)*0.15);if(c<bc2){bc2=c;bb2=u;}});if(!bb2||S.rj<bb2.cost(cl(bb2.k)))break;buyCrown(bb2.k);}}}
     if(S.best>=MAXT&&opt.stopAtEnd!==false){out.end=+(t/3600).toFixed(2);break;}
   }
-  out.final={ach:S.ach?S.ach.n:0,gp:out.gp||0,gw:out.gw||0,gnet:out.gnet||0,early:out.early||0,best:S.best,maxRun:S.maxRun,asc:S.asc,reb:S.reb,sd:S.sd,rj:S.rj,rjCycle:S.rjCycle,cr:JSON.parse(JSON.stringify(S.cr)),gps:gps(),pen:penMax(),n:SL.length,shinies:S.shinies,dv:{stage:S.dv.stage,mass:S.dv.mass,mult:devMult()},offers:S.alt.offers,up:JSON.parse(JSON.stringify(S.up))};
-  }finally{SIM=false;S=bk.S;SL=bk.SL;frenzyT=bk.fr;T=bk.T;RC=bk.RC;EV=bk.EV;bm=bk.bm;}
+  out.final={ach:S.ach?S.ach.n:0,mut:S.mut?{n:S.mut.n,col:S.mut.col,burps:S.dv.burps||0,jp:S.dv.jp||0,reg:S.dv.reg||0,rush:S.rush}:null,gp:out.gp||0,gw:out.gw||0,gnet:out.gnet||0,early:out.early||0,best:S.best,maxRun:S.maxRun,asc:S.asc,reb:S.reb,sd:S.sd,rj:S.rj,rjCycle:S.rjCycle,cr:JSON.parse(JSON.stringify(S.cr)),gps:gps(),pen:penMax(),n:SL.length,shinies:S.shinies,dv:{stage:S.dv.stage,mass:S.dv.mass,mult:devMult()},offers:S.alt.offers,up:JSON.parse(JSON.stringify(S.up))};
+  }finally{MUT_P=mp0;MUT_P2=mp1;rush={on:0};rushT=RUSH_MIN+Math.random()*RUSH_VAR;SIMG.rushTaps=undefined;SIM=false;S=bk.S;SL=bk.SL;frenzyT=bk.fr;T=bk.T;RC=bk.RC;EV=bk.EV;bm=bk.bm;}
   return out;}
 window.__sf={get S(){return S;},set S(v){S=v;},get SL(){return SL;},get RC(){return RC;},TIERS:TIERS,UPS:UPS,CR:CR,PENS:PENS,FEATS:FEATS,
   tickEco:tickEco,sim:function(sec,step){step=step||0.1;for(var t=0;t<sec;t+=step){tickEco(step);physics(step);raceTick(step);}updUI();},simPlay:simPlay,
-  ACH:ACH,achCheck:achCheck,achOnUnlock:achOnUnlock,checkFeats:checkFeats,tickExtra:tickExtra,aS:aS,achInc:achInc,achProg:achProg,achScore:achScore,achTitle:achTitle,buildAch:buildAch,get achQ(){return achQ;},get achN(){return S.ach?S.ach.n:0;},
+  ACH:ACH,achCheck:achCheck,achOnUnlock:achOnUnlock,tickExtra:tickExtra,MUT:MUT,mS:mS,mutRoll:mutRoll,gotMutant:gotMutant,mutReveal:mutReveal,startRush:startRush,get rush(){return rush;},rushTap:rushTap,endRush:endRush,rS:rS,get rushT(){return rushT;},set rushT(v){rushT=v;},jackpotBurp:jackpotBurp,burpRoll:burpRoll,burpFeed:burpFeed,feedDevourer:feedDevourer,regurg:regurg,oddsTxt:oddsTxt,tip1:tip1,BURP_N:BURP_N,mutColHTML:mutColHTML,showWhatsNew2:showWhatsNew2,snd:{sMutate:sMutate,sRushAppear:sRushAppear,sRushTap:sRushTap,sRushEsc:sRushEsc,sRushDone:sRushDone,sBurpFill:sBurpFill,sJackBurp:sJackBurp,sRegurg:sRegurg,sSting:sSting},get burpSlow(){return burpSlow;},aS:aS,achInc:achInc,achProg:achProg,achScore:achScore,achTitle:achTitle,buildAch:buildAch,get achQ(){return achQ;},get achN(){return S.ach?S.ach.n:0;},
   save:saveNow,saveReq:save,checkUpdate:checkUpdate,BUILD:BUILD,load:load,gps:gps,gpsBase:gpsBase,buySlime:buySlime,buyUp:buyUp,buyCrown:buyCrown,doMerge:doMerge,ascend:ascend,rebirth:rebirth,canAscend:canAscend,canRebirth:canRebirth,
   allInPlay:allInPlay,gachaBuy:gachaBuy,gachaPull:gachaPull,eggPrice:eggPrice,slotSpin:slotSpin,scBuy:scBuy,scSettle:scSettle,scGrid:scGrid,scPrice:scPrice,giveCard:giveCard,get casTab(){return casTab;},set casTab(v){casTab=v;},finishScratch:finishScratch,RAR:RAR,SYM:SYM,SCT:SCT,GCOL:GCOL,allInP:allInP,slimeBet:slimeBet,slimeBetOk:slimeBetOk,slimeBetP:slimeBetP,donFlip:donFlip,donP:donP,donOffer:donOffer,donEnd:donEnd,get DON(){return DON;},set DON(v){DON=v;},casCap:casCap,casS:casS,buildCasino:buildCasino,rjGain:rjGain,earlyGain:earlyGain,canEarly:canEarly,ascendEarly:ascendEarly,earlyP:earlyP,openLevels:openLevels,sdGain:sdGain,buyCost:buyCost,fmt:fmt,squish:squish,spawn:spawnSlime,crowdMult:crowdMult,penMax:function(){return penMax();},penCap:penCap,penOpen:penOpen,PR:PR,PIT:PIT,ALT:ALT,CAND:CAND,
   newRace:newRace,placeBet:placeBet,cancelBet:cancelBet,enterOwn:enterOwn,startRace:startRace,settleRace:settleRace,raceOdds:raceOdds,betMax:betMax,raceDaily:raceDaily,
