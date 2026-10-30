@@ -2386,7 +2386,7 @@ $('lvlX').addEventListener('click',closeLevels);$('shLvl').addEventListener('cli
 function showWhatsNew2(){queueModal(function(){var L=['<p>🧬 <b>Mutant slimes!</b> Any merge can now make a rare mutant with its own look and a small goo bonus. Collect all 6.</p>',
   '<p>✨ <b>Golden Rush!</b> Every so often a Golden Slime dashes around for 10 seconds. Tap it as fast as you can.</p>'];
   if(S.feat.devourer)L.push('<p>💨 <b>Jackpot Burps!</b> Feeding the Devourer fills a burp meter. Full meter = a surprise prize.</p>');
-  L.push('<p>📝 <b>Clearer words</b> everywhere: Squish Power is now <b>Tap Power</b>, and upgrades show plain % and odds.</p>');if(S.feat.ach)L.push('<p>🏆 10 new achievements to find.</p>');
+  L.push('<p>📝 <b>Clearer words</b> everywhere: Squish Power is now <b>Tap Power</b>, and upgrades show plain % and odds.</p>');if(S.feat.ach)L.push('<p>🏆 12 new achievements to find.</p>');
   showModal('<div class="rel"><span class="newtag">NEW</span><h2 style="margin-top:12px">Fresh goo on the farm! 🧬</h2><div class="wn calm">'+L.join('')+'<p class="sm">Nothing else changed: your farm and progress are just as you left them.</p></div><button class="mbtn" id="mOk">Let\'s go!</button></div>',{mOk:null},'reveal');});}
 // tap the goo counter to see the full number
 $('goo').addEventListener('click',function(){var n=S.goo,t=n<1e21?Math.floor(n).toLocaleString('en-US'):n.toExponential(3).replace('+','');banner('💧 '+t+' goo','#2b2140',2.2);});
@@ -2480,7 +2480,7 @@ document.addEventListener('visibilitychange',function(){
   else{var away=(Date.now()-(S.last||Date.now()))/1000;if(away>2)offline(away,60);saveNow();startLoop();updUI();checkUpdate();}});
 window.addEventListener('pagehide',saveNow);
 // ---------- stale-version guard: Safari / Home Screen apps can keep an old copy cached; offer a one-tap update ----------
-var BUILD='20261029210100',updT=0;
+var BUILD='20261029210554',updT=0;
 function checkUpdate(){if(SIM||!window.fetch||location.protocol==='file:'||Date.now()-updT<6e5)return;updT=Date.now();
   fetch(location.pathname+'?vc='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():'';}).then(function(t){var m=/var BUILD='([0-9a-z_.-]+)'/.exec(t||'');if(m&&m[1]!==BUILD)showUpd();}).catch(function(){});}
 function showUpd(){if($('updBar'))return;var b=document.createElement('button');b.id='updBar';b.textContent='✨ A new version of Slime Farm is ready · tap to update';b.addEventListener('click',function(){saveNow();noSave=true;location.reload();});document.body.appendChild(b);}
