@@ -661,7 +661,7 @@ F658:hard_hat worker construction_worker proletarian|worker_bee
 660:speaker talker|
 661:formation establishment geological_formation|
 662:bush president_bush george_bush scrub crotch_hair shrub pubic_hair chaparral|
-663:clothing wearable|overall hand_wear body_suit street_clothes pressure_suit cat_suit arm_guard jump_suit wet_suit military_uniform plain_clothes leg_covering civilian_dress smoking_jacket sweat_suit civilian_clothing body_pad diving_dress workout_suit diving_suit arm_pad shoulder_pad hip_pad leisure_wear threads bra athletic_supporter hose wrist_pad shin_guard accessory chest_protector garment throat_protector thigh_pad weeds outer_garment diaper protective_garment footwear apron reversible wrapper livery sweats ironing jumpsuit furnishing mending trappings nappy headgear trouser silks duds muff headdress burka burqa raglan outerwear wraparound knitwear leotard hosiery jammies sleepwear gallus legging
+663:clothing wearable|overall hand_wear body_suit street_clothes pressure_suit cat_suit arm_guard jump_suit wet_suit military_uniform plain_clothes leg_covering civilian_dress smoking_jacket sweat_suit civilian_clothing body_pad diving_dress workout_suit diving_suit arm_pad shoulder_pad hip_pad leisure_wear threads bra athletic_supporter wrist_pad shin_guard accessory chest_protector garment throat_protector thigh_pad weeds outer_garment diaper protective_garment footwear apron reversible wrapper livery sweats ironing jumpsuit furnishing mending trappings nappy headgear trouser silks duds muff headdress burka burqa raglan outerwear wraparound knitwear leotard hosiery jammies sleepwear gallus legging
 664:star_fruit|
 665:guitar|steel_guitar electric_guitar bass_guitar acoustic_guitar hawaiian_guitar ukulele uke
 666:finger|
@@ -1606,7 +1606,7 @@ F1591:leopard|
 1605:miner|
 1606:crescent|
 F1607:rhino rhinoceros|
-1608:watering_can watering_pot|
+1608:watering_can watering_pot hose garden_hose fire_hose|
 1609:tunisia|
 1610:cloak|wrap opera_hood opera_cloak shawl prayer_shawl hooded_cloak capuchin
 1611:mushroom_cloud|
