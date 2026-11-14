@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="INKHORDE">
+<meta name="theme-color" content="#c69c64">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect fill=%22%23c69c64%22 width=%2264%22 height=%2264%22 rx=%2212%22/><rect x=%2210%22 y=%2214%22 width=%2244%22 height=%2236%22 rx=%224%22 fill=%22none%22 stroke=%22%2326406a%22 stroke-width=%225%22/><text x=%2232%22 y=%2242%22 font-size=%2222%22 text-anchor=%22middle%22 fill=%22%2326406a%22 font-family=%22serif%22 font-weight=%22900%22>INK</text></svg>">
+<title>INKHORDE</title>
+  <script type="module" crossorigin src="./assets/index-CUuKnhgx.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/CanvasPool-6PJpnc_3.js">
+  <link rel="modulepreload" crossorigin href="./assets/canvasUtils-BPf5fO0w.js">
+  <link rel="modulepreload" crossorigin href="./assets/RenderTargetSystem-CTQssmi4.js">
+  <link rel="modulepreload" crossorigin href="./assets/getTextureBatchBindGroup-Bj6kWNfI.js">
+  <link rel="modulepreload" crossorigin href="./assets/getTexelRangeRects-B7ObHcEq.js">
+  <link rel="stylesheet" crossorigin href="./assets/index-Byt0upxM.css">
+</head>
+<body>
+<div id="app">
+  <header id="hud">
+    <button id="pauseBtn" type="button" aria-label="Pause" hidden></button>
+    <div id="score" class="stampfont">0</div>
+    <div id="goal"><span id="waveline">WAVE 1</span><span id="bestline"></span></div>
+  </header>
+  <div id="field">
+    <div id="tell" class="stampfont"></div>
+    <div id="hint" class="stampfont"></div>
+    <div id="toast"></div>
+  </div>
+  <form id="pad" autocomplete="off" hidden>
+    <div id="inkbar"><i></i><b></b></div>
+    <div id="box"><input id="word" type="text" inputmode="text" enterkeyhint="go" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="40" placeholder="type anything…" aria-label="Type any word"><span id="caret"></span></div>
+    <div id="boot"></div>
+  </form>
+</div>
+<div id="title" class="sheet">
+  <h1 class="stampfont">INKHORDE</h1>
+  <canvas id="titleStamp" width="168" height="168"></canvas>
+  <p class="sub">Type any word. It joins your army.</p>
+  <p id="titleBest" class="best">BEST 0</p>
+  <button id="playBtn" class="btn stampfont" type="button" disabled>LOADING…</button>
+  <button id="logBtn" class="btn small" type="button">WORD LOG</button>
+  <p class="fine">Plays offline · no account · <a href="./LICENSE-WORDNET.txt" target="_blank">WordNet word list</a></p>
+</div>
+<div id="pauseSheet" class="sheet" hidden>
+  <h2 class="stampfont">PAUSED</h2>
+  <button id="resumeBtn" class="btn stampfont" type="button">RESUME</button>
+  <button id="logBtn2" class="btn small" type="button">WORD LOG</button>
+  <button id="soundBtn" class="btn small" type="button">SOUND: ON</button>
+  <button id="quitBtn" class="btn small" type="button">END RUN</button>
+</div>
+<div id="recap" class="sheet" hidden>
+  <p id="recapCause"></p>
+  <div id="recapScore" class="stampfont">0</div>
+  <p id="recapBest" class="best"></p>
+  <p id="recapWave"></p>
+  <div id="recapFinds"></div>
+  <p id="recapNext"></p>
+  <button id="againBtn" class="btn stampfont" type="button">STAMP AGAIN</button>
+  <button id="logBtn3" class="btn small" type="button">WORD LOG</button>
+</div>
+<div id="logSheet" class="sheet scroll" hidden>
+  <div id="logHead"><h2 class="stampfont">WORD LOG</h2><button id="logClose" class="btn tiny" type="button">CLOSE</button></div>
+  <p id="logCounts"></p>
+  <div id="logClues"></div>
+  <div id="logGrid"></div>
+</div>
+</body>
+</html>
