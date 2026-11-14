@@ -1,0 +1,13 @@
+INKHORDE art credits
+
+Stamp art is adapted (restyled to single-ink rubber stamps, recoloured, outlined, eyes/feet/props added) from:
+
+1) Twemoji graphics, Copyright 2020 Twitter, Inc and other contributors (now jdecked/twemoji).
+   Licensed under CC-BY 4.0: https://creativecommons.org/licenses/by/4.0/
+   https://github.com/jdecked/twemoji
+
+2) game-icons.net icons by: andymeneely, carl-olsen, caro-asercion, cathelineau, darkzaitzev, delapouite, faithtoken, felbrigg, generalace135, guard13007, heavenly-dog, irongamer, john-redman, lorc, lord-berandas, lucasms, priorblue, quoting, rihlsul, sbed, seregacthtuf, skoll, spencerdub, various-artists, viscious-speed, willdabeast.
+   Licensed under CC BY 3.0: https://creativecommons.org/licenses/by/3.0/
+   https://game-icons.net
+
+Word list: Princeton WordNet 3.0 (see LICENSE-WORDNET.txt). Emoji keywords: emojibase-data (MIT).
