@@ -10,13 +10,13 @@
 <meta name="format-detection" content="telephone=no">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect fill=%22%23c69c64%22 width=%2264%22 height=%2264%22 rx=%2212%22/><rect x=%2210%22 y=%2214%22 width=%2244%22 height=%2236%22 rx=%224%22 fill=%22none%22 stroke=%22%2326406a%22 stroke-width=%225%22/><text x=%2232%22 y=%2242%22 font-size=%2222%22 text-anchor=%22middle%22 fill=%22%2326406a%22 font-family=%22serif%22 font-weight=%22900%22>INK</text></svg>">
 <title>INKHORDE</title>
-  <script type="module" crossorigin src="./assets/index-3cLiZ69G.js"></script>
+  <script type="module" crossorigin src="./assets/index-hQKeVdcD.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/CanvasPool-DQSZBxHu.js">
   <link rel="modulepreload" crossorigin href="./assets/canvasUtils-7QIGaAgM.js">
-  <link rel="modulepreload" crossorigin href="./assets/RenderTargetSystem-B2s7K_WD.js">
+  <link rel="modulepreload" crossorigin href="./assets/RenderTargetSystem-Cvq6Vc4W.js">
   <link rel="modulepreload" crossorigin href="./assets/getTextureBatchBindGroup-C4I2IA-a.js">
-  <link rel="modulepreload" crossorigin href="./assets/getTexelRangeRects-FF3MZrmf.js">
-  <link rel="stylesheet" crossorigin href="./assets/index-B9ZTAZuU.css">
+  <link rel="modulepreload" crossorigin href="./assets/getTexelRangeRects-Dt4O4qw4.js">
+  <link rel="stylesheet" crossorigin href="./assets/index-DDdEDFVn.css">
 </head>
 <body>
 <div id="app">
@@ -32,11 +32,11 @@
     <div id="toast"></div>
     <div id="clever" class="stampfont"><b>CLEVER!</b><small></small></div>
   </div>
-  <form id="pad" autocomplete="off" hidden>
+  <div id="dock" hidden><form id="pad" autocomplete="off">
     <div id="inkbar"><i></i><b></b></div>
     <div id="box"><input id="word" type="text" inputmode="text" enterkeyhint="go" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="40" placeholder="type anything…" aria-label="Type any word"><span id="caret"></span></div>
     <div id="boot"></div>
-  </form>
+  </form></div>
 </div>
 <div id="title" class="sheet">
   <h1 class="stampfont">INKHORDE</h1>
@@ -46,6 +46,7 @@
   <button id="playBtn" class="btn stampfont" type="button" disabled>LOADING…</button>
   <button id="dailyBtn" class="btn small daily" type="button">DAILY</button>
   <div class="row"><button id="logBtn" class="btn small" type="button">WORD LOG</button><button id="codexBtn" class="btn small" type="button">CODEX</button><button id="styleBtn" class="btn small" type="button">STYLE</button></div>
+  <button id="kbBtn2" class="btn tiny" type="button">KEYBOARD: INK</button>
   <p class="fine">Plays offline · no account · <a href="./LICENSE-WORDNET.txt" target="_blank">WordNet word list</a> · <a href="./CREDITS.txt" target="_blank">Art: Twemoji (CC-BY 4.0) &amp; game-icons.net (CC BY 3.0)</a></p>
 </div>
 <div id="pauseSheet" class="sheet" hidden>
@@ -53,6 +54,7 @@
   <button id="resumeBtn" class="btn stampfont" type="button">RESUME</button>
   <button id="logBtn2" class="btn small" type="button">WORD LOG</button>
   <button id="soundBtn" class="btn small" type="button">SOUND: ON</button>
+  <button id="kbBtn" class="btn small" type="button">KEYBOARD: INK</button>
   <button id="quitBtn" class="btn small" type="button">END RUN</button>
 </div>
 <div id="recap" class="sheet" hidden>
