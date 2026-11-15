@@ -10,20 +10,20 @@
 <meta name="format-detection" content="telephone=no">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect fill=%22%23c69c64%22 width=%2264%22 height=%2264%22 rx=%2212%22/><rect x=%2210%22 y=%2214%22 width=%2244%22 height=%2236%22 rx=%224%22 fill=%22none%22 stroke=%22%2326406a%22 stroke-width=%225%22/><text x=%2232%22 y=%2242%22 font-size=%2222%22 text-anchor=%22middle%22 fill=%22%2326406a%22 font-family=%22serif%22 font-weight=%22900%22>INK</text></svg>">
 <title>INKHORDE</title>
-  <script type="module" crossorigin src="./assets/index-8BR0BIa7.js"></script>
+  <script type="module" crossorigin src="./assets/index-3cLiZ69G.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/CanvasPool-DQSZBxHu.js">
   <link rel="modulepreload" crossorigin href="./assets/canvasUtils-7QIGaAgM.js">
   <link rel="modulepreload" crossorigin href="./assets/RenderTargetSystem-B2s7K_WD.js">
   <link rel="modulepreload" crossorigin href="./assets/getTextureBatchBindGroup-C4I2IA-a.js">
   <link rel="modulepreload" crossorigin href="./assets/getTexelRangeRects-FF3MZrmf.js">
-  <link rel="stylesheet" crossorigin href="./assets/index-Bho1Tup0.css">
+  <link rel="stylesheet" crossorigin href="./assets/index-B9ZTAZuU.css">
 </head>
 <body>
 <div id="app">
   <header id="hud">
-    <button id="pauseBtn" type="button" aria-label="Pause" hidden></button>
-    <div id="score" class="stampfont">0</div>
-    <div id="goal"><span id="waveline">WAVE 1</span><span id="bestline"></span></div>
+    <div id="hudrow"><div id="score" class="stampfont">0</div><span id="waveline">WAVE 1</span><span id="bestline"></span>
+      <div id="zoom" hidden><button type="button" data-z="auto" aria-label="Auto camera" class="on">⤢</button></div>
+      <button id="pauseBtn" type="button" aria-label="Pause" hidden></button></div>
     <div id="clue"></div>
   </header>
   <div id="field">
@@ -31,7 +31,6 @@
     <div id="hint" class="stampfont"></div>
     <div id="toast"></div>
     <div id="clever" class="stampfont"><b>CLEVER!</b><small></small></div>
-    <div id="zoom" hidden><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" data-z="auto" aria-label="Auto zoom" class="on">AUTO</button></div>
   </div>
   <form id="pad" autocomplete="off" hidden>
     <div id="inkbar"><i></i><b></b></div>
