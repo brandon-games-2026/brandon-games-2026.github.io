@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>STORMCELLAR · First Aid</title>
+  <meta name="description" content="Offline first-aid cards for iPhone. One action per screen, big type, works with no signal. Not medical advice; call 911 in an emergency.">
+  <meta name="theme-color" content="#f4efe4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Stormcellar">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <script>
+    // Apply theme before first paint to avoid a flash.
+    try { var s = JSON.parse(localStorage.getItem('sc.v1.settings') || '{}'); var d = s.lowPower || s.theme === 'dark' || ((s.theme || 'auto') === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.dataset.theme = d ? 'dark' : 'light'; } catch (e) {}
+  </script>
+  <script type="module" crossorigin src="/stormcellar/assets/index-CZtbeHPQ.js"></script>
+  <link rel="stylesheet" crossorigin href="/stormcellar/assets/index-Ds2YN7in.css">
+</head>
+<body>
+  <div id="app"></div>
+  <noscript>STORMCELLAR needs JavaScript. In an emergency, call 911.</noscript>
+</body>
+</html>
