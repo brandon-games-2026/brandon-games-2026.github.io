@@ -1,6 +1,6 @@
 // STORMCELLAR service worker: precache everything on install, serve cache-first, work fully offline.
-const CACHE = 'stormcellar-083df2e48efa';
-const FILES = ["./","assets/index-Cb4gJYqa.css","assets/index-DGNoBZKf.js","icons/apple-touch-icon.png","icons/icon-192.png","icons/icon-512.png","icons/maskable-512.png","index.html","manifest.webmanifest"];
+const CACHE = 'stormcellar-3e8609e263a5';
+const FILES = ["./","assets/index-BqDfn_Un.css","assets/index-D1DY6ffq.js","icons/apple-touch-icon.png","icons/icon-192.png","icons/icon-512.png","icons/maskable-512.png","index.html","manifest.webmanifest"];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(f => new Request(f, { cache: 'reload' })))));
   // Do not skipWaiting automatically: an update waits until the person taps "Update library" (never mid-card).
