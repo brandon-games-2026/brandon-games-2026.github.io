@@ -1,6 +1,6 @@
 // STORMCELLAR service worker: precache everything on install, serve cache-first, work fully offline.
-const CACHE = 'stormcellar-1c4589070011';
-const FILES = ["./","assets/index-DGArBoDz.js","assets/index-Djy7l1Ju.css","icons/apple-touch-icon.png","icons/icon-192.png","icons/icon-512.png","icons/maskable-512.png","index.html","manifest.webmanifest"];
+const CACHE = 'stormcellar-9946024520d8';
+const FILES = ["./","assets/index-Cb4gJYqa.css","assets/index-Cg40e2Mr.js","icons/apple-touch-icon.png","icons/icon-192.png","icons/icon-512.png","icons/maskable-512.png","index.html","manifest.webmanifest"];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(f => new Request(f, { cache: 'reload' })))));
   // Do not skipWaiting automatically: an update waits until the person taps "Update library" (never mid-card).
@@ -11,9 +11,11 @@ self.addEventListener('activate', e => {
 self.addEventListener('message', e => { if (e.data === 'SKIP_WAITING') self.skipWaiting(); });
 // Optional videos live in their own cache ('sc-videos'), saved on purpose from the Videos page; never precached.
 const VCACHE = 'sc-videos';
-async function videoResponse(req) {
+// Optional map packs (pmtiles, places, fonts, and the lazy map code) live in 'sc-maps', also saved on purpose.
+const MCACHE = 'sc-maps';
+async function videoResponse(req, cacheName = VCACHE) {
   const url = req.url.split('#')[0].split('?')[0];
-  const c = await caches.open(VCACHE);
+  const c = await caches.open(cacheName);
   const hit = await c.match(url, { ignoreVary: true });
   if (!hit) {
     try { return await fetch(req); } catch { return new Response('', { status: 504, statusText: 'Video not saved for offline' }); }
@@ -36,13 +38,15 @@ async function videoResponse(req) {
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
-  if (new URL(req.url).pathname.includes('/videos/')) { e.respondWith(videoResponse(req)); return; }
+  const path = new URL(req.url).pathname;
+  if (path.includes('/videos/')) { e.respondWith(videoResponse(req)); return; }
+  if (path.includes('/maps/')) { e.respondWith(videoResponse(req, MCACHE)); return; }
   e.respondWith((async () => {
     const c = await caches.open(CACHE);
     if (req.mode === 'navigate') {
       return (await c.match('./index.html', { ignoreVary: true })) || (await c.match('./')) || fetch(req);
     }
-    const hit = await c.match(req, { ignoreSearch: true, ignoreVary: true });
+    const hit = await c.match(req, { ignoreSearch: true, ignoreVary: true }) || await (await caches.open(MCACHE)).match(req, { ignoreSearch: true, ignoreVary: true });
     if (hit) return hit;
     try { return await fetch(req); } catch { return new Response('', { status: 504 }); }
   })());
