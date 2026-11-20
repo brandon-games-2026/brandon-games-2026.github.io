@@ -1,6 +1,6 @@
 // STORMCELLAR service worker: precache everything on install, serve cache-first, work fully offline.
-const CACHE = 'stormcellar-3e8609e263a5';
-const FILES = ["./","assets/index-BqDfn_Un.css","assets/index-D1DY6ffq.js","icons/apple-touch-icon.png","icons/icon-192.png","icons/icon-512.png","icons/maskable-512.png","index.html","manifest.webmanifest"];
+const CACHE = 'stormcellar-166bf1f740c5';
+const FILES = ["./","assets/bag-BKlyGfOV.js","assets/index-C1qPP6V7.js","assets/index-WdzBOJC_.css","assets/nwr-D9QRek84.js","assets/pack-comms-DrBmeCyr.js","assets/pack-food-NjGVdHy6.js","assets/pack-grow-DvdX_Olm.js","assets/pack-med-DydUQTZv.js","assets/pack-nuke-BC3h8zlm.js","assets/pack-plan-CsUlvssH.js","assets/pack-repair-B4LSQVWK.js","assets/pack-san-B-u5fA1e.js","assets/pack-secure-Birxg7iB.js","assets/pack-water-DtIvxOJx.js","assets/pack-week-Bbr49MX6.js","assets/page-dGuSS84k.js","assets/rolldown-runtime-DK3Fl9T5.js","icons/apple-touch-icon.png","icons/icon-192.png","icons/icon-512.png","icons/maskable-512.png","index.html","manifest.webmanifest"];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(f => new Request(f, { cache: 'reload' })))));
   // Do not skipWaiting automatically: an update waits until the person taps "Update library" (never mid-card).
